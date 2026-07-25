@@ -6,7 +6,8 @@ import SwiftUI
 struct ColoringView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @State private var silhouette = SilhouetteLibrary.all[0]
+    @State private var silhouette = SilhouetteLibrary.animals[0]
+    @State private var category = "animals"
     @State private var chosenColor = paintPalette[7]
     /// Region index -> color the child painted it.
     @State private var fills: [Int: Color] = [:]
@@ -20,6 +21,7 @@ struct ColoringView: View {
 
             VStack(spacing: 14) {
                 header
+                categories
                 picker
                 canvas
                 PaletteBar(colors: paintPalette, selected: $chosenColor)
@@ -57,10 +59,40 @@ struct ColoringView: View {
         }
     }
 
+    private var categories: some View {
+        HStack(spacing: 10) {
+            categoryChip(id: "animals", name: "Animales")
+            categoryChip(id: "places", name: "Paisajes")
+            Spacer()
+        }
+    }
+
+    private func categoryChip(id: String, name: String) -> some View {
+        Button {
+            category = id
+            // Jump to the first drawing of the new category, so the canvas
+            // never sits on something that left the strip.
+            silhouette = visible.first ?? SilhouetteLibrary.animals[0]
+            fills.removeAll()
+        } label: {
+            Text(name)
+                .font(.system(size: 17, weight: .medium, design: .rounded))
+                .foregroundStyle(category == id ? .white : Color.deepPurple)
+                .padding(.horizontal, 22)
+                .padding(.vertical, 10)
+                .background(category == id ? Color.pinkStrong : .white, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var visible: [Silhouette] {
+        SilhouetteLibrary.all.filter { $0.category == category }
+    }
+
     private var picker: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(SilhouetteLibrary.all) { item in
+                ForEach(visible) { item in
                     Button {
                         silhouette = item
                         fills.removeAll()

@@ -100,8 +100,20 @@ html, body {
 
 #stage { flex: 1; border-radius: 18px; overflow: hidden; position: relative; background: #3C3489; min-height: 0; }
 #stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-/* Covers the player's own title bar and share button. */
-#stage .shield { position: absolute; top: 0; left: 0; right: 0; height: 70px; z-index: 2; }
+
+/* Swallows every tap on the video. Without this, tapping the iframe opens
+   YouTube itself: the title bar, the share button, "More videos", or a whole
+   new window. She controls playback with our buttons underneath instead. */
+#stage .block { position: absolute; inset: 0; z-index: 3; }
+
+/* YouTube paints its own "More videos" grid the moment a video pauses, and
+   rel=0 no longer removes it. So while paused we cover the frame entirely. */
+#stage .veil {
+  position: absolute; inset: 0; z-index: 4;
+  background: #26215C; color: #F4C0D1; font-size: 76px;
+  display: none; align-items: center; justify-content: center;
+}
+#stage .veil.on { display: flex; }
 
 .controls { flex: 0 0 auto; display: flex; align-items: center; gap: 18px; }
 .big {
@@ -143,6 +155,14 @@ html, body {
 .door svg { height: 130px; }
 .door .name { font-size: 26px; font-weight: 600; }
 .door .sub { font-size: 16px; opacity: .6; }
+
+.cats { flex: 0 0 auto; display: flex; gap: 10px; }
+.cats button {
+  border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
+  padding: 10px 22px; font-size: 17px; font-weight: 500;
+  background: #fff; color: #26215C;
+}
+.cats button.on { background: #D4537E; color: #fff; }
 
 .picker { flex: 0 0 auto; display: flex; gap: 9px; overflow-x: auto; padding-bottom: 4px; }
 .picker::-webkit-scrollbar { display: none; }

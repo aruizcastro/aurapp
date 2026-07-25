@@ -137,7 +137,7 @@ function renderWorlds() {
   paint.className = 'tile';
   paint.style.background = '#F4C0D1';
   paint.innerHTML = '<span class="ico">🎨</span><span class="name">Pintar</span>' +
-                    '<span class="sub">16 dibujos</span>';
+                    '<span class="sub">22 dibujos</span>';
   paint.onclick = () => go('paint');
   host.appendChild(paint);
 }
@@ -245,6 +245,9 @@ function playVideo(video) {
         onStateChange: (e) => {
           playing = e.data === 1;
           $('#playPause').textContent = playing ? '⏸' : '▶';
+          // Cover the frame whenever it is not actively playing, so YouTube's
+          // pause overlay and end screen never reach her.
+          $('#veil').classList.toggle('on', e.data !== 1 && e.data !== 3);
           if (e.data === 0) go('grid');          // ended
         }
       }
@@ -283,6 +286,7 @@ function stopPlayer() {
   yt = null;
   $('#ytHost').innerHTML = '';
   $('#progress').style.width = '0';
+  $('#veil').classList.remove('on');
   save();
 }
 
@@ -316,26 +320,57 @@ function buildPalette(host, initial, onPick) {
 
 // Coloring -------------------------------------------------------------
 
+const CATEGORIES = [
+  { id: 'animals', name: 'Animales' },
+  { id: 'places',  name: 'Paisajes' }
+];
+
+let category = 'animals';
+
 function openColoring() {
-  const picker = $('#silPicker');
-  if (!picker.childElementCount) {
-    SILHOUETTES.forEach(item => {
+  const cats = $('#silCats');
+  if (!cats.childElementCount) {
+    CATEGORIES.forEach(cat => {
       const btn = document.createElement('button');
-      btn.className = 'pk' + (item.id === silhouette.id ? ' on' : '');
-      btn.innerHTML = '<svg viewBox="0 0 320 300" aria-hidden="true">' + item.svg + '</svg>' +
-                      '<span></span>';
-      btn.querySelector('span').textContent = item.name;
+      btn.textContent = cat.name;
+      btn.className = cat.id === category ? 'on' : '';
       btn.onclick = () => {
-        picker.querySelectorAll('.pk').forEach(p => p.classList.remove('on'));
+        cats.querySelectorAll('button').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
-        silhouette = item;
+        category = cat.id;
+        // Jump to the first drawing of the new category so the canvas
+        // never sits on something that is no longer in the strip.
+        silhouette = SILHOUETTES.find(s => s.category === category);
+        buildPicker();
         drawSilhouette();
       };
-      picker.appendChild(btn);
+      cats.appendChild(btn);
     });
     buildPalette($('#palColor'), colorPick, c => { colorPick = c; });
+    buildPicker();
   }
   drawSilhouette();
+}
+
+function buildPicker() {
+  const picker = $('#silPicker');
+  picker.innerHTML = '';
+  picker.scrollLeft = 0;
+
+  SILHOUETTES.filter(s => s.category === category).forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'pk' + (item.id === silhouette.id ? ' on' : '');
+    btn.innerHTML = '<svg viewBox="0 0 320 300" aria-hidden="true">' + item.svg + '</svg>' +
+                    '<span></span>';
+    btn.querySelector('span').textContent = item.name;
+    btn.onclick = () => {
+      picker.querySelectorAll('.pk').forEach(p => p.classList.remove('on'));
+      btn.classList.add('on');
+      silhouette = item;
+      drawSilhouette();
+    };
+    picker.appendChild(btn);
+  });
 }
 
 function drawSilhouette() {

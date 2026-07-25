@@ -51,7 +51,11 @@
 
 <!-- Player ------------------------------------------------------------ -->
 <div class="screen" id="s-player">
-  <div id="stage"><div class="shield"></div><div id="ytHost"></div></div>
+  <div id="stage">
+    <div id="ytHost"></div>
+    <div class="block"></div>
+    <div class="veil" id="veil">▶</div>
+  </div>
   <div class="controls">
     <button class="big pink" id="playPause" aria-label="Pausa">⏸</button>
     <div class="track"><div id="progress"></div></div>
@@ -78,7 +82,7 @@
     <button class="door" data-go="color" style="background:#9FE1CB">
       <svg viewBox="0 0 320 300" id="doorArt" aria-hidden="true"></svg>
       <span class="name">Colorear</span>
-      <span class="sub">16 dibujos</span>
+      <span class="sub">22 dibujos</span>
     </button>
     <button class="door" data-go="draw" style="background:#FAC775">
       <svg viewBox="0 0 320 300" aria-hidden="true">
@@ -99,6 +103,7 @@
     <div class="grow"></div>
     <button class="round" id="colorReset" aria-label="Empezar de nuevo">↺</button>
   </div>
+  <div class="cats" id="silCats"></div>
   <div class="picker" id="silPicker"></div>
   <div id="canvasWrap"><svg id="colorSvg" viewBox="0 0 320 300" preserveAspectRatio="xMidYMid meet"></svg></div>
   <div class="palette" id="palColor"></div>

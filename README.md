@@ -25,11 +25,13 @@ El código SwiftIUI queda guardado en `AurApp/` por si algún día hay una Mac m
 
 **Videos.** Seis mundos temáticos en la primera pantalla. Dentro de cada mundo, páginas de 6 videos con flechas grandes (también funciona deslizar). Nunca hay más de 7 cosas en pantalla y cualquier video queda a dos toques. El mundo *Favoritos* se llena solo con lo que ella repite tres veces o más.
 
-**Reproductor.** Usa el IFrame Player API oficial de YouTube, con los controles de YouTube apagados y reemplazados por dos botones de 76 px: pausa y casita. Sin búsqueda, sin recomendados, sin videos relacionados al final.
+**Reproductor.** Usa el IFrame Player API oficial de YouTube, con los controles de YouTube apagados y reemplazados por dos botones de 76 px: pausa y casita.
+
+Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar el video abre la barra de título de YouTube, el botón de compartir, o directamente una ventana nueva de YouTube. Y como YouTube dibuja su rejilla de "More videos" apenas el video se pausa —`rel=0` dejó de eliminarla en 2018—, mientras está pausado la app tapa el cuadro por completo.
 
 **Límite de tiempo.** El contador solo corre mientras un video está efectivamente reproduciéndose, no mientras ella navega. Al agotarse aparece una pantalla de "el unicornio se fue a dormir" que ofrece ir a pintar. Se reinicia solo al cambiar el día.
 
-**Pintar.** *Colorear*: 16 siluetas originales, se toca un color y luego una zona, que se llena completa. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
+**Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
 
 **Panel de padres.** Protegido con PIN de 4 dígitos. Se entra manteniendo apretado el candado 2 segundos. Los números del teclado salen en desorden cada vez: a los 4 años se memorizan posiciones mucho antes que números.
 
@@ -152,4 +154,6 @@ Las alternativas son descargar los videos (sin anuncios y funciona sin internet,
 
 Las 16 siluetas son originales, construidas con círculos, elipses y curvas. No están basadas en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.
 
-Se definen una sola vez en `AurApp/Paint/Silhouettes.swift` y se convierten a `docs/silhouettes.js`, para que las dos versiones nunca se separen. Cada dibujo se traza en una caja de 320 × 300 y se escala solo. Las zonas se listan de atrás hacia adelante: la última dibujada queda encima.
+Viven en `docs/silhouettes.js`, que es la fuente de verdad. Cada dibujo se traza en una caja de 320 × 300 y se escala solo. Las zonas se listan de atrás hacia adelante: la última dibujada queda encima, y el toque se resuelve recorriendo la lista al revés.
+
+Para agregar un dibujo nuevo, se añade una entrada más al arreglo con su `id`, `name`, `category` y el SVG de sus zonas. No hay que tocar ningún otro archivo.
