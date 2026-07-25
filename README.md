@@ -131,13 +131,13 @@ docs/                        La PWA
 ├── index.html               Todas las pantallas
 ├── app.css                  Estilos (nada táctil bajo 52 px)
 ├── app.js                   Estado, navegación, reproductor, pintar
-├── silhouettes.js           Las 16 siluetas, generadas desde el código Swift
+├── silhouettes.js           Los 22 dibujos — fuente de verdad
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512
 
 AurApp/                      La versión SwiftUI, guardada para más adelante
-silhouettes-preview.png      Cómo se ven los 16 dibujos
+silhouettes-preview.png      Cómo se ven los 22 dibujos
 ```
 
 ---
@@ -152,7 +152,7 @@ Las alternativas son descargar los videos (sin anuncios y funciona sin internet,
 
 ## Sobre los dibujos
 
-Las 16 siluetas son originales, construidas con círculos, elipses y curvas. No están basadas en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.
+Los 22 dibujos son originales, construidas con círculos, elipses y curvas. No están basadas en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.
 
 Viven en `docs/silhouettes.js`, que es la fuente de verdad. Cada dibujo se traza en una caja de 320 × 300 y se escala solo. Las zonas se listan de atrás hacia adelante: la última dibujada queda encima, y el toque se resuelve recorriendo la lista al revés.
 
