@@ -74,7 +74,11 @@ Editas los archivos de `docs/`, y:
 git add . && git commit -m "cambios" && git push
 ```
 
-En un par de minutos el iPad recoge la versión nueva sola. No hay que reinstalar nada.
+En un par de minutos el iPad recoge la versión nueva sola. **Nunca borres la app del iPad para actualizarla**: al borrarla se va el `localStorage` y con él toda la lista de videos.
+
+El service worker va en modo *red primero*: cada vez que la app abre con señal, pide los archivos frescos y usa el caché solo como respaldo. Así una actualización entra en la primera apertura, sin trucos.
+
+Si alguna vez queda pegada, basta cerrarla del todo (deslizar hacia arriba en el selector de apps) y volver a abrirla.
 
 Si es la primera vez, en **Settings → Pages** del repositorio: Source `Deploy from a branch`, rama `main`, carpeta **`/docs`**.
 

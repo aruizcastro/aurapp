@@ -1,8 +1,15 @@
-/* Service worker. Caches the app shell so the painting side works with no
-   internet at all — in the car, on a plane. Videos obviously still need a
-   connection, and YouTube requests are never cached. */
+/* Service worker.
+   Network first, cache as fallback. That order matters: cache-first makes
+   updates land one or two launches late, which is maddening when you have
+   just pushed a fix. This way a launch with signal always gets the newest
+   code, and a launch without signal still opens from the cache, so the
+   painting side keeps working in the car or on a plane.
 
-const CACHE = 'aurapp-v2';
+   The shell files are tiny, so the extra request costs nothing noticeable.
+   Bumping CACHE below is optional now — the old copies get overwritten on
+   every successful fetch anyway. */
+
+const CACHE = 'aurapp-v3';
 
 const SHELL = [
   './',
@@ -39,18 +46,17 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname.includes('youtube.com') || url.hostname.includes('ytimg.com')) return;
 
   if (event.request.method !== 'GET') return;
+  if (url.origin !== self.location.origin) return;
 
-  // Cache first for the shell, then network. Keeps launch instant.
   event.respondWith(
-    caches.match(event.request).then(hit => {
-      if (hit) return hit;
-      return fetch(event.request).then(response => {
-        if (response.ok && url.origin === self.location.origin) {
+    fetch(event.request)
+      .then(response => {
+        if (response.ok) {
           const copy = response.clone();
           caches.open(CACHE).then(cache => cache.put(event.request, copy));
         }
         return response;
-      }).catch(() => hit);
-    })
+      })
+      .catch(() => caches.match(event.request).then(hit => hit || caches.match('./index.html')))
   );
 });
