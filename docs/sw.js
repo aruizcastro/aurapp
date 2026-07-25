@@ -2,7 +2,7 @@
    internet at all — in the car, on a plane. Videos obviously still need a
    connection, and YouTube requests are never cached. */
 
-const CACHE = 'aurapp-v1';
+const CACHE = 'aurapp-v2';
 
 const SHELL = [
   './',

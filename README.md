@@ -2,22 +2,9 @@
 
 Una app de iPad para una niña de 4 años: videos de YouTube de una lista que tú controlas, y un mundo para pintar.
 
-Hay dos versiones del mismo proyecto en este repositorio:
-
-| Carpeta | Qué es | Estado |
-|---|---|---|
-| `docs/` | **PWA** — se instala desde Safari, sin Mac ni Xcode | **Esta es la que se usa** |
-| `AurApp/` | App nativa SwiftUI | Completa, pero no compilable con el equipo actual |
+Es una PWA: se instala desde Safari, sin Mac, sin Xcode, sin cuenta de desarrollador y sin caducidad. Vive en `docs/` y se publica con GitHub Pages.
 
 El código, los nombres de archivo y los comentarios están en inglés. Los textos que ella ve están en español.
-
----
-
-## Por qué la PWA y no la app nativa
-
-El Mac mini de 2018 se quedó en macOS Sequoia: Apple lo dejó fuera de macOS Tahoe 26. Y como Xcode 26 exige Tahoe, el techo de ese equipo es Xcode 16.4, que trae los SDK de iPadOS 18.5. El iPad está en iPadOS 26.5.2, así que Xcode 16.4 se niega a instalarle nada.
-
-El código SwiftIUI queda guardado en `AurApp/` por si algún día hay una Mac más nueva. Mientras tanto, la PWA hace lo mismo y en varios aspectos gana: no caduca a los 7 días, no cuesta $99 al año, y se actualiza sola cuando cambias el código.
 
 ---
 
@@ -37,52 +24,15 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 ---
 
-## Publicarla (una sola vez, ~10 minutos)
+## Instalarla en el iPad
 
-La PWA necesita estar en una dirección con HTTPS. GitHub Pages es gratis y permanente.
-
-### 1. Subir el repositorio
-
-Crea un repositorio en [github.com/new](https://github.com/new). Ponle `aurapp` y déjalo público (Pages gratis requiere repositorio público).
-
-Desde Terminal, en esta carpeta:
-
-```bash
-cd ~/projects/aurapp
-git init
-git add .
-git commit -m "AurApp"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/aurapp.git
-git push -u origin main
-```
-
-Cambia `TU-USUARIO` por tu usuario de GitHub. Si te pide contraseña, GitHub ya no las acepta: crea un token en Settings → Developer settings → Personal access tokens y úsalo como contraseña.
-
-### 2. Activar Pages
-
-En el repositorio: **Settings → Pages**.
-
-- **Source**: Deploy from a branch
-- **Branch**: `main`, carpeta `/docs`
-- **Save**
-
-En un par de minutos tu app queda en:
-
-```
-https://TU-USUARIO.github.io/aurapp/
-```
-
-### 3. Instalarla en el iPad
-
-1. Abre esa dirección en **Safari** en el iPad. Tiene que ser Safari — Chrome en iOS no puede instalar apps en la pantalla de inicio.
+1. Abre en **Safari** la dirección donde esté publicada. Tiene que ser Safari — Chrome en iOS no puede instalar apps en la pantalla de inicio.
 2. Toca el botón **Compartir** (el cuadrito con la flecha).
-3. **Añadir a pantalla de inicio**.
-4. Ponle el nombre y toca Añadir.
+3. **Añadir a pantalla de inicio** y confirma.
 
-Queda el ícono del unicornio. Al abrirlo no se ve Safari por ningún lado.
+Queda el ícono del unicornio. Al abrirlo no se ve Safari por ningún lado. Úsala en horizontal.
 
-### 4. Activar el Modo Guiado
+### Modo Guiado
 
 Esto no es opcional. Sin esto ella simplemente cierra la app y abre otra cosa, y el límite de tiempo no sirve de nada.
 
@@ -90,9 +40,11 @@ Esto no es opcional. Sin esto ella simplemente cierra la app y abre otra cosa, y
 
 Para usarlo: abre AurApp y da tres clics rápidos al botón lateral. El iPad queda encerrado en la app. Para salir, otros tres clics y el código.
 
-### 5. Agregar los videos
+---
 
-Abre la app, mantén apretado el candado 2 segundos, escribe el PIN (viene en `1234`, cámbialo) y pega enlaces de YouTube. El título se llena solo.
+## Agregar videos
+
+Mantén apretado el candado 2 segundos, escribe el PIN (viene en `1234`, cámbialo) y pega enlaces de YouTube. El título y la portada se llenan solos: la app se los pide a YouTube por oEmbed, que no necesita API key.
 
 Sirve cualquier forma de enlace:
 
@@ -104,7 +56,17 @@ https://www.youtube.com/shorts/XXXXXXXXXXX
 
 ---
 
-## Actualizar la app después
+## Dónde viven los datos
+
+La lista de videos, el PIN y el contador de tiempo se guardan en `localStorage`, en el dispositivo. **Cada dispositivo tiene su propia lista**: lo que agregues en la Mac no aparece en el iPad.
+
+Safari borra el almacenamiento de sitios que no se visitan en 7 días, **pero las apps agregadas a la pantalla de inicio están exentas** de esa regla.
+
+Aun así, el panel de padres tiene **Exportar** e **Importar**. Vale la pena exportar una vez que tengas los videos cargados, y es la forma de pasar la lista de un dispositivo a otro.
+
+---
+
+## Publicar cambios
 
 Editas los archivos de `docs/`, y:
 
@@ -114,20 +76,14 @@ git add . && git commit -m "cambios" && git push
 
 En un par de minutos el iPad recoge la versión nueva sola. No hay que reinstalar nada.
 
----
-
-## Dónde viven los datos
-
-La lista de videos, el PIN y el contador de tiempo se guardan en `localStorage`, dentro del iPad. Safari borra el almacenamiento de sitios que no se visitan en 7 días, **pero las apps agregadas a la pantalla de inicio están exentas** de esa regla.
-
-Aun así, el panel de padres tiene **Exportar** e **Importar**: te baja un archivo con tu lista. Vale la pena exportar una vez que tengas los videos cargados, por si cambias de iPad.
+Si es la primera vez, en **Settings → Pages** del repositorio: Source `Deploy from a branch`, rama `main`, carpeta **`/docs`**.
 
 ---
 
 ## Estructura
 
 ```
-docs/                        La PWA
+docs/
 ├── index.html               Todas las pantallas
 ├── app.css                  Estilos (nada táctil bajo 52 px)
 ├── app.js                   Estado, navegación, reproductor, pintar
@@ -136,7 +92,6 @@ docs/                        La PWA
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512
 
-AurApp/                      La versión SwiftUI, guardada para más adelante
 silhouettes-preview.png      Cómo se ven los 22 dibujos
 ```
 
@@ -144,7 +99,7 @@ silhouettes-preview.png      Cómo se ven los 22 dibujos
 
 ## Los anuncios
 
-El IFrame Player es la única forma que las políticas de YouTube permiten para reproducir sus videos dentro de una app de terceros. Tu suscripción Premium **no** aplica ahí: Premium va atado a tu cuenta, y ese reproductor incrustado no está firmado con ella. Van a salir anuncios, normalmente de 5 a 15 segundos en contenido infantil.
+El IFrame Player es la única forma que las políticas de YouTube permiten para reproducir sus videos dentro de una app de terceros. Una suscripción Premium **no** aplica ahí: Premium va atado a la cuenta, y ese reproductor incrustado no está firmado con ella. Van a salir anuncios, normalmente de 5 a 15 segundos en contenido infantil.
 
 Las alternativas son descargar los videos (sin anuncios y funciona sin internet, pero viola los términos de YouTube), o usar YouTube Kids para los videos y esta app solo para pintar.
 
@@ -152,8 +107,19 @@ Las alternativas son descargar los videos (sin anuncios y funciona sin internet,
 
 ## Sobre los dibujos
 
-Los 22 dibujos son originales, construidas con círculos, elipses y curvas. No están basadas en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.
+Los 22 dibujos son originales, construidos con círculos, elipses y curvas. No están basados en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.
 
 Viven en `docs/silhouettes.js`, que es la fuente de verdad. Cada dibujo se traza en una caja de 320 × 300 y se escala solo. Las zonas se listan de atrás hacia adelante: la última dibujada queda encima, y el toque se resuelve recorriendo la lista al revés.
 
-Para agregar un dibujo nuevo, se añade una entrada más al arreglo con su `id`, `name`, `category` y el SVG de sus zonas. No hay que tocar ningún otro archivo.
+Para agregar un dibujo nuevo se añade una entrada más al arreglo, con su `id`, `name`, `category` y el SVG de sus zonas. No hay que tocar ningún otro archivo.
+
+```js
+{
+  "id": "star",
+  "name": "Estrella",
+  "category": "places",
+  "svg": "<circle cx=\"160\" cy=\"150\" r=\"60\" class=\"rg\"/>"
+}
+```
+
+Las zonas llevan `class="rg"`. Si una zona es solo una línea (un bigote, una antena), lleva `class="rg ln"` y `fill="none"`.
