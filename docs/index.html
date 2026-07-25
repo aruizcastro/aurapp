@@ -73,15 +73,15 @@
     <h1>¿Qué quieres pintar?</h1>
   </div>
   <div class="doors">
-    <button class="door" data-go="color" style="background:#9FE1CB">
+    <button class="door" data-go="color" style="background:var(--door-1)">
       <svg viewBox="0 0 320 300" id="doorArt" aria-hidden="true"></svg>
       <span class="name">Colorear</span>
       <span class="sub">22 dibujos</span>
     </button>
-    <button class="door" data-go="draw" style="background:#FAC775">
+    <button class="door" data-go="draw" style="background:var(--door-2)">
       <svg viewBox="0 0 320 300" aria-hidden="true">
         <path d="M40 200 C90 100 130 250 170 150 C200 76 240 190 285 120"
-              fill="none" stroke="#26215C" stroke-width="14" stroke-linecap="round" opacity=".75"/>
+              fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round" opacity=".75"/>
       </svg>
       <span class="name">Dibujar</span>
       <span class="sub">Lo que quieras</span>
@@ -254,6 +254,12 @@
       <h3>Videos (<span id="videoCount">0</span>)</h3>
       <div id="videoList"></div>
       <p class="hint" id="emptyHint">Todavía no hay videos. Pega un enlace de YouTube arriba.</p>
+    </section>
+
+    <section>
+      <h3>Colores de la app</h3>
+      <div id="themePicker" class="themes"></div>
+      <p class="hint">Cambia los fondos y los botones. Los dibujos y los personajes no cambian.</p>
     </section>
 
     <section>

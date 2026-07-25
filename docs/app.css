@@ -1,6 +1,27 @@
 /* AurApp — styles. Everything is sized for small, imprecise fingers:
    no tap target under 52px, no text she has to read in order to navigate. */
 
+/* Palette ------------------------------------------------------------
+   Every mood colour lives here so the whole app can be re-tinted from the
+   parent panel. The characters and the colouring pages are deliberately not
+   themed — those are artwork, not chrome. */
+
+:root {
+  --bg-main: #FBEAF0;
+  --bg-alt: #EEEDFE;
+  --bg-paint: #E7F4EF;
+  --bg-plain: #F5F5F4;
+  --ink: #26215C;
+  --accent: #D4537E;
+  --accent-soft: #F4C0D1;
+  --accent-strong: #E86A9A;
+  --accent-2: #CECBF6;
+  --ok: #1D9E75;
+  --door-1: #9FE1CB;
+  --door-2: #FAC775;
+  --stage-deep: #3C3489;
+}
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 html, body {
@@ -8,8 +29,8 @@ html, body {
   overflow: hidden;
   overscroll-behavior: none;
   font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
-  background: #FBEAF0;
-  color: #26215C;
+  background: var(--bg-main);
+  color: var(--ink);
   -webkit-user-select: none; user-select: none;
   -webkit-touch-callout: none;
 }
@@ -19,12 +40,12 @@ html, body {
 .screen { position: fixed; inset: 0; display: none; flex-direction: column; padding: 20px; gap: 14px; }
 .screen.on { display: flex; }
 
-#s-worlds, #s-paint { background: #FBEAF0; }
-#s-grid, #s-timeup  { background: #EEEDFE; }
-#s-color            { background: #E7F4EF; }
-#s-draw             { background: #FBEAF0; }
-#s-player           { background: #26215C; }
-#s-pin, #s-parents  { background: #F5F5F4; }
+#s-worlds, #s-paint { background: var(--bg-main); }
+#s-grid, #s-timeup  { background: var(--bg-alt); }
+#s-color            { background: var(--bg-paint); }
+#s-draw             { background: var(--bg-main); }
+#s-player           { background: var(--ink); }
+#s-pin, #s-parents  { background: var(--bg-plain); }
 
 /* Header -------------------------------------------------------------- */
 
@@ -41,7 +62,7 @@ html, body {
 .round {
   width: 52px; height: 52px; flex: 0 0 auto;
   border: 0; border-radius: 50%;
-  background: #fff; color: #26215C;
+  background: #fff; color: var(--ink);
   font-size: 22px; display: grid; place-items: center; cursor: pointer;
 }
 .round.lock { background: rgba(255,255,255,.7); color: #6b6b6b; }
@@ -57,7 +78,7 @@ html, body {
 .tile {
   border: 0; border-radius: 26px; padding: 22px 12px; cursor: pointer;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
-  font-family: inherit; color: #26215C;
+  font-family: inherit; color: var(--ink);
 }
 .tile:disabled { opacity: .4; }
 .tile .ico { font-size: 44px; line-height: 1; }
@@ -71,7 +92,7 @@ html, body {
 .arrow {
   width: 62px; flex: 0 0 auto; align-self: stretch; max-height: 240px;
   border: 0; border-radius: 20px; cursor: pointer;
-  background: #D4537E; color: #fff; font-size: 30px;
+  background: var(--accent); color: #fff; font-size: 30px;
 }
 .arrow:disabled { background: rgba(255,255,255,.6); color: rgba(38,33,92,.25); }
 
@@ -79,11 +100,11 @@ html, body {
 
 .card {
   border: 0; padding: 9px; border-radius: 20px; background: #fff; cursor: pointer;
-  font-family: inherit; text-align: left; color: #26215C;
+  font-family: inherit; text-align: left; color: var(--ink);
 }
 .card .thumb {
   position: relative; width: 100%; aspect-ratio: 16/9;
-  border-radius: 14px; overflow: hidden; background: #CECBF6;
+  border-radius: 14px; overflow: hidden; background: var(--accent-2);
 }
 .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .card .thumb .play {
@@ -97,12 +118,12 @@ html, body {
 }
 
 .dots { display: flex; justify-content: center; gap: 10px; flex: 0 0 auto; }
-.dots i { width: 14px; height: 14px; border-radius: 50%; background: #F4C0D1; }
-.dots i.on { background: #D4537E; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-soft); }
+.dots i.on { background: var(--accent); }
 
 /* Player -------------------------------------------------------------- */
 
-#stage { flex: 1; border-radius: 18px; overflow: hidden; position: relative; background: #3C3489; min-height: 0; }
+#stage { flex: 1; border-radius: 18px; overflow: hidden; position: relative; background: var(--stage-deep); min-height: 0; }
 #stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* Swallows every tap on the video. Without this, tapping the iframe opens
@@ -114,7 +135,7 @@ html, body {
    rel=0 no longer removes it. So while paused we cover the frame entirely. */
 #stage .veil {
   position: absolute; inset: 0; z-index: 4;
-  background: #26215C; color: #F4C0D1; font-size: 76px;
+  background: var(--ink); color: var(--accent-soft); font-size: 76px;
   display: none; align-items: center; justify-content: center;
 }
 #stage .veil.on { display: flex; }
@@ -123,19 +144,19 @@ html, body {
 .big {
   width: 76px; height: 76px; flex: 0 0 auto;
   border: 0; border-radius: 50%; cursor: pointer;
-  font-size: 30px; color: #26215C; display: grid; place-items: center;
+  font-size: 30px; color: var(--ink); display: grid; place-items: center;
 }
-.big.pink { background: #F4C0D1; }
-.big.lilac { background: #CECBF6; }
+.big.pink { background: var(--accent-soft); }
+.big.lilac { background: var(--accent-2); }
 
 .track { flex: 1; height: 14px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
-.track div { height: 100%; width: 0; border-radius: 999px; background: #F4C0D1; }
+.track div { height: 100%; width: 0; border-radius: 999px; background: var(--accent-soft); }
 
 /* Time up ------------------------------------------------------------- */
 
 #s-timeup { align-items: center; justify-content: center; text-align: center; }
 #s-timeup .moon {
-  width: 132px; height: 132px; border-radius: 50%; background: #CECBF6;
+  width: 132px; height: 132px; border-radius: 50%; background: var(--accent-2);
   display: grid; place-items: center; font-size: 60px; margin-bottom: 6px;
 }
 #s-timeup h2 { margin: 0; font-size: 32px; font-weight: 600; }
@@ -144,7 +165,7 @@ html, body {
 .cta {
   border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
   padding: 16px 30px; font-size: 21px; font-weight: 500;
-  background: #F4C0D1; color: #26215C; margin-top: 14px;
+  background: var(--accent-soft); color: var(--ink); margin-top: 14px;
 }
 .quiet { border: 0; background: none; color: #777; font-size: 16px; cursor: pointer; font-family: inherit; }
 
@@ -153,7 +174,7 @@ html, body {
 .doors { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: center; }
 .door {
   border: 0; border-radius: 28px; padding: 30px 16px; cursor: pointer;
-  font-family: inherit; color: #26215C;
+  font-family: inherit; color: var(--ink);
   display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
 .door svg { height: 130px; }
@@ -164,9 +185,9 @@ html, body {
 .cats button {
   border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
   padding: 10px 22px; font-size: 17px; font-weight: 500;
-  background: #fff; color: #26215C;
+  background: #fff; color: var(--ink);
 }
-.cats button.on { background: #D4537E; color: #fff; }
+.cats button.on { background: var(--accent); color: #fff; }
 
 .picker { flex: 0 0 auto; display: flex; gap: 9px; overflow-x: auto; padding-bottom: 4px; }
 .picker::-webkit-scrollbar { display: none; }
@@ -175,7 +196,7 @@ html, body {
   border: 2px solid transparent; border-radius: 12px; background: #fff; cursor: pointer;
   font-family: inherit; text-align: center;
 }
-.pk.on { border-color: #D4537E; background: #FBEAF0; }
+.pk.on { border-color: var(--accent); background: var(--bg-main); }
 .pk svg { width: 100%; height: 40px; display: block; }
 .pk svg .rg { fill: #9e9e98; stroke: #9e9e98; stroke-width: 5; }
 .pk svg .ln { fill: none; }
@@ -191,14 +212,14 @@ html, body {
 
 .palette { flex: 0 0 auto; display: flex; gap: 12px; justify-content: center; }
 .sw { width: 52px; height: 52px; border-radius: 50%; border: 4px solid transparent; cursor: pointer; padding: 0; }
-.sw.on { border-color: #26215C; }
+.sw.on { border-color: var(--ink); }
 
 .tools { flex: 0 0 auto; display: flex; gap: 10px; }
 .tool {
   flex: 1; border: 0; border-radius: 14px; padding: 14px 6px; cursor: pointer;
-  background: #fff; color: #26215C; font-family: inherit; font-size: 17px; font-weight: 500;
+  background: #fff; color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 500;
 }
-.tool.on { background: #D4537E; color: #fff; }
+.tool.on { background: var(--accent); color: #fff; }
 
 /* Friends -------------------------------------------------------------- */
 
@@ -211,14 +232,14 @@ html, body {
   border: 4px solid transparent; border-radius: 50%;
   background: #fff; overflow: hidden;
 }
-.facetab.on { border-color: #1D9E75; background: #E1F5EE; }
+.facetab.on { border-color: var(--ok); background: #E1F5EE; }
 .facetab svg { display: block; width: 100%; height: 100%; }
 
 .icontab {
   width: 68px; height: 68px; flex: 0 0 auto; padding: 6px; cursor: pointer;
   border: 4px solid transparent; border-radius: 18px; background: #fff;
 }
-.icontab.on { border-color: #D4537E; background: #FBEAF0; }
+.icontab.on { border-color: var(--accent); background: var(--bg-main); }
 .icontab svg { display: block; width: 100%; height: 100%; }
 
 .petsrow { flex: 1; display: flex; gap: 14px; min-height: 0; }
@@ -236,9 +257,9 @@ html, body {
   background: #fff; border: 3px solid transparent; border-radius: 16px;
   padding: 6px; cursor: pointer; font-family: inherit;
 }
-.petitem.on { border-color: #D4537E; background: #FBEAF0; }
+.petitem.on { border-color: var(--accent); background: var(--bg-main); }
 .petitem svg { display: block; width: 100%; height: 54px; }
-.petitem span { display: block; font-size: 13px; color: #26215C; text-align: center; margin-top: 2px; }
+.petitem span { display: block; font-size: 13px; color: var(--ink); text-align: center; margin-top: 2px; }
 
 .pethint { margin: 0; font-size: 14px; color: #6b6b6b; }
 
@@ -297,13 +318,13 @@ html, body {
   background: #fff; border: 4px solid transparent; border-radius: 14px;
   padding: 2px; cursor: pointer; font-family: inherit;
 }
-.camcostume.on { border-color: #D4537E; background: #FBEAF0; }
+.camcostume.on { border-color: var(--accent); background: var(--bg-main); }
 .camcostume svg { display: block; width: 100%; height: 44px; }
 
 .camshutter {
   width: 88px; height: 88px; flex: 0 0 auto; border-radius: 50%;
-  border: 6px solid #fff; background: #E86A9A; cursor: pointer; padding: 0;
-  display: grid; place-items: center; box-shadow: 0 0 0 4px #E86A9A;
+  border: 6px solid #fff; background: var(--accent-strong); cursor: pointer; padding: 0;
+  display: grid; place-items: center; box-shadow: 0 0 0 4px var(--accent-strong);
 }
 .camshutter:active { transform: scale(.94); }
 .camshutter svg { width: 48px; height: 48px; }
@@ -320,11 +341,11 @@ html, body {
 .storybtn {
   border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
   min-height: 88px; padding: 0 40px; font-size: 26px; font-weight: 600;
-  background: #E86A9A; color: #fff;
+  background: var(--accent-strong); color: #fff;
   display: flex; align-items: center; gap: 12px;
 }
 .storybtn .ico { font-size: 34px; }
-.storybtn.next { background: #1D9E75; }
+.storybtn.next { background: var(--ok); }
 .storybtn:active { transform: scale(.96); }
 
 @media (orientation: portrait) {
@@ -340,9 +361,19 @@ html, body {
 
 .foresthint {
   flex: 0 0 auto; margin: 0; text-align: center;
-  font-size: 20px; font-weight: 500; color: #26215C; min-height: 26px;
+  font-size: 20px; font-weight: 500; color: var(--ink); min-height: 26px;
 }
 @media (max-width: 760px) { .foresthint { font-size: 16px; } }
+
+.themes { display: flex; gap: 12px; flex-wrap: wrap; }
+.themeswatch {
+  border: 4px solid transparent; border-radius: 16px; padding: 8px 10px;
+  cursor: pointer; font-family: inherit; background: #fff; min-width: 104px;
+}
+.themeswatch.on { border-color: var(--accent); }
+.themeswatch .chips { display: flex; gap: 4px; margin-bottom: 6px; }
+.themeswatch .chips i { width: 22px; height: 22px; border-radius: 6px; }
+.themeswatch span { font-size: 14px; color: var(--ink); }
 
 /* PIN ----------------------------------------------------------------- */
 
@@ -350,7 +381,7 @@ html, body {
 #s-pin h2 { margin: 0; font-size: 22px; font-weight: 500; }
 .pips { display: flex; gap: 14px; }
 .pips i { width: 18px; height: 18px; border-radius: 50%; background: #dcdcdc; }
-.pips i.on { background: #D4537E; }
+.pips i.on { background: var(--accent); }
 .pips.bad { animation: shake .4s; }
 @keyframes shake { 25% { transform: translateX(9px) } 75% { transform: translateX(-9px) } }
 
@@ -376,9 +407,9 @@ html, body {
 }
 #s-parents .btn {
   border: 0; border-radius: 12px; padding: 12px 18px; cursor: pointer;
-  font-family: inherit; font-size: 16px; font-weight: 500; background: #EEEDFE; color: #26215C;
+  font-family: inherit; font-size: 16px; font-weight: 500; background: var(--bg-alt); color: var(--ink);
 }
-#s-parents .btn.primary { background: #D4537E; color: #fff; }
+#s-parents .btn.primary { background: var(--accent); color: #fff; }
 #s-parents .btn.danger { background: none; color: #b3261e; padding: 6px 8px; }
 #s-parents .vrow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #f0f0f0; }
 #s-parents .vrow img { width: 74px; height: 42px; object-fit: cover; border-radius: 6px; background: #eee; }

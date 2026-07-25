@@ -20,6 +20,53 @@ const PALETTE = ['#E24B4A', '#EF9F27', '#FAC775', '#97C459', '#1D9E75',
 
 const PER_PAGE = 6;
 
+/* Palettes. The app started out pink and purple; this lets it be re-tinted
+   without touching a single component. Artwork stays as it is — only the
+   chrome changes. */
+const THEMES = [
+  { id: 'unicorn', name: 'Unicornio',
+    vars: { '--bg-main':'#FBEAF0', '--bg-alt':'#EEEDFE', '--bg-paint':'#E7F4EF',
+            '--bg-plain':'#F5F5F4', '--ink':'#26215C', '--accent':'#D4537E',
+            '--accent-soft':'#F4C0D1', '--accent-strong':'#E86A9A',
+            '--accent-2':'#CECBF6', '--ok':'#1D9E75',
+            '--door-1':'#9FE1CB', '--door-2':'#FAC775', '--stage-deep':'#3C3489' },
+    tiles: ['#CECBF6','#9FE1CB','#FAC775','#F4C0D1','#B5D4F4','#F5C4B3',
+            '#F4C0D1','#E8C9A0','#B5D4F4','#C0DD97','#9FE1CB'] },
+
+  { id: 'ocean', name: 'Mar',
+    vars: { '--bg-main':'#E3F0FA', '--bg-alt':'#E6F2EC', '--bg-paint':'#E8F3F6',
+            '--bg-plain':'#F4F6F7', '--ink':'#12324C', '--accent':'#2E7EB8',
+            '--accent-soft':'#A9D6EF', '--accent-strong':'#3B93D2',
+            '--accent-2':'#BFE2D5', '--ok':'#1D9E75',
+            '--door-1':'#9AD8C4', '--door-2':'#F3C77A', '--stage-deep':'#1B4B6E' },
+    tiles: ['#A9D6EF','#9AD8C4','#F3C77A','#BFD8F0','#7FC4E8','#F0B79A',
+            '#8FD0E8','#D9C7A6','#A9D6EF','#B6D98F','#9AD8C4'] },
+
+  { id: 'forest', name: 'Bosque',
+    vars: { '--bg-main':'#EFF4E6', '--bg-alt':'#E9F1E4', '--bg-paint':'#EAF2E8',
+            '--bg-plain':'#F5F6F2', '--ink':'#263A22', '--accent':'#5E9440',
+            '--accent-soft':'#C4E0A8', '--accent-strong':'#6EA84C',
+            '--accent-2':'#DCCFA8', '--ok':'#1D9E75',
+            '--door-1':'#AFD9A0', '--door-2':'#EFC97E', '--stage-deep':'#2E4A28' },
+    tiles: ['#C4E0A8','#AFD9A0','#EFC97E','#E0CBA0','#BBD9C6','#E8B98E',
+            '#D6E3B0','#D9C4A0','#BBD9C6','#AFD9A0','#C9E2B4'] }
+];
+
+function applyTheme(id) {
+  const theme = THEMES.find(t => t.id === id) || THEMES[0];
+  const root = document.documentElement;
+  Object.entries(theme.vars).forEach(([key, value]) => root.style.setProperty(key, value));
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme.vars['--bg-main']);
+  return theme;
+}
+
+function currentTheme() {
+  return THEMES.find(t => t.id === state.theme) || THEMES[0];
+}
+
+
+
 const PET_DEFAULT = () => {
   const fresh = {};
   PET_SPECIES.forEach(id => {
@@ -28,7 +75,8 @@ const PET_DEFAULT = () => {
   return fresh;
 };
 
-const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '', pets: PET_DEFAULT() };
+const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
+                   theme: 'unicorn', pets: PET_DEFAULT() };
 
 let state = load();
 
@@ -142,12 +190,13 @@ function renderWorlds() {
 
   const host = $('#worldTiles');
   host.innerHTML = '';
+  const tint = currentTheme().tiles;
 
-  WORLDS.forEach(world => {
+  WORLDS.forEach((world, i) => {
     const count = videosIn(world.id).length;
     const tile = document.createElement('button');
     tile.className = 'tile';
-    tile.style.background = world.color;
+    tile.style.background = tint[i % tint.length];
     tile.disabled = count === 0;
     tile.innerHTML = '<span class="ico">' + world.icon + '</span>' +
                      '<span class="name">' + world.name + '</span>' +
@@ -158,7 +207,7 @@ function renderWorlds() {
 
   const paint = document.createElement('button');
   paint.className = 'tile';
-  paint.style.background = '#F4C0D1';
+  paint.style.background = tint[6];
   paint.innerHTML = '<span class="ico">🎨</span><span class="name">Pintar</span>' +
                     '<span class="sub">22 dibujos</span>';
   paint.onclick = () => go('paint');
@@ -166,7 +215,7 @@ function renderWorlds() {
 
   const friends = document.createElement('button');
   friends.className = 'tile';
-  friends.style.background = '#E8C9A0';
+  friends.style.background = tint[7];
   friends.innerHTML = '<span class="ico">🐹</span><span class="name">Amigos</span>' +
                       '<span class="sub">Capi, Michi y Coneja</span>';
   friends.onclick = () => go('pets');
@@ -174,7 +223,7 @@ function renderWorlds() {
 
   const camera = document.createElement('button');
   camera.className = 'tile';
-  camera.style.background = '#B5D4F4';
+  camera.style.background = tint[8];
   camera.innerHTML = '<span class="ico">📷</span><span class="name">Fotos</span>' +
                      '<span class="sub">Con disfraces</span>';
   camera.onclick = () => go('camera');
@@ -182,7 +231,7 @@ function renderWorlds() {
 
   const story = document.createElement('button');
   story.className = 'tile';
-  story.style.background = '#C0DD97';
+  story.style.background = tint[9];
   story.innerHTML = '<span class="ico">🐺</span><span class="name">El lobo</span>' +
                     '<span class="sub">y los tres cerditos</span>';
   story.onclick = () => go('story');
@@ -190,7 +239,7 @@ function renderWorlds() {
 
   const forest = document.createElement('button');
   forest.className = 'tile';
-  forest.style.background = '#9FE1CB';
+  forest.style.background = tint[10];
   forest.innerHTML = '<span class="ico">🌲</span><span class="name">El bosque</span>' +
                      '<span class="sub">Juguemos con el lobo</span>';
   forest.onclick = () => go('forest');
@@ -1058,6 +1107,7 @@ function renderParents() {
   $('#limitSel').value = String(state.limit);
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
   $('#pinInput').value = state.pin;
+  renderThemePicker();
   $('#videoCount').textContent = state.videos.length;
   $('#emptyHint').style.display = state.videos.length ? 'none' : '';
 
@@ -1102,6 +1152,27 @@ function renderParents() {
     };
 
     list.appendChild(row);
+  });
+}
+
+function renderThemePicker() {
+  const host = $('#themePicker');
+  host.innerHTML = '';
+  THEMES.forEach(theme => {
+    const btn = document.createElement('button');
+    btn.className = 'themeswatch' + (theme.id === state.theme ? ' on' : '');
+    btn.innerHTML = '<div class="chips">' +
+      ['--accent', '--accent-soft', '--door-1', '--door-2']
+        .map(k => '<i style="background:' + theme.vars[k] + '"></i>').join('') +
+      '</div><span></span>';
+    btn.querySelector('span').textContent = theme.name;
+    btn.onclick = () => {
+      state.theme = theme.id;
+      save();
+      applyTheme(theme.id);
+      renderThemePicker();
+    };
+    host.appendChild(btn);
   });
 }
 
@@ -1183,4 +1254,5 @@ if ('serviceWorker' in navigator) {
 }
 
 rollover();
+applyTheme(state.theme);
 go('worlds');
