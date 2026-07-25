@@ -20,10 +20,13 @@ const PALETTE = ['#E24B4A', '#EF9F27', '#FAC775', '#97C459', '#1D9E75',
 
 const PER_PAGE = 6;
 
-const PET_DEFAULT = () => ({
-  capy: { fur: PET_FURS.capy[0], outfit: 'none', acc: {}, full: 40 },
-  cat:  { fur: PET_FURS.cat[0],  outfit: 'none', acc: {}, full: 40 }
-});
+const PET_DEFAULT = () => {
+  const fresh = {};
+  PET_SPECIES.forEach(id => {
+    fresh[id] = { fur: PET_FURS[id][0], outfit: 'none', acc: {}, full: 40 };
+  });
+  return fresh;
+};
 
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '', pets: PET_DEFAULT() };
 
@@ -34,7 +37,13 @@ function load() {
     const saved = JSON.parse(localStorage.getItem('aurapp') || '{}');
     const merged = Object.assign({}, DEFAULTS, saved);
     // Lists saved before the friends existed have no pets key.
+    // Saved lists predate the rabbit, so fill in any species that is missing
+    // rather than replacing what she has already dressed.
     merged.pets = Object.assign(PET_DEFAULT(), saved.pets || {});
+    PET_SPECIES.forEach(id => {
+      if (!merged.pets[id]) merged.pets[id] = { fur: PET_FURS[id][0], outfit: 'none', acc: {}, full: 40 };
+      if (!merged.pets[id].acc) merged.pets[id].acc = {};
+    });
     return merged;
   } catch (e) {
     return Object.assign({}, DEFAULTS);
@@ -111,6 +120,9 @@ function go(name) {
   if (name === 'color') openColoring();
   if (name === 'draw') setupDraw();
   if (name === 'pets') openPets();
+  if (name === 'camera') openCamera();
+  if (name === 'story') openStory();
+  if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
 
@@ -155,9 +167,25 @@ function renderWorlds() {
   friends.className = 'tile';
   friends.style.background = '#E8C9A0';
   friends.innerHTML = '<span class="ico">🐹</span><span class="name">Amigos</span>' +
-                      '<span class="sub">Capi y Michi</span>';
+                      '<span class="sub">Capi, Michi y Coneja</span>';
   friends.onclick = () => go('pets');
   host.appendChild(friends);
+
+  const camera = document.createElement('button');
+  camera.className = 'tile';
+  camera.style.background = '#B5D4F4';
+  camera.innerHTML = '<span class="ico">📷</span><span class="name">Fotos</span>' +
+                     '<span class="sub">Con disfraces</span>';
+  camera.onclick = () => go('camera');
+  host.appendChild(camera);
+
+  const story = document.createElement('button');
+  story.className = 'tile';
+  story.style.background = '#C0DD97';
+  story.innerHTML = '<span class="ico">🐺</span><span class="name">El lobo</span>' +
+                    '<span class="sub">y los tres cerditos</span>';
+  story.onclick = () => go('story');
+  host.appendChild(story);
 }
 
 // ---------------------------------------------------------- video grid
@@ -527,10 +555,17 @@ $('#clearDraw').onclick = () => {
 
 // ------------------------------------------------------------- friends
 
+/* She cannot read, so both rows of tabs are pictures. The friend tabs show
+   each animal's own face; the activity tabs show the thing itself — a dress,
+   an apple, a moon. Words are kept only as accessible labels. */
 const PET_MODES = [
-  { id: 'dress', name: 'Vestir' },
-  { id: 'feed',  name: 'Comer' },
-  { id: 'sleep', name: 'Dormir' }
+  { id: 'dress', name: 'Vestir', icon: () => PET_CLOTHES[2].draw(PET_CLOTHES[2].color), box: '56 200 190 160' },
+  { id: 'feed',  name: 'Comer',  icon: () => '<g transform="translate(30 30) scale(1.15)">' +
+                                             PET_FOOD[0].draw() + '</g>', box: '0 0 60 60' },
+  { id: 'sleep', name: 'Dormir', icon: () =>
+      '<path d="M44 12 A26 26 0 1 0 44 56 A21 21 0 0 1 44 12 Z" fill="#F6C64A" stroke="#8A6A12" stroke-width="4"/>' +
+      '<circle cx="14" cy="16" r="3" fill="#8A6A12"/><circle cx="20" cy="50" r="2.5" fill="#8A6A12"/>',
+      box: '0 0 64 68' }
 ];
 
 let petWho = 'capy';
@@ -556,14 +591,15 @@ function drawPet() {
 function renderPetTabs() {
   const who = $('#petWho');
   who.innerHTML = '';
-  ['capy', 'cat'].forEach(id => {
+  PET_SPECIES.forEach(id => {
     const btn = document.createElement('button');
-    btn.textContent = PET_NAMES[id];
-    btn.className = id === petWho ? 'on' : '';
-    btn.onclick = () => {
-      petWho = id;
-      openPets();
-    };
+    btn.className = 'facetab' + (id === petWho ? ' on' : '');
+    btn.setAttribute('aria-label', PET_NAMES[id]);
+    btn.title = PET_NAMES[id];
+    // The tab is the animal's own head, so she picks by face, not by name.
+    btn.innerHTML = '<svg viewBox="30 0 240 240" aria-hidden="true">' +
+                    PET_HEADS[id](state.pets[id].fur, 'idle') + '</svg>';
+    btn.onclick = () => { petWho = id; openPets(); };
     who.appendChild(btn);
   });
 
@@ -571,8 +607,10 @@ function renderPetTabs() {
   modes.innerHTML = '';
   PET_MODES.forEach(m => {
     const btn = document.createElement('button');
-    btn.textContent = m.name;
-    btn.className = m.id === petMode ? 'on' : '';
+    btn.className = 'icontab' + (m.id === petMode ? ' on' : '');
+    btn.setAttribute('aria-label', m.name);
+    btn.title = m.name;
+    btn.innerHTML = '<svg viewBox="' + m.box + '" aria-hidden="true">' + m.icon() + '</svg>';
     btn.onclick = () => {
       petMode = m.id;
       petMood = m.id === 'sleep' ? 'asleep' : 'idle';
@@ -705,6 +743,181 @@ function petHearts() {
     }, i * 130);
   });
 }
+
+// -------------------------------------------------------------- camera
+
+let camStream = null;
+let camFacing = 'user';
+let camPlaced = [];      // [{id, x, y, scale}] in preview pixels
+let camDrag = null;
+
+const CAM_SCALE = 0.9;
+
+async function openCamera() {
+  renderCamCostumes();
+  drawCamOverlay();
+
+  const video = $('#camVideo');
+  video.classList.toggle('mirror', camFacing === 'user');
+
+  camStream = await cameraStart(video, camFacing);
+  $('#camDenied').classList.toggle('on', !camStream);
+  if (!camStream) $('#camDenied').textContent = CAMERA_DENIED_TEXT;
+}
+
+function closeCamera() {
+  if (camStream) { cameraStop(camStream); camStream = null; }
+}
+
+function camBox() {
+  const r = $('#camWrap').getBoundingClientRect();
+  return { w: r.width, h: r.height, left: r.left, top: r.top };
+}
+
+function drawCamOverlay() {
+  const box = camBox();
+  const svg = $('#camOverlay');
+  svg.setAttribute('viewBox', '0 0 ' + Math.round(box.w) + ' ' + Math.round(box.h));
+  svg.innerHTML = camPlaced.map(p =>
+    '<g data-id="' + p.id + '" transform="translate(' + p.x + ' ' + p.y +
+    ') scale(' + p.scale + ')">' + costumeToSVG(cameraCostume(p.id)) + '</g>'
+  ).join('');
+}
+
+function renderCamCostumes() {
+  const host = $('#camCostumes');
+  host.innerHTML = '';
+  CAMERA_COSTUMES.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'camcostume' + (camPlaced.some(p => p.id === c.id) ? ' on' : '');
+    btn.setAttribute('aria-label', c.name);
+    btn.title = c.name;
+    btn.innerHTML = '<svg viewBox="-95 -95 190 190" aria-hidden="true">' + costumeToSVG(c) + '</svg>';
+    btn.onclick = () => {
+      const at = camPlaced.findIndex(p => p.id === c.id);
+      if (at >= 0) {
+        camPlaced.splice(at, 1);              // tapping again takes it off
+      } else {
+        const box = camBox();
+        camPlaced.push({
+          id: c.id,
+          x: box.w / 2,
+          y: box.h / 2 + c.defaultY * CAM_SCALE,
+          scale: CAM_SCALE
+        });
+      }
+      renderCamCostumes();
+      drawCamOverlay();
+    };
+    host.appendChild(btn);
+  });
+}
+
+(function bindCameraDrag() {
+  const svg = $('#camOverlay');
+
+  const at = (e) => {
+    const box = camBox();
+    return { x: e.clientX - box.left, y: e.clientY - box.top };
+  };
+
+  svg.addEventListener('pointerdown', (e) => {
+    const p = at(e);
+    // Topmost first: the last one she added is the one she means to move.
+    for (let i = camPlaced.length - 1; i >= 0; i--) {
+      const placed = camPlaced[i];
+      const costume = cameraCostume(placed.id);
+      if (Math.hypot(p.x - placed.x, p.y - placed.y) < costume.radius * placed.scale) {
+        camDrag = { i, dx: p.x - placed.x, dy: p.y - placed.y };
+        svg.setPointerCapture(e.pointerId);
+        return;
+      }
+    }
+  });
+
+  svg.addEventListener('pointermove', (e) => {
+    if (!camDrag) return;
+    e.preventDefault();
+    const p = at(e);
+    const box = camBox();
+    const placed = camPlaced[camDrag.i];
+    placed.x = Math.max(20, Math.min(box.w - 20, p.x - camDrag.dx));
+    placed.y = Math.max(20, Math.min(box.h - 20, p.y - camDrag.dy));
+    drawCamOverlay();
+  });
+
+  ['pointerup', 'pointercancel'].forEach(ev =>
+    svg.addEventListener(ev, () => { camDrag = null; }));
+})();
+
+$('#camFlip').onclick = async () => {
+  camFacing = camFacing === 'user' ? 'environment' : 'user';
+  closeCamera();
+  await openCamera();
+};
+
+$('#camShutter').onclick = async () => {
+  if (!camStream) return;
+
+  const flash = $('#camFlash');
+  flash.classList.add('on');
+  setTimeout(() => flash.classList.remove('on'), 90);
+
+  const box = camBox();
+  const blob = await capturePhoto($('#camVideo'), camPlaced, camFacing === 'user', box.w, box.h);
+  if (!blob) return;
+
+  await photoSave(blob);
+  showLastPhoto();
+};
+
+async function showLastPhoto() {
+  const record = await photoLast();
+  if (!record) return;
+  const shot = $('#camShot');
+  const url = URL.createObjectURL(record.blob);
+  shot.innerHTML = '<img alt="">';
+  shot.firstElementChild.src = url;
+  shot.classList.add('on');
+}
+
+// -------------------------------------------------- wolf and three pigs
+
+function openStory() {
+  storyInit($('#storySvg'));
+  storyReset();
+  renderStoryDots();
+  $('#storyBlow').hidden = false;
+  $('#storyNext').hidden = true;
+}
+
+function renderStoryDots() {
+  const dots = $('#storyDots');
+  dots.innerHTML = '';
+  const current = storyState().round;
+  STORY_ROUNDS.forEach((_, i) => {
+    const dot = document.createElement('i');
+    if (i === current) dot.className = 'on';
+    dots.appendChild(dot);
+  });
+}
+
+$('#storyBlow').onclick = () => {
+  const started = storyBlow(() => {
+    const next = $('#storyNext');
+    next.lastElementChild.textContent = STORY_ROUNDS[storyState().round].nextLabel;
+    next.hidden = false;
+    $('#storyBlow').hidden = true;
+  });
+  if (!started) return;
+};
+
+$('#storyNext').onclick = () => {
+  if (!storyNextRound()) storyReset();
+  renderStoryDots();
+  $('#storyNext').hidden = true;
+  $('#storyBlow').hidden = false;
+};
 
 // ----------------------------------------------------------------- PIN
 

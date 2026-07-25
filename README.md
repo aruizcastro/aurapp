@@ -20,6 +20,12 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 **Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
 
+**Amigos.** Tres personajes en estilo sticker — Capi el capibara, Michi la gata y Coneja — que comparten un mismo cuerpo, así que la ropa le queda a los tres. Tres actividades: vestir, darles de comer y dormir. Las pestañas son dibujos, no palabras: se elige el amigo por su cara y la actividad por el objeto.
+
+**Fotos.** Cámara con seis disfraces combinables (sombrero, gafas, corbata, orejas de gato, nariz de perro y cuerno de unicornio). Cada uno se arrastra donde ella quiera y todos quedan quemados en la foto. Las fotos se guardan en IndexedDB en el propio dispositivo, con tope de 30 — al llegar, la más vieja se borra sola. Nunca salen del iPad: no hay servidor.
+
+**El lobo y los tres cerditos.** Tres rondas: casa de paja, de palitos y de ladrillos. Un botón enorme sopla, las dos primeras casas vuelan por los aires y los cerditos corren; la de ladrillos aguanta y el lobo se cae de espaldas. El lobo nunca alcanza a nadie y siempre pierde.
+
 **Panel de padres.** Protegido con PIN de 4 dígitos. Se entra manteniendo apretado el candado 2 segundos. Los números del teclado salen en desorden cada vez: a los 4 años se memorizan posiciones mucho antes que números.
 
 ---
@@ -91,7 +97,10 @@ docs/
 ├── index.html               Todas las pantallas
 ├── app.css                  Estilos (nada táctil bajo 52 px)
 ├── app.js                   Estado, navegación, reproductor, pintar
-├── silhouettes.js           Los 22 dibujos — fuente de verdad
+├── silhouettes.js           Los 22 dibujos para colorear
+├── pets.js                  Capi, Michi y Coneja, y su clóset compartido
+├── camera.js                Disfraces y guardado de fotos en IndexedDB
+├── story.js                 El lobo y los tres cerditos
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512

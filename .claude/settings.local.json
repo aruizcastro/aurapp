@@ -7,7 +7,8 @@
       "Bash(gh api *)",
       "Bash(git remote *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://aruizcastro.github.io/aurapp/)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://aruizcastro.github.io/aurApp/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://aruizcastro.github.io/aurApp/)",
+      "Skill(loop)"
     ]
   }
 }

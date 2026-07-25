@@ -12,11 +12,14 @@
 const PET_OUTLINE = '#5A3A28';
 
 const PET_FURS = {
-  capy: ['#C08B5C', '#A9754A', '#D8AE84', '#8C6242'],
-  cat:  ['#E8C9B0', '#F2DCC6', '#D6BBA6', '#C9A98E']
+  capy:   ['#C08B5C', '#A9754A', '#D8AE84', '#8C6242'],
+  cat:    ['#E8C9B0', '#F2DCC6', '#D6BBA6', '#C9A98E'],
+  rabbit: ['#EFE3D6', '#D8CFC4', '#F4D8DE', '#BFAE9E']
 };
 
-const PET_NAMES = { capy: 'Capi', cat: 'Michi' };
+const PET_NAMES = { capy: 'Capi', cat: 'Michi', rabbit: 'Coneja' };
+
+const PET_SPECIES = ['capy', 'cat', 'rabbit'];
 
 function petShade(hex, factor) {
   const n = parseInt(hex.slice(1), 16);
@@ -193,6 +196,33 @@ function catHead(fur, mood) {
   return s;
 }
 
+/* Rabbit. The ears carry the whole read, so they are tall, tilted slightly
+   outward, and drawn behind the skull — a rabbit with short ears is a mouse. */
+function rabbitHead(fur, mood) {
+  const muzzle = petShade(fur, 0.93);
+  const inner = '#F2A9BC';
+
+  let s = petPath('M114 96 C104 34 118 6 133 8 C148 10 150 42 142 100 Z', fur) +
+          petPath('M186 96 C196 34 182 6 167 8 C152 10 150 42 158 100 Z', fur);
+  s += '<path d="M122 88 C116 44 126 24 133 26 C140 28 140 52 134 92 Z" fill="' + inner + '"/>' +
+       '<path d="M178 88 C184 44 174 24 167 26 C160 28 160 52 166 92 Z" fill="' + inner + '"/>';
+  s += petPath('M150 40 C210 40 250 76 250 128 C250 184 210 220 150 220 ' +
+               'C90 220 50 184 50 128 C50 76 90 40 150 40 Z', fur);
+  s += '<ellipse cx="128" cy="178" rx="27" ry="19" fill="' + muzzle + '"/>' +
+       '<ellipse cx="172" cy="178" rx="27" ry="19" fill="' + muzzle + '"/>';
+  s += '<path d="M150 154 C160 154 164 162 158 168 C154 172 146 172 142 168 ' +
+       'C136 162 140 154 150 154 Z" fill="#D9899A"/>';
+  s += '<ellipse cx="60" cy="150" rx="20" ry="13" fill="#E8A08A" opacity=".62"/>';
+  s += '<ellipse cx="240" cy="150" rx="20" ry="13" fill="#E8A08A" opacity=".62"/>';
+  s += '<g stroke="' + PET_OUTLINE + '" stroke-width="5" stroke-linecap="round" opacity=".7">' +
+       '<path d="M100 176 L56 168"/><path d="M100 188 L58 196"/>' +
+       '<path d="M200 176 L244 168"/><path d="M200 188 L242 196"/></g>';
+  s += petEyes(mood) + petMouth(mood, 168);
+  return s;
+}
+
+const PET_HEADS = { capy: capyHead, cat: catHead, rabbit: rabbitHead };
+
 /* Draws a whole friend. `night` dims the scene for the sleeping activity. */
 function petArt(species, fur, mood, outfitID, accessories, night) {
   const outfit = PET_CLOTHES.find(o => o.id === outfitID) || PET_CLOTHES[0];
@@ -226,7 +256,7 @@ function petArt(species, fur, mood, outfitID, accessories, night) {
   if (outfit.draw) s += outfit.draw(outfit.color);
 
   s += '<g transform="translate(0 -6)">' +
-       (species === 'capy' ? capyHead(fur, mood) : catHead(fur, mood)) +
+       (PET_HEADS[species] || capyHead)(fur, mood) +
        '</g>';
 
   PET_ACCESSORIES.forEach(a => {
