@@ -604,6 +604,10 @@ const PET_MODES = [
   { id: 'dress', name: 'Vestir', icon: () => PET_CLOTHES[2].draw(PET_CLOTHES[2].color), box: '56 200 190 160' },
   { id: 'feed',  name: 'Comer',  icon: () => '<g transform="translate(30 30) scale(1.15)">' +
                                              PET_FOOD[0].draw() + '</g>', box: '0 0 60 60' },
+  { id: 'bath',  name: 'Bañar',  icon: () => '<g transform="translate(0 -18) scale(0.62)">' +
+                                             PET_BATH.tub() + '</g>', box: '20 200 260 200' },
+  { id: 'play',  name: 'Jugar',  icon: () => '<g transform="translate(40 40)">' +
+                                             PET_TOYS[0].draw() + '</g>', box: '0 0 80 80' },
   { id: 'sleep', name: 'Dormir', icon: () =>
       '<path d="M44 12 A26 26 0 1 0 44 56 A21 21 0 0 1 44 12 Z" fill="#F6C64A" stroke="#8A6A12" stroke-width="4"/>' +
       '<circle cx="14" cy="16" r="3" fill="#8A6A12"/><circle cx="20" cy="50" r="2.5" fill="#8A6A12"/>',
@@ -619,15 +623,22 @@ function petState() { return state.pets[petWho]; }
 
 function openPets() {
   petMood = petMode === 'sleep' ? 'asleep' : 'idle';
+  petScene = { bath: petMode === 'bath', foam: [], sponge: null, toy: null };
   renderPetTabs();
   renderPetPanel();
   drawPet();
 }
 
+/* Extra props layered into the scene: the tub and foam while bathing, and a
+   toy in flight while playing. Kept here rather than in pets.js so that file
+   stays pure drawing. */
+let petScene = { bath: false, foam: [], sponge: null, toy: null };
+
 function drawPet() {
   const p = petState();
   $('#petName').textContent = PET_NAMES[petWho];
-  $('#petSvg').innerHTML = petArt(petWho, p.fur, petMood, p.outfit, p.acc, petMode === 'sleep');
+  $('#petSvg').innerHTML = petArt(petWho, p.fur, petMood, p.outfit, p.acc,
+                                  petMode === 'sleep', petScene);
 }
 
 function renderPetTabs() {
@@ -656,6 +667,7 @@ function renderPetTabs() {
     btn.onclick = () => {
       petMode = m.id;
       petMood = m.id === 'sleep' ? 'asleep' : 'idle';
+      petScene = { bath: m.id === 'bath', foam: [], sponge: null, toy: null };
       renderPetTabs();
       renderPetPanel();
       drawPet();
@@ -681,6 +693,27 @@ function renderPetPanel() {
 
   if (petMode === 'sleep') {
     hint.textContent = 'Está durmiendo. Vuelve mañana o cámbiale de actividad.';
+    return;
+  }
+
+  if (petMode === 'bath') {
+    hint.textContent = 'Pasa el dedo por encima para llenarlo de espuma.';
+    meter.style.display = '';
+    meter.firstElementChild.style.width = Math.min(100, petScene.foam.length * 6) + '%';
+    return;
+  }
+
+  if (petMode === 'play') {
+    hint.textContent = 'Toca un juguete y se lo lanzas.';
+    PET_TOYS.forEach(toy => {
+      const btn = document.createElement('button');
+      btn.className = 'petitem';
+      btn.innerHTML = petThumb('<g transform="translate(50 50)">' + toy.draw() + '</g>', '0 0 100 100') +
+                      '<span></span>';
+      btn.querySelector('span').textContent = toy.name;
+      btn.onclick = () => throwToy(toy);
+      items.appendChild(btn);
+    });
     return;
   }
 
@@ -784,6 +817,104 @@ function petHearts() {
       setTimeout(() => { heart.style.opacity = '0'; }, 620);
     }, i * 130);
   });
+}
+
+/* Rubbing the friend leaves foam behind. Foam never fades on its own: at
+   four, watching your own mess accumulate is the entire point. */
+(function bindBath() {
+  const svg = $('#petSvg');
+  let rubbing = false;
+
+  const at = (e) => {
+    const box = svg.getBoundingClientRect();
+    return {
+      x: (e.clientX - box.left) * 300 / box.width,
+      y: (e.clientY - box.top) * 400 / box.height
+    };
+  };
+
+  const rub = (e) => {
+    if (petMode !== 'bath' || !rubbing) return;
+    e.preventDefault();
+    const p = at(e);
+    petScene.sponge = p;
+
+    const last = petScene.foam[petScene.foam.length - 1];
+    const far = !last || Math.hypot(p.x - last.x, p.y - last.y) > 26;
+    if (far && petScene.foam.length < 40) {
+      petScene.foam.push({ x: p.x, y: p.y, size: 16 + Math.random() * 10 });
+      if (petScene.foam.length === 17) {
+        petMood = 'happy';
+        petSparkle();
+      }
+      renderPetPanel();
+    }
+    drawPet();
+  };
+
+  svg.addEventListener('pointerdown', (e) => {
+    if (petMode !== 'bath') return;
+    rubbing = true;
+    svg.setPointerCapture(e.pointerId);
+    rub(e);
+  });
+  svg.addEventListener('pointermove', rub);
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+    svg.addEventListener(ev, () => {
+      rubbing = false;
+      petScene.sponge = null;
+      drawPet();
+    }));
+})();
+
+function petSparkle() {
+  const host = $('#petFlying');
+  if (!host) return;
+  [[92, 150], [150, 116], [208, 150]].forEach((pos, i) => {
+    const star = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    star.setAttribute('d', 'M0 -12 L3 -3 L12 0 L3 3 L0 12 L-3 3 L-12 0 L-3 -3 Z');
+    star.setAttribute('fill', '#FFF3C4');
+    star.setAttribute('transform', 'translate(' + pos[0] + ' ' + pos[1] + ')');
+    star.style.opacity = '0';
+    host.appendChild(star);
+    setTimeout(() => {
+      star.style.transition = 'all .7s';
+      star.style.opacity = '1';
+      star.setAttribute('transform', 'translate(' + pos[0] + ' ' + (pos[1] - 34) + ') scale(1.6)');
+      setTimeout(() => { star.style.opacity = '0'; }, 520);
+    }, i * 120);
+  });
+}
+
+/* The toy arcs in from off-screen, the friend beams, then it settles beside
+   her. Nothing to aim, nothing to miss. */
+function throwToy(toy) {
+  if (petBusy) return;
+  petBusy = true;
+
+  let t = 0;
+  const from = { x: -50, y: 350 }, to = { x: 256, y: 348 };
+
+  const step = () => {
+    t += 0.045;
+    if (t >= 1) {
+      petScene.toy = { x: to.x, y: to.y, spin: 0, draw: toy.draw };
+      petMood = 'happy';
+      drawPet();
+      petHearts();
+      setTimeout(() => { petMood = 'idle'; petBusy = false; drawPet(); }, 1000);
+      return;
+    }
+    petScene.toy = {
+      x: from.x + (to.x - from.x) * t,
+      y: from.y + (to.y - from.y) * t + Math.sin(t * Math.PI) * -150,
+      spin: t * 420,
+      draw: toy.draw
+    };
+    drawPet();
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 // -------------------------------------------------------------- camera
