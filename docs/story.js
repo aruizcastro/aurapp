@@ -20,15 +20,15 @@ const STORY_WOLF_X = 84;       // far enough from the edge to fall over backward
 
 const STORY_ROUNDS = [
   { id: 'straw', name: 'La casa de paja', material: 'Paja', falls: true,
-    wall: '#F2C75C', wall2: '#E0AE3E', roof: '#F5D889',
+    wall: '#F5CE55', wall2: '#E3B23C', roof: '#F0D179',
     cheer: '¡Voló la paja!', nextLabel: 'La casa de palitos' },
 
   { id: 'stick', name: 'La casa de palitos', material: 'Palitos', falls: true,
-    wall: '#C08A4E', wall2: '#A06B39', roof: '#D2A268',
+    wall: '#A9773F', wall2: '#8C5F30', roof: '#9A6B38',
     cheer: '¡Volaron los palitos!', nextLabel: 'La casa de ladrillos' },
 
   { id: 'brick', name: 'La casa de ladrillos', material: 'Ladrillos', falls: false,
-    wall: '#D4705C', wall2: '#BC5B49', roof: '#7FB4DC',
+    wall: '#D2503F', wall2: '#B94134', roof: '#9A6B38',
     cheer: '¡La casa aguantó!', nextLabel: '¡Otra vez!' }
 ];
 
@@ -132,18 +132,20 @@ function storyDrawPiece(p, shake) {
    blow  0..1  how wide the mouth is blowing
    fall  0..1  how far he has toppled over backwards */
 function storyWolf(puff, blow, fall) {
-  const fur = '#98A2B0', belly = '#CBD4DE', dark = '#7C8593';
+  const fur = '#9C9C97', belly = '#D8D6D0', dark = '#76766F';
   const tip = fall * fall;                       // falls slowly, then all at once
   const scale = 0.74 * (1 + 0.16 * puff);
   const open = 6 + blow * 12;
 
   let s = '';
-  s += storyPath('M-22 -46 C-64 -52 -70 -92 -38 -88 C-52 -74 -46 -54 -20 -54 Z', dark);
+  // Bushy tail with a pale tip, like the reference sheet.
+  s += storyPath('M-22 -46 C-66 -54 -74 -96 -38 -90 C-54 -74 -46 -54 -20 -54 Z', dark);
+  s += "<path d='M-38 -90 C-56 -88 -60 -74 -50 -68 C-44 -78 -40 -85 -38 -90 Z' fill='" + belly + "'/>";
   // Sitting down hard shoots both legs out in front of him.
   s += storyEllipse(-14 + fall * 12, -8 - fall * 10, 14, 9, dark);
   s += storyEllipse(14 + fall * 26, -8 - fall * 6, 14, 9, dark);
   s += storyEllipse(0, -44, 27, 31, fur);
-  s += '<ellipse cx="4" cy="-38" rx="15" ry="20" fill="' + belly + '"/>';
+  s += '<ellipse cx="2" cy="-36" rx="18" ry="23" fill="' + belly + '"/>';
   s += storyEllipse(-28, -50, 9, 12, fur);
   s += storyEllipse(28, -52, 9, 12, fur);
 
@@ -160,6 +162,10 @@ function storyWolf(puff, blow, fall) {
     s += storyEllipse(31, -84, cheek, cheek * 0.9, belly, 7);
   }
 
+  s += "<path d='M-30 -96 C-30 -74 -14 -62 2 -62 C18 -62 32 -74 32 -94 "
+       + "C22 -84 -18 -84 -30 -96 Z' fill='" + belly + "'/>";
+  s += "<ellipse cx='-27' cy='-88' rx='9' ry='6' fill='#E8927A' opacity='.65'/>";
+  s += "<ellipse cx='31' cy='-88' rx='9' ry='6' fill='#E8927A' opacity='.65'/>";
   s += storyEllipse(6, -80, 21, 15, belly, 7);
   s += '<ellipse cx="16" cy="-86" rx="8" ry="6" fill="' + STORY_OUTLINE + '"/>';
 
@@ -178,6 +184,8 @@ function storyWolf(puff, blow, fall) {
     const pupil = 6 - puff * 2;
     s += '<circle cx="-13" cy="-107" r="' + storyN(pupil) + '" fill="' + STORY_OUTLINE + '"/>';
     s += '<circle cx="15" cy="-107" r="' + storyN(pupil) + '" fill="' + STORY_OUTLINE + '"/>';
+    s += '<circle cx="-15" cy="-110" r="2.4" fill="#FFFFFF"/>';
+    s += '<circle cx="13" cy="-110" r="2.4" fill="#FFFFFF"/>';
     s += '<g fill="none" stroke="' + STORY_OUTLINE + '" stroke-width="6" stroke-linecap="round">' +
          '<path d="M-26 -126 L-6 -' + storyN(130 + puff * 6) + '"/>' +
          '<path d="M26 -126 L6 -' + storyN(130 + puff * 6) + '"/></g>';
@@ -218,6 +226,8 @@ function storyPig(mood, t) {
   s += storyPath('M-15 -66 L-23 -84 L-3 -71 Z', dark, 7);
   s += storyPath('M15 -66 L23 -84 L3 -71 Z', dark, 7);
   s += storyEllipse(0, -57, 22, 21, skin);
+  s += "<ellipse cx='-17' cy='-54' rx='7' ry='5' fill='#E8828E' opacity='.6'/>";
+  s += "<ellipse cx='17' cy='-54' rx='7' ry='5' fill='#E8828E' opacity='.6'/>";
   s += storyEllipse(0, -50, 12, 9, dark, 7);
   s += '<circle cx="-4" cy="-50" r="2.6" fill="' + STORY_OUTLINE + '"/>' +
        '<circle cx="4" cy="-50" r="2.6" fill="' + STORY_OUTLINE + '"/>';
@@ -229,10 +239,14 @@ function storyPig(mood, t) {
   } else if (mood === 'run') {
     s += '<circle cx="-9" cy="-67" r="4.5" fill="' + STORY_OUTLINE + '"/>' +
          '<circle cx="9" cy="-67" r="4.5" fill="' + STORY_OUTLINE + '"/>';
+    s += '<circle cx="-10.5" cy="-69" r="1.8" fill="#FFFFFF"/>' +
+         '<circle cx="7.5" cy="-69" r="1.8" fill="#FFFFFF"/>';
     s += '<ellipse cx="0" cy="-38" rx="6" ry="5" fill="#B9566E"/>';
   } else {
     s += '<circle cx="-9" cy="-66" r="4" fill="' + STORY_OUTLINE + '"/>' +
          '<circle cx="9" cy="-66" r="4" fill="' + STORY_OUTLINE + '"/>';
+    s += '<circle cx="-10.4" cy="-67.8" r="1.6" fill="#FFFFFF"/>' +
+         '<circle cx="7.6" cy="-67.8" r="1.6" fill="#FFFFFF"/>';
     s += '<path d="M-8 -38 C-4 -33 4 -33 8 -38" fill="none" stroke="' + STORY_OUTLINE +
          '" stroke-width="5" stroke-linecap="round"/>';
   }
