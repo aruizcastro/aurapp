@@ -12,9 +12,9 @@
 const PET_OUTLINE = '#5A3A28';
 
 const PET_FURS = {
-  capy:   ['#C08B5C', '#A9754A', '#D8AE84', '#8C6242'],
-  cat:    ['#E8C9B0', '#F2DCC6', '#D6BBA6', '#C9A98E'],
-  rabbit: ['#EFE3D6', '#D8CFC4', '#F4D8DE', '#BFAE9E']
+  capy:   ['#A9784E', '#8C6242', '#C79A6C', '#D8B48C'],
+  cat:    ['#EFA057', '#E8C9B0', '#C9A98E', '#F2C27A'],
+  rabbit: ['#BCBFC4', '#9A9DA3', '#E8E4DC', '#D6BBC4']
 };
 
 const PET_NAMES = { capy: 'Capi', cat: 'Michi', rabbit: 'Coneja' };
@@ -135,8 +135,12 @@ function petEyes(mood) {
            '<path d="M188 100 C196 112 214 112 222 100" fill="none" stroke="' + PET_OUTLINE +
              '" stroke-width="9" stroke-linecap="round"/>';
   }
-  return '<ellipse cx="95" cy="96" rx="12" ry="14" fill="' + PET_OUTLINE + '"/>' +
-         '<ellipse cx="205" cy="96" rx="12" ry="14" fill="' + PET_OUTLINE + '"/>';
+  // A single off-centre highlight is what makes a flat dark oval read as an
+  // eye rather than a hole.
+  return '<ellipse cx="95" cy="96" rx="13" ry="15" fill="' + PET_OUTLINE + '"/>' +
+         '<ellipse cx="205" cy="96" rx="13" ry="15" fill="' + PET_OUTLINE + '"/>' +
+         '<circle cx="99" cy="90" r="4.5" fill="#fff"/>' +
+         '<circle cx="209" cy="90" r="4.5" fill="#fff"/>';
 }
 
 function petMouth(mood, muzzleY) {
@@ -171,54 +175,80 @@ function capyHead(fur, mood) {
   s += '<ellipse cx="242" cy="132" rx="20" ry="13" fill="#E8A08A" opacity=".7"/>';
   s += '<g stroke="' + muzzle + '" stroke-width="5" stroke-linecap="round" opacity=".8">' +
        '<path d="M126 54 L124 64"/><path d="M150 48 L150 58"/><path d="M174 54 L176 64"/></g>';
-  s += petEyes(mood) + petMouth(mood, 168);
+  // Nostrils sit high on the muzzle, which is what makes it read as a snout
+  // seen head-on rather than as a big chin.
+  s += '<g fill="' + nose + '">' +
+       '<path d="M132 132 C138 128 142 132 140 138 C136 142 130 138 132 132 Z"/>' +
+       '<path d="M168 132 C162 128 158 132 160 138 C164 142 170 138 168 132 Z"/></g>';
+  s += petEyes(mood) + petMouth(mood, 158);
   return s;
 }
 
+/* Cat. Tabby stripes on the forehead and a plain w-mouth — no whiskers, they
+   only add clutter at thumbnail size. */
 function catHead(fur, mood) {
-  const muzzle = petShade(fur, 0.9);
+  const stripe = petShade(fur, 0.8);
 
-  let s = petPath('M76 74 L58 12 L128 48 Z', fur) + petPath('M224 74 L242 12 L172 48 Z', fur);
-  s += '<path d="M86 68 L74 34 L112 52 Z" fill="#F2A9BC"/>' +
-       '<path d="M214 68 L226 34 L188 52 Z" fill="#F2A9BC"/>';
+  let s = petPath('M78 78 L62 12 L132 50 Z', fur) + petPath('M222 78 L238 12 L168 50 Z', fur);
+  s += '<path d="M88 70 L78 34 L116 54 Z" fill="#F3B39C"/>' +
+       '<path d="M212 70 L222 34 L184 54 Z" fill="#F3B39C"/>';
   s += petPath('M150 30 C214 30 254 68 254 124 C254 182 212 220 150 220 ' +
                'C88 220 46 182 46 124 C46 68 86 30 150 30 Z', fur);
-  s += '<ellipse cx="126" cy="176" rx="30" ry="22" fill="' + muzzle + '"/>' +
-       '<ellipse cx="174" cy="176" rx="30" ry="22" fill="' + muzzle + '"/>';
-  s += '<path d="M150 150 C161 150 165 159 158 165 C154 169 146 169 142 165 ' +
-       'C135 159 139 150 150 150 Z" fill="#C4737F"/>';
-  s += '<ellipse cx="58" cy="146" rx="20" ry="13" fill="#E8A08A" opacity=".7"/>';
-  s += '<ellipse cx="242" cy="146" rx="20" ry="13" fill="#E8A08A" opacity=".7"/>';
-  s += '<g stroke="' + PET_OUTLINE + '" stroke-width="6" stroke-linecap="round" opacity=".85">' +
-       '<path d="M96 172 L48 162"/><path d="M96 186 L50 194"/>' +
-       '<path d="M204 172 L252 162"/><path d="M204 186 L250 194"/></g>';
-  s += petEyes(mood) + petMouth(mood, 166);
+  s += '<g stroke="' + stripe + '" stroke-width="7" stroke-linecap="round" fill="none">' +
+       '<path d="M124 54 C126 62 126 68 124 74"/>' +
+       '<path d="M150 48 C152 58 152 64 150 70"/>' +
+       '<path d="M176 54 C174 62 174 68 176 74"/></g>';
+  s += '<ellipse cx="62" cy="146" rx="21" ry="14" fill="#E8927A" opacity=".72"/>';
+  s += '<ellipse cx="238" cy="146" rx="21" ry="14" fill="#E8927A" opacity=".72"/>';
+  s += petEyes(mood) + petSnout(mood, 152, '#4A3226');
   return s;
 }
 
-/* Rabbit. The ears carry the whole read, so they are tall, tilted slightly
-   outward, and drawn behind the skull — a rabbit with short ears is a mouse. */
+/* Rabbit with lop ears: they hang down the sides of the head instead of
+   standing up. Longer to draw than upright ears, but unmistakable, and it
+   stops the silhouette colliding with the cat's. */
 function rabbitHead(fur, mood) {
-  const muzzle = petShade(fur, 0.93);
-  const inner = '#F2A9BC';
+  const inner = '#F0B4B8';
 
-  let s = petPath('M114 96 C104 34 118 6 133 8 C148 10 150 42 142 100 Z', fur) +
-          petPath('M186 96 C196 34 182 6 167 8 C152 10 150 42 158 100 Z', fur);
-  s += '<path d="M122 88 C116 44 126 24 133 26 C140 28 140 52 134 92 Z" fill="' + inner + '"/>' +
-       '<path d="M178 88 C184 44 174 24 167 26 C160 28 160 52 166 92 Z" fill="' + inner + '"/>';
-  s += petPath('M150 40 C210 40 250 76 250 128 C250 184 210 220 150 220 ' +
-               'C90 220 50 184 50 128 C50 76 90 40 150 40 Z', fur);
-  s += '<ellipse cx="128" cy="178" rx="27" ry="19" fill="' + muzzle + '"/>' +
-       '<ellipse cx="172" cy="178" rx="27" ry="19" fill="' + muzzle + '"/>';
-  s += '<path d="M150 154 C160 154 164 162 158 168 C154 172 146 172 142 168 ' +
-       'C136 162 140 154 150 154 Z" fill="#D9899A"/>';
-  s += '<ellipse cx="60" cy="150" rx="20" ry="13" fill="#E8A08A" opacity=".62"/>';
-  s += '<ellipse cx="240" cy="150" rx="20" ry="13" fill="#E8A08A" opacity=".62"/>';
-  s += '<g stroke="' + PET_OUTLINE + '" stroke-width="5" stroke-linecap="round" opacity=".7">' +
-       '<path d="M100 176 L56 168"/><path d="M100 188 L58 196"/>' +
-       '<path d="M200 176 L244 168"/><path d="M200 188 L242 196"/></g>';
-  s += petEyes(mood) + petMouth(mood, 168);
+  // The ears have to hang well outside the skull or they vanish behind it —
+  // the head is drawn on top of them.
+  let s = petPath('M104 62 C60 50 18 92 16 150 C14 200 46 220 76 206 ' +
+                  'C98 194 102 142 104 102 Z', fur) +
+          petPath('M196 62 C240 50 282 92 284 150 C286 200 254 220 224 206 ' +
+                  'C202 194 198 142 196 102 Z', fur);
+  s += '<path d="M100 86 C66 78 36 110 34 152 C32 188 56 202 78 192 ' +
+       'C94 182 98 142 100 110 Z" fill="' + inner + '"/>' +
+       '<path d="M200 86 C234 78 264 110 266 152 C268 188 244 202 222 192 ' +
+       'C206 182 202 142 200 110 Z" fill="' + inner + '"/>';
+  s += petPath('M150 40 C200 40 234 76 234 126 C234 178 200 212 150 212 ' +
+               'C100 212 66 178 66 126 C66 76 100 40 150 40 Z', fur);
+  s += '<ellipse cx="88" cy="150" rx="17" ry="12" fill="#E8927A" opacity=".7"/>';
+  s += '<ellipse cx="212" cy="150" rx="17" ry="12" fill="#E8927A" opacity=".7"/>';
+  s += petEyes(mood) + petSnout(mood, 150, '#B0757E');
   return s;
+}
+
+/* Small nose plus a w-shaped mouth, for the two round-faced friends. The
+   capybara does not use this: its whole muzzle is the feature. */
+function petSnout(mood, y, noseColor) {
+  const nose = '<path d="M150 ' + y + ' C160 ' + y + ' 164 ' + (y + 8) + ' 158 ' + (y + 14) +
+               ' C154 ' + (y + 18) + ' 146 ' + (y + 18) + ' 142 ' + (y + 14) +
+               ' C136 ' + (y + 8) + ' 140 ' + y + ' 150 ' + y + ' Z" fill="' + noseColor + '"/>';
+
+  if (mood === 'chew') {
+    // Keep the nose: without it the open mouth floats on a blank face.
+    return nose + '<ellipse cx="150" cy="' + (y + 30) + '" rx="17" ry="14" fill="#8C4A44" stroke="' +
+           PET_OUTLINE + '" stroke-width="7"/>';
+  }
+  return '<path d="M150 ' + y + ' C160 ' + y + ' 164 ' + (y + 8) + ' 158 ' + (y + 14) +
+         ' C154 ' + (y + 18) + ' 146 ' + (y + 18) + ' 142 ' + (y + 14) +
+         ' C136 ' + (y + 8) + ' 140 ' + y + ' 150 ' + y + ' Z" fill="' + noseColor + '"/>' +
+         '<path d="M150 ' + (y + 16) + ' L150 ' + (y + 22) + '" stroke="' + PET_OUTLINE +
+         '" stroke-width="6" stroke-linecap="round"/>' +
+         '<path d="M150 ' + (y + 22) + ' C150 ' + (y + 34) + ' 132 ' + (y + 36) + ' 126 ' + (y + 26) +
+         '" fill="none" stroke="' + PET_OUTLINE + '" stroke-width="6" stroke-linecap="round"/>' +
+         '<path d="M150 ' + (y + 22) + ' C150 ' + (y + 34) + ' 168 ' + (y + 36) + ' 174 ' + (y + 26) +
+         '" fill="none" stroke="' + PET_OUTLINE + '" stroke-width="6" stroke-linecap="round"/>';
 }
 
 const PET_HEADS = { capy: capyHead, cat: catHead, rabbit: rabbitHead };
@@ -251,6 +281,18 @@ function petArt(species, fur, mood, outfitID, accessories, night) {
   s += petEllipse(52, 286, 24, 40, fur) + petEllipse(248, 286, 24, 40, fur);
   s += petPath('M150 200 C214 200 250 240 250 296 C250 344 208 366 150 366 ' +
                'C92 366 50 344 50 296 C50 240 86 200 150 200 Z', fur);
+
+  if (species === 'cat') {
+    s += '<g stroke="' + petShade(fur, 0.8) + '" stroke-width="8" stroke-linecap="round" fill="none">' +
+         '<path d="M228 250 C236 254 240 258 242 264"/>' +
+         '<path d="M224 276 C234 278 240 282 244 288"/>' +
+         '<path d="M226 302 C236 302 242 304 246 308"/></g>';
+  }
+  if (species === 'rabbit') {
+    s += '<path d="M150 226 C176 226 190 254 190 292 C190 328 172 348 150 348 ' +
+         'C128 348 110 328 110 292 C110 254 124 226 150 226 Z" fill="#F3F1EC"/>';
+  }
+
   s += petEllipse(108, 368, 28, 18, fur) + petEllipse(192, 368, 28, 18, fur);
 
   if (outfit.draw) s += outfit.draw(outfit.color);
