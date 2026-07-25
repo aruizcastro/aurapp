@@ -19,14 +19,23 @@ const PALETTE = ['#E24B4A', '#EF9F27', '#FAC775', '#97C459', '#1D9E75',
                  '#378ADD', '#7F77DD', '#D4537E', '#D85A30', '#2C2C2A'];
 
 const PER_PAGE = 6;
-const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '' };
+
+const PET_DEFAULT = () => ({
+  capy: { fur: PET_FURS.capy[0], outfit: 'none', acc: {}, full: 40 },
+  cat:  { fur: PET_FURS.cat[0],  outfit: 'none', acc: {}, full: 40 }
+});
+
+const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '', pets: PET_DEFAULT() };
 
 let state = load();
 
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem('aurapp') || '{}');
-    return Object.assign({}, DEFAULTS, saved);
+    const merged = Object.assign({}, DEFAULTS, saved);
+    // Lists saved before the friends existed have no pets key.
+    merged.pets = Object.assign(PET_DEFAULT(), saved.pets || {});
+    return merged;
   } catch (e) {
     return Object.assign({}, DEFAULTS);
   }
@@ -101,6 +110,7 @@ function go(name) {
   if (name === 'parents') renderParents();
   if (name === 'color') openColoring();
   if (name === 'draw') setupDraw();
+  if (name === 'pets') openPets();
   if (name !== 'player') stopPlayer();
 }
 
@@ -140,6 +150,14 @@ function renderWorlds() {
                     '<span class="sub">22 dibujos</span>';
   paint.onclick = () => go('paint');
   host.appendChild(paint);
+
+  const friends = document.createElement('button');
+  friends.className = 'tile';
+  friends.style.background = '#E8C9A0';
+  friends.innerHTML = '<span class="ico">🐹</span><span class="name">Amigos</span>' +
+                      '<span class="sub">Capi y Michi</span>';
+  friends.onclick = () => go('pets');
+  host.appendChild(friends);
 }
 
 // ---------------------------------------------------------- video grid
@@ -506,6 +524,187 @@ $('#undoBtn').onclick = () => { strokes.pop(); repaint(); };
 $('#clearDraw').onclick = () => {
   if (confirm('¿Empezamos un dibujo nuevo?')) { strokes = []; repaint(); }
 };
+
+// ------------------------------------------------------------- friends
+
+const PET_MODES = [
+  { id: 'dress', name: 'Vestir' },
+  { id: 'feed',  name: 'Comer' },
+  { id: 'sleep', name: 'Dormir' }
+];
+
+let petWho = 'capy';
+let petMode = 'dress';
+let petMood = 'idle';
+let petBusy = false;
+
+function petState() { return state.pets[petWho]; }
+
+function openPets() {
+  petMood = petMode === 'sleep' ? 'asleep' : 'idle';
+  renderPetTabs();
+  renderPetPanel();
+  drawPet();
+}
+
+function drawPet() {
+  const p = petState();
+  $('#petName').textContent = PET_NAMES[petWho];
+  $('#petSvg').innerHTML = petArt(petWho, p.fur, petMood, p.outfit, p.acc, petMode === 'sleep');
+}
+
+function renderPetTabs() {
+  const who = $('#petWho');
+  who.innerHTML = '';
+  ['capy', 'cat'].forEach(id => {
+    const btn = document.createElement('button');
+    btn.textContent = PET_NAMES[id];
+    btn.className = id === petWho ? 'on' : '';
+    btn.onclick = () => {
+      petWho = id;
+      openPets();
+    };
+    who.appendChild(btn);
+  });
+
+  const modes = $('#petModes');
+  modes.innerHTML = '';
+  PET_MODES.forEach(m => {
+    const btn = document.createElement('button');
+    btn.textContent = m.name;
+    btn.className = m.id === petMode ? 'on' : '';
+    btn.onclick = () => {
+      petMode = m.id;
+      petMood = m.id === 'sleep' ? 'asleep' : 'idle';
+      renderPetTabs();
+      renderPetPanel();
+      drawPet();
+    };
+    modes.appendChild(btn);
+  });
+}
+
+function petThumb(inner, box) {
+  return '<svg viewBox="' + box + '" aria-hidden="true">' + inner + '</svg>';
+}
+
+function renderPetPanel() {
+  const items = $('#petItems');
+  const pal = $('#petPal');
+  const hint = $('#petHint');
+  const meter = $('#petMeter');
+  const p = petState();
+
+  items.innerHTML = '';
+  pal.innerHTML = '';
+  meter.style.display = 'none';
+
+  if (petMode === 'sleep') {
+    hint.textContent = 'Está durmiendo. Vuelve mañana o cámbiale de actividad.';
+    return;
+  }
+
+  if (petMode === 'feed') {
+    hint.textContent = 'Toca una comida y se la lleva a la boca.';
+    meter.style.display = '';
+    meter.firstElementChild.style.width = p.full + '%';
+
+    PET_FOOD.forEach(food => {
+      const btn = document.createElement('button');
+      btn.className = 'petitem';
+      btn.innerHTML = petThumb('<g transform="translate(30 30)">' + food.draw() + '</g>', '0 0 60 60') +
+                      '<span></span>';
+      btn.querySelector('span').textContent = food.name;
+      btn.onclick = () => feedPet(food);
+      items.appendChild(btn);
+    });
+    return;
+  }
+
+  hint.textContent = 'La misma ropa les queda a los dos.';
+
+  PET_CLOTHES.forEach(outfit => {
+    const btn = document.createElement('button');
+    btn.className = 'petitem' + (outfit.id === p.outfit ? ' on' : '');
+    btn.innerHTML = petThumb(outfit.draw ? outfit.draw(outfit.color) : '', '56 200 188 150') +
+                    '<span></span>';
+    btn.querySelector('span').textContent = outfit.name;
+    btn.onclick = () => { p.outfit = outfit.id; save(); renderPetPanel(); drawPet(); };
+    items.appendChild(btn);
+  });
+
+  PET_ACCESSORIES.forEach(acc => {
+    const btn = document.createElement('button');
+    btn.className = 'petitem' + (p.acc[acc.id] ? ' on' : '');
+    btn.innerHTML = petThumb(acc.draw(acc.color), '40 0 220 250') + '<span></span>';
+    btn.querySelector('span').textContent = acc.name;
+    btn.onclick = () => { p.acc[acc.id] = !p.acc[acc.id]; save(); renderPetPanel(); drawPet(); };
+    items.appendChild(btn);
+  });
+
+  PET_FURS[petWho].forEach(color => {
+    const swatch = document.createElement('button');
+    swatch.className = 'sw' + (p.fur === color ? ' on' : '');
+    swatch.style.background = color;
+    swatch.setAttribute('aria-label', 'color');
+    swatch.onclick = () => { p.fur = color; save(); renderPetPanel(); drawPet(); };
+    pal.appendChild(swatch);
+  });
+}
+
+/* The food flies to the mouth, the friend chews, then beams. That last beat
+   is the whole game at four: the reward is the face, not the meter. */
+function feedPet(food) {
+  if (petBusy) return;
+  petBusy = true;
+
+  const host = $('#petFlying');
+  host.innerHTML = '<g id="petBite" transform="translate(150 400)">' + food.draw() + '</g>';
+  const bite = $('#petBite');
+  let t = 0;
+
+  const step = () => {
+    t += 0.06;
+    if (t >= 1) {
+      petMood = 'chew';
+      drawPet();
+      setTimeout(() => {
+        petMood = 'happy';
+        petState().full = Math.min(100, petState().full + 15);
+        save();
+        drawPet();
+        renderPetPanel();
+        petHearts();
+        setTimeout(() => { petMood = 'idle'; petBusy = false; drawPet(); }, 950);
+      }, 420);
+      return;
+    }
+    const y = 400 + (180 - 400) * t;
+    const lift = Math.sin(t * Math.PI) * -26;
+    bite.setAttribute('transform', 'translate(150 ' + (y + lift) + ') scale(' + (1 - t * 0.25) + ')');
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function petHearts() {
+  const host = $('#petFlying');
+  host.innerHTML = '';
+  [[104, 140], [150, 118], [196, 140]].forEach((pos, i) => {
+    const heart = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    heart.setAttribute('d', 'M0 6 C-10 -4 -6 -14 0 -8 C6 -14 10 -4 0 6 Z');
+    heart.setAttribute('fill', '#EF5B6B');
+    heart.setAttribute('transform', 'translate(' + pos[0] + ' ' + pos[1] + ') scale(1.6)');
+    heart.style.opacity = '0';
+    host.appendChild(heart);
+    setTimeout(() => {
+      heart.style.transition = 'all .8s';
+      heart.style.opacity = '1';
+      heart.setAttribute('transform', 'translate(' + pos[0] + ' ' + (pos[1] - 46) + ') scale(2)');
+      setTimeout(() => { heart.style.opacity = '0'; }, 620);
+    }, i * 130);
+  });
+}
 
 // ----------------------------------------------------------------- PIN
 

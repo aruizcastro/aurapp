@@ -16,12 +16,6 @@
 </head>
 <body>
 
-<!-- Portrait nudge ---------------------------------------------------- -->
-<div id="rotate">
-  <div class="ico">🔄</div>
-  <p>Voltea el iPad</p>
-</div>
-
 <!-- Worlds ------------------------------------------------------------ -->
 <div class="screen on" id="s-worlds">
   <div class="bar">
@@ -129,6 +123,26 @@
   <div class="palette" id="palDraw"></div>
 </div>
 
+<!-- Friends ----------------------------------------------------------- -->
+<div class="screen" id="s-pets">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <h1 id="petName"></h1>
+    <div class="grow"></div>
+    <div class="whotabs" id="petWho"></div>
+  </div>
+  <div class="petsrow">
+    <div class="petstage"><svg id="petSvg" viewBox="0 0 300 400" role="img" aria-label="amigo"></svg></div>
+    <div class="petside">
+      <div class="cats" id="petModes"></div>
+      <div class="meter" id="petMeter"><div></div></div>
+      <div class="petitems" id="petItems"></div>
+      <div class="palette" id="petPal"></div>
+      <p class="pethint" id="petHint"></p>
+    </div>
+  </div>
+</div>
+
 <!-- PIN --------------------------------------------------------------- -->
 <div class="screen" id="s-pin">
   <h2>PIN de papá o mamá</h2>
@@ -196,6 +210,7 @@
 </div>
 
 <script src="silhouettes.js"></script>
+<script src="pets.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
