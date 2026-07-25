@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>AurApp</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AurApp">
+<meta name="theme-color" content="#FBEAF0">
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- Portrait nudge ---------------------------------------------------- -->
+<div id="rotate">
+  <div class="ico">🔄</div>
+  <p>Voltea el iPad</p>
+</div>
+
+<!-- Worlds ------------------------------------------------------------ -->
+<div class="screen on" id="s-worlds">
+  <div class="bar">
+    <h1>¿Qué quieres ver hoy?</h1>
+    <div class="grow"></div>
+    <div class="pill" id="clockWorlds">⏱ <span>30 min</span></div>
+    <button class="round lock" id="lockBtn" aria-label="Papá o mamá">🔒</button>
+  </div>
+  <div class="worlds" id="worldTiles"></div>
+</div>
+
+<!-- Video grid -------------------------------------------------------- -->
+<div class="screen" id="s-grid">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <h1 id="gridTitle"></h1>
+    <div class="grow"></div>
+    <div class="pill" id="clockGrid">⏱ <span></span></div>
+  </div>
+  <div class="row">
+    <button class="arrow" id="prevPage" aria-label="Anterior">‹</button>
+    <div class="grid" id="videoGrid"></div>
+    <button class="arrow" id="nextPage" aria-label="Siguiente">›</button>
+  </div>
+  <div class="dots" id="pageDots"></div>
+</div>
+
+<!-- Player ------------------------------------------------------------ -->
+<div class="screen" id="s-player">
+  <div id="stage"><div class="shield"></div><div id="ytHost"></div></div>
+  <div class="controls">
+    <button class="big pink" id="playPause" aria-label="Pausa">⏸</button>
+    <div class="track"><div id="progress"></div></div>
+    <button class="big lilac" id="playerHome" aria-label="Inicio">🏠</button>
+  </div>
+</div>
+
+<!-- Time up ----------------------------------------------------------- -->
+<div class="screen" id="s-timeup">
+  <div class="moon">🌙</div>
+  <h2>El unicornio se fue a dormir</h2>
+  <p>Mañana hay más videos</p>
+  <button class="cta" data-go="paint">🎨 Vamos a pintar</button>
+  <button class="quiet" id="timeupParents" style="margin-top:18px">Soy papá o mamá</button>
+</div>
+
+<!-- Paint menu -------------------------------------------------------- -->
+<div class="screen" id="s-paint">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <h1>¿Qué quieres pintar?</h1>
+  </div>
+  <div class="doors">
+    <button class="door" data-go="color" style="background:#9FE1CB">
+      <svg viewBox="0 0 320 300" id="doorArt" aria-hidden="true"></svg>
+      <span class="name">Colorear</span>
+      <span class="sub">16 dibujos</span>
+    </button>
+    <button class="door" data-go="draw" style="background:#FAC775">
+      <svg viewBox="0 0 320 300" aria-hidden="true">
+        <path d="M40 200 C90 100 130 250 170 150 C200 76 240 190 285 120"
+              fill="none" stroke="#26215C" stroke-width="14" stroke-linecap="round" opacity=".75"/>
+      </svg>
+      <span class="name">Dibujar</span>
+      <span class="sub">Lo que quieras</span>
+    </button>
+  </div>
+</div>
+
+<!-- Coloring ---------------------------------------------------------- -->
+<div class="screen" id="s-color">
+  <div class="bar">
+    <button class="round" data-go="paint" aria-label="Atrás">‹</button>
+    <h1 id="colorTitle" style="font-size:24px"></h1>
+    <div class="grow"></div>
+    <button class="round" id="colorReset" aria-label="Empezar de nuevo">↺</button>
+  </div>
+  <div class="picker" id="silPicker"></div>
+  <div id="canvasWrap"><svg id="colorSvg" viewBox="0 0 320 300" preserveAspectRatio="xMidYMid meet"></svg></div>
+  <div class="palette" id="palColor"></div>
+</div>
+
+<!-- Free draw --------------------------------------------------------- -->
+<div class="screen" id="s-draw">
+  <div class="bar">
+    <button class="round" data-go="paint" aria-label="Atrás">‹</button>
+    <h1 style="font-size:24px">Mi dibujo</h1>
+    <div class="grow"></div>
+    <button class="round" id="undoBtn" aria-label="Deshacer">↶</button>
+  </div>
+  <div class="tools">
+    <button class="tool on" data-tool="pencil">✏️ Lápiz</button>
+    <button class="tool" data-tool="brush">🖌 Pincel</button>
+    <button class="tool" data-tool="eraser">🩹 Borrador</button>
+    <button class="tool" id="clearDraw">🗑 Nuevo</button>
+  </div>
+  <div id="canvasWrap2" style="flex:1;background:#fff;border-radius:18px;min-height:0;overflow:hidden">
+    <canvas id="drawCanvas"></canvas>
+  </div>
+  <div class="palette" id="palDraw"></div>
+</div>
+
+<!-- PIN --------------------------------------------------------------- -->
+<div class="screen" id="s-pin">
+  <h2>PIN de papá o mamá</h2>
+  <div class="pips" id="pips"><i></i><i></i><i></i><i></i></div>
+  <div class="pad" id="pinPad"></div>
+  <button class="quiet" id="pinCancel">Cancelar</button>
+</div>
+
+<!-- Parent panel ------------------------------------------------------ -->
+<div class="screen" id="s-parents">
+  <div class="wrap">
+    <div class="bar" style="margin:10px 0 18px">
+      <h2 style="margin:0">Ajustes</h2>
+      <div class="grow"></div>
+      <button class="btn" data-go="worlds">Listo</button>
+    </div>
+
+    <section>
+      <h3>Tiempo</h3>
+      <label>Límite diario
+        <select id="limitSel">
+          <option value="0">Sin límite</option>
+          <option value="15">15 minutos</option>
+          <option value="20">20 minutos</option>
+          <option value="30">30 minutos</option>
+          <option value="45">45 minutos</option>
+          <option value="60">60 minutos</option>
+          <option value="90">90 minutos</option>
+        </select>
+      </label>
+      <label>Usado hoy <span id="usedToday">0 min</span></label>
+      <button class="btn" id="resetTime">Reiniciar el contador de hoy</button>
+    </section>
+
+    <section>
+      <h3>Agregar video</h3>
+      <label>Enlace <input type="url" id="addLink" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off"></label>
+      <label>Título <input type="text" id="addTitle" placeholder="Cómo lo va a ver ella"></label>
+      <label>Mundo <select id="addWorld"></select></label>
+      <button class="btn primary" id="addBtn">Agregar</button>
+      <p class="hint" id="addHint">El título y la portada se llenan solos al pegar el enlace.</p>
+    </section>
+
+    <section>
+      <h3>Videos (<span id="videoCount">0</span>)</h3>
+      <div id="videoList"></div>
+      <p class="hint" id="emptyHint">Todavía no hay videos. Pega un enlace de YouTube arriba.</p>
+    </section>
+
+    <section>
+      <h3>Seguridad</h3>
+      <label>PIN <input type="text" id="pinInput" inputmode="numeric" maxlength="4"></label>
+      <button class="btn" id="savePin">Guardar PIN</button>
+      <p class="hint">Activa el Modo Guiado en Ajustes → Accesibilidad para que no pueda salirse de la app: triple clic al botón lateral.</p>
+    </section>
+
+    <section>
+      <h3>Respaldo</h3>
+      <button class="btn" id="exportBtn">Exportar la lista</button>
+      <button class="btn" id="importBtn">Importar</button>
+      <p class="hint">Guarda un archivo con tus videos, por si cambias de iPad.</p>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </section>
+  </div>
+</div>
+
+<script src="silhouettes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
