@@ -375,6 +375,11 @@ html, body {
 .themeswatch .chips i { width: 22px; height: 22px; border-radius: 6px; }
 .themeswatch span { font-size: 14px; color: var(--ink); }
 
+.worldrow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #f0f0f0; }
+.worldrow .ico { font-size: 24px; }
+.worldrow b { flex: 1; font-weight: 500; font-size: 16px; }
+.worldrow input { width: 26px; height: 26px; }
+
 /* PIN ----------------------------------------------------------------- */
 
 #s-pin { align-items: center; justify-content: center; gap: 20px; }

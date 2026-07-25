@@ -52,6 +52,17 @@ const THEMES = [
             '#D6E3B0','#D9C4A0','#BBD9C6','#AFD9A0','#C9E2B4'] }
 ];
 
+
+/* The worlds that are not video. Any of them can be switched off from the
+   parent panel — hidden, not deleted, so turning one back on is one tap. */
+const EXTRA_WORLDS = [
+  { id: 'paint',  name: 'Pintar',    sub: '22 dibujos',            icon: '🎨' },
+  { id: 'pets',   name: 'Amigos',    sub: 'Capi, Michi y Coneja',  icon: '🐹' },
+  { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷' },
+  { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺' },
+  { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' }
+];
+
 function applyTheme(id) {
   const theme = THEMES.find(t => t.id === id) || THEMES[0];
   const root = document.documentElement;
@@ -76,7 +87,7 @@ const PET_DEFAULT = () => {
 };
 
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
-                   theme: 'unicorn', pets: PET_DEFAULT() };
+                   theme: 'unicorn', hidden: { camera: true }, pets: PET_DEFAULT() };
 
 let state = load();
 
@@ -87,6 +98,7 @@ function load() {
     // Lists saved before the friends existed have no pets key.
     // Saved lists predate the rabbit, so fill in any species that is missing
     // rather than replacing what she has already dressed.
+    merged.hidden = Object.assign({}, saved.hidden || DEFAULTS.hidden);
     merged.pets = Object.assign(PET_DEFAULT(), saved.pets || {});
     PET_SPECIES.forEach(id => {
       if (!merged.pets[id]) merged.pets[id] = { fur: PET_FURS[id][0], outfit: 'none', acc: {}, full: 40 };
@@ -205,45 +217,17 @@ function renderWorlds() {
     host.appendChild(tile);
   });
 
-  const paint = document.createElement('button');
-  paint.className = 'tile';
-  paint.style.background = tint[6];
-  paint.innerHTML = '<span class="ico">🎨</span><span class="name">Pintar</span>' +
-                    '<span class="sub">22 dibujos</span>';
-  paint.onclick = () => go('paint');
-  host.appendChild(paint);
-
-  const friends = document.createElement('button');
-  friends.className = 'tile';
-  friends.style.background = tint[7];
-  friends.innerHTML = '<span class="ico">🐹</span><span class="name">Amigos</span>' +
-                      '<span class="sub">Capi, Michi y Coneja</span>';
-  friends.onclick = () => go('pets');
-  host.appendChild(friends);
-
-  const camera = document.createElement('button');
-  camera.className = 'tile';
-  camera.style.background = tint[8];
-  camera.innerHTML = '<span class="ico">📷</span><span class="name">Fotos</span>' +
-                     '<span class="sub">Con disfraces</span>';
-  camera.onclick = () => go('camera');
-  host.appendChild(camera);
-
-  const story = document.createElement('button');
-  story.className = 'tile';
-  story.style.background = tint[9];
-  story.innerHTML = '<span class="ico">🐺</span><span class="name">El lobo</span>' +
-                    '<span class="sub">y los tres cerditos</span>';
-  story.onclick = () => go('story');
-  host.appendChild(story);
-
-  const forest = document.createElement('button');
-  forest.className = 'tile';
-  forest.style.background = tint[10];
-  forest.innerHTML = '<span class="ico">🌲</span><span class="name">El bosque</span>' +
-                     '<span class="sub">Juguemos con el lobo</span>';
-  forest.onclick = () => go('forest');
-  host.appendChild(forest);
+  EXTRA_WORLDS.forEach((extra, i) => {
+    if (state.hidden[extra.id]) return;
+    const tile = document.createElement('button');
+    tile.className = 'tile';
+    tile.style.background = tint[(6 + i) % tint.length];
+    tile.innerHTML = '<span class="ico">' + extra.icon + '</span>' +
+                     '<span class="name">' + extra.name + '</span>' +
+                     '<span class="sub">' + extra.sub + '</span>';
+    tile.onclick = () => go(extra.id);
+    host.appendChild(tile);
+  });
 }
 
 // ---------------------------------------------------------- video grid
@@ -1107,6 +1091,7 @@ function renderParents() {
   $('#limitSel').value = String(state.limit);
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
   $('#pinInput').value = state.pin;
+  renderWorldToggles();
   renderThemePicker();
   $('#videoCount').textContent = state.videos.length;
   $('#emptyHint').style.display = state.videos.length ? 'none' : '';
@@ -1155,6 +1140,24 @@ function renderParents() {
   });
 }
 
+function renderWorldToggles() {
+  const host = $('#worldToggles');
+  host.innerHTML = '';
+  EXTRA_WORLDS.forEach(extra => {
+    const row = document.createElement('label');
+    row.className = 'worldrow';
+    row.innerHTML = '<span class="ico">' + extra.icon + '</span><b></b>' +
+                    '<input type="checkbox"' + (state.hidden[extra.id] ? '' : ' checked') + '>';
+    row.querySelector('b').textContent = extra.name;
+    row.querySelector('input').onchange = (e) => {
+      if (e.target.checked) delete state.hidden[extra.id];
+      else state.hidden[extra.id] = true;
+      save();
+    };
+    host.appendChild(row);
+  });
+}
+
 function renderThemePicker() {
   const host = $('#themePicker');
   host.innerHTML = '';
@@ -1170,7 +1173,8 @@ function renderThemePicker() {
       state.theme = theme.id;
       save();
       applyTheme(theme.id);
-      renderThemePicker();
+      renderWorldToggles();
+  renderThemePicker();
     };
     host.appendChild(btn);
   });
