@@ -122,6 +122,7 @@ function go(name) {
   if (name === 'pets') openPets();
   if (name === 'camera') openCamera();
   if (name === 'story') openStory();
+  if (name === 'forest') openForest();
   if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
@@ -186,6 +187,14 @@ function renderWorlds() {
                     '<span class="sub">y los tres cerditos</span>';
   story.onclick = () => go('story');
   host.appendChild(story);
+
+  const forest = document.createElement('button');
+  forest.className = 'tile';
+  forest.style.background = '#9FE1CB';
+  forest.innerHTML = '<span class="ico">🌲</span><span class="name">El bosque</span>' +
+                     '<span class="sub">Juguemos con el lobo</span>';
+  forest.onclick = () => go('forest');
+  host.appendChild(forest);
 }
 
 // ---------------------------------------------------------- video grid
@@ -917,6 +926,51 @@ $('#storyNext').onclick = () => {
   renderStoryDots();
   $('#storyNext').hidden = true;
   $('#storyBlow').hidden = false;
+};
+
+// ------------------------------------------------------ forest chase
+
+function openForest() {
+  forestInit($('#forestSvg'));
+  renderForestDots();
+  $('#forestAsk').hidden = false;
+  $('#forestAgain').hidden = true;
+  $('#forestHint').textContent = 'Pregúntale si ya está listo.';
+}
+
+function renderForestDots() {
+  const dots = $('#forestDots');
+  const s = forestState();
+  dots.innerHTML = '';
+  for (let i = 0; i < s.total; i++) {
+    const dot = document.createElement('i');
+    if (i < s.worn) dot.className = 'on';
+    dots.appendChild(dot);
+  }
+}
+
+$('#forestAsk').onclick = () => {
+  const phase = forestAsk((ended) => {
+    renderForestDots();
+    if (ended === 'chase') {
+      $('#forestAsk').hidden = true;
+      $('#forestAgain').hidden = false;
+      $('#forestHint').textContent = '¡Salió! Nadie lo alcanzó.';
+    } else {
+      $('#forestHint').textContent = 'Se está poniendo ' + forestLastGarment() + '.';
+    }
+  });
+  if (!phase) return;
+  renderForestDots();
+  $('#forestHint').textContent = phase === 'chase' ? '¡Ya está listo!' : '…';
+};
+
+$('#forestAgain').onclick = () => {
+  forestReset();
+  renderForestDots();
+  $('#forestAgain').hidden = true;
+  $('#forestAsk').hidden = false;
+  $('#forestHint').textContent = 'Pregúntale si ya está listo.';
 };
 
 // ----------------------------------------------------------------- PIN

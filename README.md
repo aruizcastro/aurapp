@@ -26,6 +26,8 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 **El lobo y los tres cerditos.** Tres rondas: casa de paja, de palitos y de ladrillos. Un botón enorme sopla, las dos primeras casas vuelan por los aires y los cerditos corren; la de ladrillos aguanta y el lobo se cae de espaldas. El lobo nunca alcanza a nadie y siempre pierde.
 
+**El bosque.** El juego tradicional de preguntarle al lobo si ya está listo. Cada toque le pone una prenda más — siete en total — y al terminar sale corriendo y los tres amigos se dispersan muertos de risa. El botón nunca cambia de forma, así que la única pista de cuánto falta es mirar al lobo: la espera es el juego.
+
 **Panel de padres.** Protegido con PIN de 4 dígitos. Se entra manteniendo apretado el candado 2 segundos. Los números del teclado salen en desorden cada vez: a los 4 años se memorizan posiciones mucho antes que números.
 
 ---
@@ -101,6 +103,7 @@ docs/
 ├── pets.js                  Capi, Michi y Coneja, y su clóset compartido
 ├── camera.js                Disfraces y guardado de fotos en IndexedDB
 ├── story.js                 El lobo y los tres cerditos
+├── forest.js                Juguemos en el bosque (reusa el lobo de story.js)
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512

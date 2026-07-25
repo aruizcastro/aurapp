@@ -338,6 +338,12 @@ html, body {
   .storybtn .ico { font-size: 27px; }
 }
 
+.foresthint {
+  flex: 0 0 auto; margin: 0; text-align: center;
+  font-size: 20px; font-weight: 500; color: #26215C; min-height: 26px;
+}
+@media (max-width: 760px) { .foresthint { font-size: 16px; } }
+
 /* PIN ----------------------------------------------------------------- */
 
 #s-pin { align-items: center; justify-content: center; gap: 20px; }

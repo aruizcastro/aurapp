@@ -188,6 +188,25 @@
   </div>
 </div>
 
+<!-- Playing in the forest ---------------------------------------------- -->
+<div class="screen" id="s-forest">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <div class="grow"></div>
+    <div class="dots" id="forestDots"></div>
+  </div>
+  <div class="storywrap"><svg id="forestSvg" aria-label="juguemos en el bosque"></svg></div>
+  <div class="storyrow">
+    <button class="storybtn" id="forestAsk">
+      <span class="ico">🐺</span><span>¿Lobo, estás?</span>
+    </button>
+    <button class="storybtn next" id="forestAgain" hidden>
+      <span class="ico">🔁</span><span>¡Otra vez!</span>
+    </button>
+  </div>
+  <p class="foresthint" id="forestHint"></p>
+</div>
+
 <!-- PIN --------------------------------------------------------------- -->
 <div class="screen" id="s-pin">
   <h2>PIN de papá o mamá</h2>
@@ -258,6 +277,7 @@
 <script src="pets.js"></script>
 <script src="camera.js"></script>
 <script src="story.js"></script>
+<script src="forest.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
