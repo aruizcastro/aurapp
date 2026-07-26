@@ -1711,7 +1711,12 @@ $('#ytBulkBtn').onclick = async () => {
 // Backup ---------------------------------------------------------------
 
 $('#exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  // The API key stays behind. The backup is meant to be moved between
+  // devices and handed around; a key riding along in it is a leak.
+  const shareable = Object.assign({}, state);
+  delete shareable.ytKey;
+
+  const blob = new Blob([JSON.stringify(shareable, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'aurapp-lista.json';
@@ -1725,7 +1730,9 @@ $('#importFile').onchange = async (e) => {
   if (!file) return;
   try {
     const data = JSON.parse(await file.text());
+    const keepKey = state.ytKey;
     state = Object.assign({}, DEFAULTS, data);
+    state.ytKey = data.ytKey || keepKey || '';   // a backup has none; keep ours
     save();
     renderParents();
     alert('Lista importada');

@@ -108,6 +108,10 @@ La lista de videos, el PIN y el contador de tiempo se guardan en `localStorage`,
 
 Safari borra el almacenamiento de sitios que no se visitan en 7 días, **pero las apps agregadas a la pantalla de inicio están exentas** de esa regla.
 
+La clave de YouTube también vive ahí, **por dispositivo**. No está escrita en el código a propósito: la dirección de Pages es pública, y si la clave estuviera en el archivo, cualquiera que abriera la app usaría tu cuota. Así, quien entre tendrá que poner la suya.
+
+El archivo de respaldo **no incluye la clave**, para que puedas pasarlo entre dispositivos o compartirlo sin filtrarla. Y al importar, la clave que ya tenías en ese dispositivo se conserva.
+
 Aun así, el panel de padres tiene **Exportar** e **Importar**. Vale la pena exportar una vez que tengas los videos cargados, y es la forma de pasar la lista de un dispositivo a otro.
 
 ---
