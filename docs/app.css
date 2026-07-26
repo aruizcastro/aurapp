@@ -407,6 +407,46 @@ html, body {
   .bigreset .badge { width: 25px; height: 25px; font-size: 15px; line-height: 25px; }
 }
 
+/* Worm ----------------------------------------------------------------- */
+
+#s-worm { background: var(--bg-main); }
+
+.wormrow { flex: 1; display: flex; align-items: center; gap: 16px; min-height: 0; }
+
+.wormboard {
+  flex: 1; min-width: 0; min-height: 0;
+  background: #E8F4DC; border-radius: 20px; overflow: hidden;
+  display: flex; align-items: center;
+}
+.wormboard svg { display: block; width: 100%; height: auto; }
+
+/* A real cross, not a row: at four the arrows have to sit where they point. */
+.pad4 {
+  flex: 0 0 auto;
+  display: grid; grid-template-columns: repeat(3, 78px); grid-template-rows: repeat(3, 78px);
+  gap: 8px;
+}
+.dirbtn {
+  border: 0; border-radius: 20px; cursor: pointer;
+  background: var(--accent); color: #fff; font-size: 30px;
+  display: grid; place-items: center; font-family: inherit;
+}
+.dirbtn:active { transform: scale(.94); }
+.dirbtn.up    { grid-column: 2; grid-row: 1; }
+.dirbtn.left  { grid-column: 1; grid-row: 2; }
+.dirbtn.right { grid-column: 3; grid-row: 2; }
+.dirbtn.down  { grid-column: 2; grid-row: 3; }
+.dirbtn.mid   { grid-column: 2; grid-row: 2; background: var(--ok); font-size: 26px; }
+
+@media (orientation: portrait) {
+  .wormrow { flex-direction: column; }
+  .pad4 { grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(3, 72px); }
+}
+@media (max-width: 760px) {
+  .pad4 { grid-template-columns: repeat(3, 62px); grid-template-rows: repeat(3, 62px); gap: 6px; }
+  .dirbtn { font-size: 24px; border-radius: 16px; }
+}
+
 /* PIN ----------------------------------------------------------------- */
 
 #s-pin { align-items: center; justify-content: center; gap: 20px; }

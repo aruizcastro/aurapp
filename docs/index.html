@@ -218,6 +218,25 @@
   <p class="foresthint" id="forestHint"></p>
 </div>
 
+<!-- Worm ---------------------------------------------------------------- -->
+<div class="screen" id="s-worm">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <div class="grow"></div>
+    <div class="dots" id="wormDots"></div>
+  </div>
+  <div class="wormrow">
+    <div class="wormboard"><svg id="wormSvg" aria-label="el gusanito"></svg></div>
+    <div class="pad4">
+      <button class="dirbtn up"    data-dir="0,-1" aria-label="Arriba">▲</button>
+      <button class="dirbtn left"  data-dir="-1,0" aria-label="Izquierda">◀</button>
+      <button class="dirbtn right" data-dir="1,0"  aria-label="Derecha">▶</button>
+      <button class="dirbtn down"  data-dir="0,1"  aria-label="Abajo">▼</button>
+      <button class="dirbtn mid" id="wormReset" aria-label="Empezar de nuevo">↺</button>
+    </div>
+  </div>
+</div>
+
 <!-- PIN --------------------------------------------------------------- -->
 <div class="screen" id="s-pin">
   <h2>PIN de papá o mamá</h2>
@@ -301,6 +320,7 @@
 <script src="camera.js"></script>
 <script src="story.js"></script>
 <script src="forest.js"></script>
+<script src="worm.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

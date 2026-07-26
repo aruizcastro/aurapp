@@ -60,7 +60,8 @@ const EXTRA_WORLDS = [
   { id: 'pets',   name: 'Amigos',    sub: 'Capi, Michi y Coneja',  icon: '🐹' },
   { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷' },
   { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺' },
-  { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' }
+  { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' },
+  { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' }
 ];
 
 function applyTheme(id) {
@@ -183,6 +184,7 @@ function go(name) {
   if (name === 'camera') openCamera();
   if (name === 'story') openStory();
   if (name === 'forest') openForest();
+  if (name === 'worm') openWorm();
   if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
@@ -1170,6 +1172,67 @@ $('#forestAgain').onclick = () => {
   $('#forestAsk').hidden = false;
   $('#forestHint').textContent = 'Pregúntale si ya está listo.';
 };
+
+// ---------------------------------------------------------------- worm
+
+function openWorm() {
+  wormInit($('#wormSvg'));
+  renderWormDots();
+}
+
+function renderWormDots() {
+  const host = $('#wormDots');
+  const s = wormState();
+  host.innerHTML = '';
+  for (let i = 0; i < s.total; i++) {
+    const dot = document.createElement('i');
+    if (i < s.eaten) dot.className = 'on';
+    host.appendChild(dot);
+  }
+}
+
+function wormGo(dc, dr) {
+  const result = wormStep(dc, dr);
+  if (result === 'ate' || result === 'done') renderWormDots();
+  return result;
+}
+
+/* A tap takes one step; holding the button keeps it walking. The first
+   repeat waits longer than the rest, so a normal tap never turns into two
+   steps by accident. */
+(function bindWormPad() {
+  $$('.dirbtn[data-dir]').forEach(btn => {
+    const [dc, dr] = btn.dataset.dir.split(',').map(Number);
+    let firstTimer = null;
+    let repeatTimer = null;
+
+    const stop = () => {
+      clearTimeout(firstTimer);
+      clearInterval(repeatTimer);
+      firstTimer = repeatTimer = null;
+    };
+
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      btn.setPointerCapture(e.pointerId);
+      if (wormGo(dc, dr) === 'done') return;
+
+      firstTimer = setTimeout(() => {
+        repeatTimer = setInterval(() => {
+          if (wormGo(dc, dr) === 'done') stop();
+        }, 240);
+      }, 420);
+    });
+
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+      btn.addEventListener(ev, stop));
+  });
+
+  $('#wormReset').onclick = () => {
+    wormReset();
+    renderWormDots();
+  };
+})();
 
 // ----------------------------------------------------------------- PIN
 

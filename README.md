@@ -30,7 +30,11 @@ En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde
 
 **El bosque.** El juego tradicional de preguntarle al lobo si ya está listo. Cada toque le pone una prenda más — siete en total — y al terminar sale corriendo y los tres amigos se dispersan muertos de risa. El botón nunca cambia de forma, así que la única pista de cuánto falta es mirar al lobo: la espera es el juego.
 
-**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, Fotos, El lobo, El bosque— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
+**El gusanito.** Un juego de comer naranjas por un tablero de 8 × 6. Se mueve **un paso por cada toque** en vez de deslizarse con un temporizador: eso es lo que lo hace jugable a los 4 años, porque no hay reflejos ni prisa y puede pensar todo lo que quiera. Sosteniendo el botón camina solo. Crece con cada naranja, y al comerse la última sonríe con la boca abierta.
+
+No se puede perder. Las paredes lo detienen sin castigo, se atraviesa a sí mismo, y no hay reloj. El único final es feliz.
+
+**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, Fotos, El lobo, El bosque, El gusanito— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
 
 **Colores de la app.** Tres paletas en el panel de padres: Unicornio (rosados y morados, la de siempre), Mar (azules y verdes) y Bosque (verdes y tierra). Cambia fondos, botones, acentos y mosaicos. Los personajes y los dibujos para colorear no cambian: son ilustración, no interfaz.
 
@@ -110,6 +114,7 @@ docs/
 ├── camera.js                Disfraces y guardado de fotos en IndexedDB
 ├── story.js                 El lobo y los tres cerditos
 ├── forest.js                Juguemos en el bosque (reusa el lobo de story.js)
+├── worm.js                  El gusanito que come naranjas
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512
