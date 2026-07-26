@@ -34,7 +34,11 @@ En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde
 
 No se puede perder. Las paredes lo detienen sin castigo, se atraviesa a sí mismo, y no hay reloj. El único final es feliz.
 
-**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, Fotos, El lobo, El bosque, El gusanito— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
+**Los números.** Arrastrar un número al grupo que tiene esa cantidad, del 1 al 9. Cada ronda muestra un numeral y **tres grupos**: uno correcto y dos señuelos con cantidades cercanas —el 4 compite contra 3 y 5— para que tenga que contar en vez de mirar cuál montón se ve más grande. Nueve tipos de objeto distintos: balones, estrellas, flores, manzanas, pececitos, mariposas, corazones, hojitas y patitos.
+
+Soltar el número en el grupo equivocado no cuesta nada: la tarjeta vuelve a su sitio y ya. Sin pitido, sin puntaje, sin nada perdido. Contar es el ejercicio, y regañarla por contar mal es la forma más rápida de que deje de contar.
+
+**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, Fotos, El lobo, El bosque, El gusanito, Los números— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
 
 **Colores de la app.** Tres paletas en el panel de padres: Unicornio (rosados y morados, la de siempre), Mar (azules y verdes) y Bosque (verdes y tierra). Cambia fondos, botones, acentos y mosaicos. Los personajes y los dibujos para colorear no cambian: son ilustración, no interfaz.
 
@@ -115,6 +119,7 @@ docs/
 ├── story.js                 El lobo y los tres cerditos
 ├── forest.js                Juguemos en el bosque (reusa el lobo de story.js)
 ├── worm.js                  El gusanito que come naranjas
+├── counting.js              Los números del 1 al 9 y sus grupos
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512

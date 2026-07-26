@@ -447,6 +447,45 @@ html, body {
   .dirbtn { font-size: 24px; border-radius: 16px; }
 }
 
+/* Counting -------------------------------------------------------------- */
+
+#s-count { background: var(--bg-alt); }
+
+.countboard {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: stretch;
+}
+.countcard {
+  background: #fff; border: 5px solid transparent; border-radius: 22px;
+  padding: 12px; display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.countcard svg { display: block; width: 100%; height: 100%; max-height: 100%; }
+.countcard.over { border-color: var(--accent); }
+.countcard.right { border-color: var(--ok); background: #E8F6EE; }
+
+.countrow { flex: 0 0 auto; display: flex; align-items: center; gap: 18px; }
+
+.numchip {
+  width: 112px; height: 112px; flex: 0 0 auto; cursor: grab;
+  border-radius: 26px; background: var(--accent); color: #fff;
+  display: grid; place-items: center; touch-action: none;
+}
+.numchip svg { width: 100%; height: 100%; }
+.numchip.dragging { position: fixed; z-index: 50; pointer-events: none; }
+.numchip.hidden { visibility: hidden; }
+
+.counthint { margin: 0; font-size: 20px; font-weight: 500; color: var(--ink); }
+
+@media (orientation: portrait) {
+  .countboard { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .numchip { width: 88px; height: 88px; border-radius: 20px; }
+  .counthint { font-size: 16px; }
+  .countcard { padding: 8px; border-width: 4px; border-radius: 18px; }
+}
+
 /* PIN ----------------------------------------------------------------- */
 
 #s-pin { align-items: center; justify-content: center; gap: 20px; }

@@ -61,7 +61,8 @@ const EXTRA_WORLDS = [
   { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷' },
   { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺' },
   { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' },
-  { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' }
+  { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' },
+  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢' }
 ];
 
 function applyTheme(id) {
@@ -185,6 +186,7 @@ function go(name) {
   if (name === 'story') openStory();
   if (name === 'forest') openForest();
   if (name === 'worm') openWorm();
+  if (name === 'count') openCounting();
   if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
@@ -1233,6 +1235,138 @@ function wormGo(dc, dr) {
     renderWormDots();
   };
 })();
+
+// ------------------------------------------------------------ counting
+
+let countN = 1;
+let countBusy = false;
+
+function openCounting() {
+  countN = 1;
+  countBusy = false;
+  renderCountRound();
+}
+
+function renderCountDots() {
+  const host = $('#countDots');
+  host.innerHTML = '';
+  for (let i = 1; i <= COUNT_MAX; i++) {
+    const dot = document.createElement('i');
+    if (i < countN) dot.className = 'on';
+    host.appendChild(dot);
+  }
+}
+
+function renderCountRound() {
+  const round = countRound(countN);
+  const board = $('#countBoard');
+  board.innerHTML = '';
+
+  round.options.forEach(opt => {
+    const card = document.createElement('div');
+    card.className = 'countcard';
+    card.dataset.count = opt.count;
+    card.innerHTML = countGroupSVG(round.item, opt.count);
+    board.appendChild(card);
+  });
+
+  const chip = $('#numChip');
+  chip.innerHTML = countNumeralSVG(countN);
+  chip.classList.remove('hidden');
+  chip.style.left = chip.style.top = '';
+
+  $('#countHint').textContent = 'Lleva el ' + countN + ' a los ' + round.item.name + '.';
+  renderCountDots();
+}
+
+/* Drag the numeral onto a group. A wrong drop just floats the card home:
+   no buzzer, no score, nothing lost. The counting is the exercise. */
+(function bindCounting() {
+  const chip = $('#numChip');
+  let dragging = false;
+  let home = null;
+  let grab = { x: 0, y: 0 };
+
+  const cardUnder = (x, y) =>
+    $$('.countcard').find(card => {
+      const r = card.getBoundingClientRect();
+      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    });
+
+  chip.addEventListener('pointerdown', (e) => {
+    if (countBusy) return;
+    e.preventDefault();
+    const r = chip.getBoundingClientRect();
+    home = r;
+    grab = { x: e.clientX - r.left, y: e.clientY - r.top };
+    dragging = true;
+    chip.setPointerCapture(e.pointerId);
+    chip.classList.add('dragging');
+    chip.style.width = r.width + 'px';
+    chip.style.height = r.height + 'px';
+    chip.style.left = r.left + 'px';
+    chip.style.top = r.top + 'px';
+  });
+
+  chip.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    chip.style.left = (e.clientX - grab.x) + 'px';
+    chip.style.top = (e.clientY - grab.y) + 'px';
+
+    const over = cardUnder(e.clientX, e.clientY);
+    $$('.countcard').forEach(c => c.classList.toggle('over', c === over));
+  });
+
+  const drop = (e) => {
+    if (!dragging) return;
+    dragging = false;
+    const over = cardUnder(e.clientX, e.clientY);
+    $$('.countcard').forEach(c => c.classList.remove('over'));
+
+    // The card always goes home; only a correct drop changes anything else.
+    chip.classList.remove('dragging');
+    chip.style.width = chip.style.height = '';
+    chip.style.left = chip.style.top = '';
+
+    if (!over || Number(over.dataset.count) !== countN) return;
+
+    countBusy = true;
+    over.classList.add('right');
+    chip.classList.add('hidden');
+    countCheer(over);
+
+    setTimeout(() => {
+      countBusy = false;
+      if (countN >= COUNT_MAX) {
+        countN = 1;
+        $('#countHint').textContent = '¡Contaste hasta ' + COUNT_MAX + '! Otra vez.';
+      } else {
+        countN++;
+      }
+      renderCountRound();
+    }, 1100);
+  };
+
+  ['pointerup', 'pointercancel'].forEach(ev => chip.addEventListener(ev, drop));
+})();
+
+function countCheer(card) {
+  const r = card.getBoundingClientRect();
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('div');
+    star.textContent = '⭐️';
+    star.style.cssText = 'position:fixed;z-index:60;pointer-events:none;font-size:30px;' +
+      'left:' + (r.left + r.width * (0.15 + i * 0.18)) + 'px;top:' + (r.top + r.height * 0.5) + 'px;' +
+      'transition:all .8s;opacity:0';
+    document.body.appendChild(star);
+    setTimeout(() => {
+      star.style.opacity = '1';
+      star.style.transform = 'translateY(-60px) scale(1.4)';
+      setTimeout(() => { star.style.opacity = '0'; setTimeout(() => star.remove(), 500); }, 500);
+    }, i * 90);
+  }
+}
 
 // ----------------------------------------------------------------- PIN
 
