@@ -1882,14 +1882,22 @@ go('worlds');
 
 // ----------------------------------------------------------- mosquitos
 
+let bugCheerTimer = 0;
+
 function openBugs() {
   bugInit($('#bugSvg'));
+  clearTimeout(bugCheerTimer);
   $('#bugCheer').hidden = true;
   renderBugDots();
   bugOnDone(() => {
     renderBugDots();
-    $('#bugCheer').textContent = '🎉';
-    $('#bugCheer').hidden = false;
+    const cheer = $('#bugCheer');
+    cheer.textContent = '🎉';
+    cheer.hidden = false;
+    // It congratulates her and then gets out of the way on its own. Nothing
+    // she does can leave it stuck over the board.
+    clearTimeout(bugCheerTimer);
+    bugCheerTimer = setTimeout(() => { cheer.hidden = true; }, 2200);
   });
 }
 
@@ -1908,6 +1916,7 @@ function wireBugs() {
   $('#bugSvg').addEventListener('pointerdown', () => setTimeout(renderBugDots, 0));
   $('#bugReset').onclick = () => {
     bugReset();
+    clearTimeout(bugCheerTimer);
     $('#bugCheer').hidden = true;
     renderBugDots();
   };
