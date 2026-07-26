@@ -65,7 +65,7 @@ const SOUND_LEVEL = {
 /* The looping beds. Loud enough to be there, quiet enough to talk over. */
 const SOUND_BED = { buzz: 0.22, water: 0.16 };
 
-let soundOn = true;          // the parent's switch
+let soundOn = false;         // the parent's switch — off until they turn it on
 let soundCtx = null;         // the WebAudio context, made on first touch
 let soundReady = false;
 const soundBuffers = {};     // name → AudioBuffer, when a real file loaded

@@ -24,6 +24,20 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+/* touch-action: manipulation turns off double-tap-to-zoom on anything that can
+   be pressed. Without it the browser waits about 300 ms after each tap to see
+   whether a second one is coming — and if it is, it cancels the first. Tapping
+   harder and faster, which is what anyone does when a button seems dead, is
+   the one thing that makes it worse. It is why the house button needed
+   pressing several times.
+
+   The same rule pairs with the :active states below: with the tap highlight
+   turned off, a button that does not visibly move is a button you cannot tell
+   you have pressed. */
+button, label, .tile, .door, .sw, .card, [data-go] { touch-action: manipulation; }
+
+.round:active, .tile:active, .cta:active, .btn:active { transform: scale(.94); }
+
 /* The browser hides [hidden] elements with `display: none` from its own
    stylesheet, which any class rule of ours that sets `display` silently beats.
    That is how the 🎉 stayed on screen after the mosquitoes were caught — and

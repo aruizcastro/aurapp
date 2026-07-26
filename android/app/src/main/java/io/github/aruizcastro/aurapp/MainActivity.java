@@ -116,24 +116,38 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) goFullScreen();
-    }
+    /*
+     * Deliberately not re-hiding the bars here. Re-asserting full screen on
+     * every focus change is what makes an app fight the person using it: they
+     * swipe the bar up, the app hides it again, and the Home button never gets
+     * pressed. The bars come back full screen on the next onResume, which is
+     * the moment she comes back to play.
+     */
 
-    /** Immersive: no status bar, no navigation bar, and they come back on a swipe. */
+    /**
+     * Full screen, but not a trap.
+     *
+     * This used to use IMMERSIVE_STICKY, and that is why the phone's Home
+     * button needed pressing several times: with sticky immersive mode the
+     * navigation bar is hidden, the first press only makes it reappear for a
+     * moment, and only the second one actually reaches Home. It feels like the
+     * phone is ignoring you.
+     *
+     * Plain IMMERSIVE reveals the bars on the first swipe or press and leaves
+     * them there until the app is resumed again. The game still opens full
+     * screen; a grown-up who wants out gets out on the first try.
+     *
+     * Keeping her inside the app is screen pinning's job, not this flag's.
+     */
     private void goFullScreen() {
         View decor = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            decor.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
+        decor.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
     @Override

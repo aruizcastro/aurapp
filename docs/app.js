@@ -155,7 +155,12 @@ const PET_DEFAULT = () => {
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
                    theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT(),
                    // '' means «whatever the device speaks»; a code pins it.
-                   lang: '', sound: true };
+                   lang: '',
+                   /* Silent until the parent says otherwise. An app that
+                      starts making noise on a phone that was quiet a second
+                      ago is the fastest way to get muted at the system level —
+                      or uninstalled. It is one switch away in the panel. */
+                   sound: false };
 
 let state = load();
 
@@ -289,10 +294,31 @@ function go(name) {
   if (name !== 'player') stopPlayer();
 }
 
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-go]');
-  if (btn) go(btn.dataset.go);
-});
+/* Navigation happens on the release of the touch, not on the click the
+   browser synthesises afterwards.
+
+   On Android that synthesised click can arrive 300 ms late, and a second tap
+   inside that window cancels it altogether — so the house button appeared to
+   ignore her while she was inside a game with twenty mosquitoes keeping the
+   main thread busy. Acting on pointerup removes the wait entirely.
+
+   The click listener stays for keyboards and for anything that does not send
+   pointer events, guarded so a normal touch does not navigate twice. */
+let navHandledAt = 0;
+
+function navFrom(e) {
+  const btn = e.target.closest && e.target.closest('[data-go]');
+  if (!btn) return;
+  if (e.type === 'click' && Date.now() - navHandledAt < 700) return;
+  if (e.type === 'pointerup') {
+    if (e.isPrimary === false) return;
+    navHandledAt = Date.now();
+  }
+  go(btn.dataset.go);
+}
+
+document.addEventListener('pointerup', navFrom);
+document.addEventListener('click', navFrom);
 
 // -------------------------------------------------------------- worlds
 
@@ -1646,7 +1672,7 @@ function renderParents() {
   renderThemePicker();
   renderLangPicker();
   renderLimitOptions();
-  $('#soundOn').checked = state.sound !== false;
+  $('#soundOn').checked = state.sound === true;
   $('#videoCount').textContent = state.videos.length;
   $('#emptyHint').style.display = state.videos.length ? 'none' : '';
 
@@ -2020,7 +2046,7 @@ $('#soundOn').onchange = () => {
 /* The audio context can only be created inside a gesture, so the first touch
    anywhere in the app wakes it — and then never again. */
 document.addEventListener('pointerdown', function wake() {
-  soundEnabled(state.sound !== false);
+  soundEnabled(state.sound === true);
   soundWake();
   document.removeEventListener('pointerdown', wake);
 }, { once: true });
