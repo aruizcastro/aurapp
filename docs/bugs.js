@@ -14,8 +14,9 @@
 
 'use strict';
 
-const BUG_W = 400;
-const BUG_H = 300;
+/* Handed over by the page, so the board is the shape of the screen. */
+let BUG_W = 400;
+let BUG_H = 300;
 const BUG_COUNT = 20;      // the jar counts all the way to twenty
 /* Tap radius. Still bigger than the drawing, but smaller than it was with
    eight mosquitoes: with twenty on the board a huge radius meant every tap
@@ -130,7 +131,12 @@ function bugArt(colors, dizzy) {
 /* The jar in the corner: how many she has caught, as a numeral. Same idea as
    the bucket in the fishing game — the number is the reward, and it is the
    part she is actually learning. Empty, it shows nothing rather than a zero. */
-const BUG_JAR = { x: 312, y: 210, w: 70, h: 70 };
+let BUG_JAR = { x: 312, y: 210, w: 70, h: 70 };
+
+function bugLayout() {
+  const w = 70, h = 70;
+  BUG_JAR = { x: BUG_W - w - 18, y: BUG_H - h - 20, w: w, h: h };
+}
 
 function bugJarArt(n) {
   const J = BUG_JAR, O = BUG_OUTLINE;
@@ -176,8 +182,10 @@ function bugState() {
   return { caught: bugCaught, total: BUG_COUNT, done: bugCaught >= BUG_COUNT };
 }
 
-function bugInit(svgEl) {
+function bugInit(svgEl, w, h) {
   bugSvg = svgEl;
+  if (w && h) { BUG_W = w; BUG_H = h; }
+  bugLayout();
   bugSvg.setAttribute('viewBox', '0 0 ' + BUG_W + ' ' + BUG_H);
 
   // One listener on the board, not one per mosquito: the bugs move, and a
@@ -192,7 +200,8 @@ function bugReset() {
   bugs = [];
   // Same as the lake: a loose grid keeps twenty of them from starting in a
   // heap. They drift apart from there on their own.
-  const cols = 5, rows = Math.ceil(BUG_COUNT / cols);
+  const cols = BUG_W >= BUG_H ? 5 : 4;
+  const rows = Math.ceil(BUG_COUNT / cols);
   const cellW = (BUG_W - BUG_MARGIN * 2) / cols, cellH = (BUG_H - BUG_MARGIN * 2) / rows;
   for (let i = 0; i < BUG_COUNT; i++) {
     const col = i % cols, row = Math.floor(i / cols);
@@ -208,6 +217,8 @@ function bugReset() {
   }
   bugBuild();
   bugStart();
+  // The buzzing starts with the round and stops when the last one is caught.
+  if (typeof soundStartLoop === 'function') soundStartLoop('buzz');
 }
 
 /* Build the nodes once and keep a handle on each <g>. */
@@ -289,6 +300,9 @@ function bugStart() {
 function bugStop() {
   if (bugRaf) cancelAnimationFrame(bugRaf);
   bugRaf = 0;
+  // Leaving the screen must silence it too, or the buzzing follows her into
+  // the drawing world.
+  if (typeof soundStopLoop === 'function') soundStopLoop('buzz');
 }
 
 // ------------------------------------------------------------------ tap
@@ -329,9 +343,12 @@ function bugTap(ev) {
   bugCaught++;
   bugDrawJar();
   bugPoof(best.x, best.y);
+  if (typeof soundPlay === 'function') soundPlay('pop');
 
   if (bugCaught >= BUG_COUNT) {
     bugStop();
+    if (typeof soundStopLoop === 'function') soundStopLoop('buzz');
+    if (typeof soundPlay === 'function') soundPlay('cheer');
     if (bugDoneCb) bugDoneCb();
   }
 }

@@ -10,8 +10,11 @@
 
 'use strict';
 
-const FISH_W = 440;
-const FISH_H = 300;
+/* The board's size in game units. Not constants: the page measures the space
+   it has and hands the numbers over, so the lake is the shape of the screen
+   instead of a fixed rectangle floating in the middle of it. */
+let FISH_W = 440;
+let FISH_H = 300;
 const FISH_TOTAL = 20;          // the bucket counts all the way to twenty
 const FISH_HIT = 32;            // generous, but not «anywhere wins» — see bugs.js
 const FISH_OUTLINE = '#2B3A6B';
@@ -26,9 +29,16 @@ const FISH_COLORS = [
   { id: 'v', body: '#B57BE0', fin: '#9B5FCC', stripes: true }
 ];
 
-// The water sits under a strip of sky, and the bucket stands on the bank.
-const FISH_WATER_TOP = 74;
-const FISH_BUCKET = { x: 352, y: 202, w: 76, h: 78 };
+// The waterline and the bucket follow the board rather than sitting at fixed
+// coordinates: on a tall screen the sky must not eat a third of the lake.
+let FISH_WATER_TOP = 74;
+let FISH_BUCKET = { x: 352, y: 202, w: 76, h: 78 };
+
+function fishLayout() {
+  FISH_WATER_TOP = Math.round(Math.min(90, Math.max(46, FISH_H * 0.22)));
+  const w = 76, h = 78;
+  FISH_BUCKET = { x: FISH_W - w - 12, y: FISH_H - h - 20, w: w, h: h };
+}
 
 // ------------------------------------------------------------------ art
 
@@ -234,8 +244,10 @@ function fishState() {
 
 function fishOnDone(fn) { fishDoneCb = fn; }
 
-function fishInit(svgEl) {
+function fishInit(svgEl, w, h) {
   fishSvg = svgEl;
+  if (w && h) { FISH_W = w; FISH_H = h; }
+  fishLayout();
   fishSvg.setAttribute('viewBox', '0 0 ' + FISH_W + ' ' + FISH_H);
   fishSvg.onpointerdown = fishTap;
   fishReset();
@@ -247,7 +259,8 @@ function fishReset() {
   fishes = [];
   // Laid out on a loose grid with a random nudge: twenty at pure random pile
   // up in one corner and leave the rest of the lake empty.
-  const cols = 5, rows = Math.ceil(FISH_TOTAL / cols);
+  const cols = FISH_W >= FISH_H ? 5 : 3;
+  const rows = Math.ceil(FISH_TOTAL / cols);
   const cellW = (FISH_W - 60) / cols, cellH = (FISH_H - FISH_WATER_TOP - 60) / rows;
   for (let i = 0; i < FISH_TOTAL; i++) {
     const dir = Math.random() < 0.5 ? -1 : 1;

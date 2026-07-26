@@ -11,8 +11,10 @@
 
 'use strict';
 
-const MATCH_W = 640;
-const MATCH_H = 440;
+/* Handed over by the page: the board is the shape of the screen, not a fixed
+   rectangle floating in the middle of it. */
+let MATCH_W = 640;
+let MATCH_H = 440;
 const MATCH_ROWS = 4;
 
 const MATCH_OUTLINE = '#4A3A2C';
@@ -21,12 +23,29 @@ const MATCH_INK = '#26215C';
 // One colour per row, so two lines crossing the middle stay tellable apart.
 const MATCH_HUES = ['#D4537E', '#2F9E6E', '#3E7BD6', '#E08A1E'];
 
-const MATCH_LEFT = { x: 16, w: 288 };
-const MATCH_RIGHT = { x: 512, w: 112 };
-const MATCH_ROW_H = 100;
-const MATCH_CARD_H = 88;
+let MATCH_LEFT = { x: 16, w: 288 };
+let MATCH_RIGHT = { x: 512, w: 112 };
+let MATCH_ROW_H = 100;
+let MATCH_CARD_H = 88;
 
-function matchRowY(i) { return i * MATCH_ROW_H + MATCH_ROW_H / 2 + 10; }
+/* The four rows always divide the whole height, and the numeral column keeps a
+   sensible width whatever is left over goes to the groups. On a narrow screen
+   that column is the one that must not shrink: a numeral she cannot read is
+   the game gone. */
+function matchLayout() {
+  MATCH_ROW_H = MATCH_H / MATCH_ROWS;
+  MATCH_CARD_H = Math.round(MATCH_ROW_H * 0.84);
+
+  const pad = Math.round(Math.min(18, MATCH_W * 0.03));
+  const rightW = Math.round(Math.min(130, Math.max(74, MATCH_W * 0.19)));
+  MATCH_RIGHT = { x: MATCH_W - rightW - pad, w: rightW };
+
+  // The gap in the middle is where the lines live; it needs room to be read.
+  const gap = Math.round(Math.max(60, MATCH_W * 0.14));
+  MATCH_LEFT = { x: pad, w: Math.max(80, MATCH_RIGHT.x - gap - pad) };
+}
+
+function matchRowY(i) { return i * MATCH_ROW_H + MATCH_ROW_H / 2; }
 
 // Where a line starts and ends: just outside each card, not at its centre, so
 // the stroke never runs underneath the drawing.
@@ -47,8 +66,10 @@ function matchState() {
 
 function matchOnDone(fn) { matchDoneCb = fn; }
 
-function matchInit(svgEl) {
+function matchInit(svgEl, w, h) {
   matchSvg = svgEl;
+  if (w && h) { MATCH_W = w; MATCH_H = h; }
+  matchLayout();
   matchSvg.setAttribute('viewBox', '0 0 ' + MATCH_W + ' ' + MATCH_H);
   matchSvg.onpointerdown = matchDown;
   matchReset();
@@ -147,7 +168,9 @@ function matchDraw() {
          (row.linked ? row.hue : '#E4E0F0') + '" stroke-width="4"/>';
     s += '<text x="' + (MATCH_RIGHT.x + MATCH_RIGHT.w / 2) + '" y="' + (y + MATCH_CARD_H / 2) +
          '" text-anchor="middle" dominant-baseline="central" ' +
-         'font-family="ui-rounded, system-ui, sans-serif" font-size="58" font-weight="700" fill="' +
+         'font-family="ui-rounded, system-ui, sans-serif" font-size="' +
+         Math.round(Math.min(MATCH_CARD_H * 0.62, MATCH_RIGHT.w * 0.62)) +
+         '" font-weight="700" fill="' +
          (row.linked ? '#fff' : MATCH_INK) + '">' + row.count + '</text>';
     const b = matchEnd(slot);
     s += '<circle cx="' + b.x + '" cy="' + b.y + '" r="9" fill="' +

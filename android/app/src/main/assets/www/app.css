@@ -478,7 +478,7 @@ html, body {
   background: #E8F4DC; border-radius: 20px; overflow: hidden;
   display: flex; align-items: center;
 }
-.wormboard svg { display: block; width: 100%; height: auto; }
+.wormboard svg { display: block; width: 100%; height: 100%; }
 
 /* A real cross, not a row: at four the arrows have to sit where they point. */
 .pad4 {
@@ -695,23 +695,19 @@ html, body {
 
 /* Mosquitos ------------------------------------------------------------ */
 
-.bugwrap {
-  flex: 1; min-height: 0; position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
+.bugwrap { flex: 1; min-height: 0; min-width: 0; position: relative; display: flex; }
 
-/* The board is capped by height as well as width. Without the max-height a
-   phone held sideways gets a board taller than the screen: the width fits, the
-   height does not, and the bottom third of the game is off the display. An SVG
-   with a viewBox has an intrinsic ratio, so capping the height shrinks the
-   width to match on its own. */
+/* The board fills the space it is given, in both directions. It used to keep a
+   fixed 4:3 shape, which on a phone held upright left a strip of game floating
+   in the middle of an empty screen. Now the game is told how tall and wide it
+   actually is and lays itself out to fit — see boardBox() in app.js. */
 .bugboard {
-  width: 100%; max-width: 780px; max-height: 100%; min-height: 0;
+  width: 100%; height: 100%; min-height: 0; min-width: 0;
   border-radius: 22px; overflow: hidden;
   background: #E9F3FA; box-shadow: 0 4px 0 rgba(38,33,92,.10);
   touch-action: none;              /* the tap must not scroll or zoom the page */
 }
-.bugboard svg { display: block; width: 100%; height: auto; max-height: 100%; }
+.bugboard svg { display: block; width: 100%; height: 100%; }
 
 /* The wings flap on the compositor instead of in the animation loop.
    Each pair pivots at the shoulder, so they sweep rather than squash. */
@@ -755,17 +751,14 @@ html, body {
 
 /* Une con la flecha ----------------------------------------------------- */
 
-.matchwrap {
-  flex: 1; min-height: 0; position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
+.matchwrap { flex: 1; min-height: 0; min-width: 0; position: relative; display: flex; }
 .matchboard {
-  width: 100%; max-width: 900px; max-height: 100%; min-height: 0;
+  width: 100%; height: 100%; min-height: 0; min-width: 0;
   border-radius: 22px; padding: 10px;
   background: #fff; box-shadow: 0 4px 0 rgba(38,33,92,.10);
   touch-action: none;            /* the finger paints a line, it does not scroll */
 }
-.matchboard svg { display: block; width: 100%; height: auto; max-height: 100%; }
+.matchboard svg { display: block; width: 100%; height: 100%; }
 
 /* On a phone held upright the header eats a lot of a short screen, so the
    boards get their padding back. */

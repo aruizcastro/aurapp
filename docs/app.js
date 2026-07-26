@@ -155,7 +155,7 @@ const PET_DEFAULT = () => {
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
                    theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT(),
                    // '' means «whatever the device speaks»; a code pins it.
-                   lang: '' };
+                   lang: '', sound: true };
 
 let state = load();
 
@@ -237,6 +237,28 @@ function videosIn(worldID) {
 
 let current = 'worlds';
 let helpCameFrom = 'worlds';
+
+/* How big is this board, in game units?
+
+   The SVG games used to be authored at a fixed size — 440 by 300, say — and
+   then letterboxed into whatever space was going. On a phone held upright that
+   left a strip of game floating in the middle of an empty screen, which is
+   exactly the complaint she would make first.
+
+   So instead the game asks the page how much room it has, and lays itself out
+   to fill it. The short side is always `unit` units long and the long side
+   grows from there, which keeps everything — a fish, a mosquito, a numeral —
+   the same *apparent* size on every screen, while the board itself changes
+   shape. The ratio is clamped so a very long screen does not produce a board
+   so wide that the game is lost in it. */
+function boardBox(el, unit) {
+  const r = el ? el.getBoundingClientRect() : { width: 0, height: 0 };
+  const w = r.width || 440, h = r.height || 300;
+  const ratio = Math.min(2.4, Math.max(1 / 2.4, w / h));
+  return ratio >= 1
+    ? { w: Math.round(unit * ratio), h: unit }
+    : { w: unit, h: Math.round(unit / ratio) };
+}
 
 function go(name) {
   if (name === 'help') helpCameFrom = current === 'help' ? helpCameFrom : current;
@@ -1619,6 +1641,7 @@ function renderParents() {
   renderThemePicker();
   renderLangPicker();
   renderLimitOptions();
+  $('#soundOn').checked = state.sound !== false;
   $('#videoCount').textContent = state.videos.length;
   $('#emptyHint').style.display = state.videos.length ? 'none' : '';
 
@@ -1674,7 +1697,7 @@ function renderWorldToggles() {
     row.className = 'worldrow';
     row.innerHTML = '<span class="ico">' + extra.icon + '</span><b></b>' +
                     '<input type="checkbox"' + (state.hidden[extra.id] ? '' : ' checked') + '>';
-    row.querySelector('b').textContent = extra.name;
+    row.querySelector('b').textContent = t('x.' + extra.id);
     row.querySelector('input').onchange = (e) => {
       if (e.target.checked) delete state.hidden[extra.id];
       else state.hidden[extra.id] = true;
@@ -1983,6 +2006,20 @@ if ('serviceWorker' in navigator) {
 }
 
 rollover();
+$('#soundOn').onchange = () => {
+  state.sound = $('#soundOn').checked;
+  save();
+  soundEnabled(state.sound);
+};
+
+/* The audio context can only be created inside a gesture, so the first touch
+   anywhere in the app wakes it — and then never again. */
+document.addEventListener('pointerdown', function wake() {
+  soundEnabled(state.sound !== false);
+  soundWake();
+  document.removeEventListener('pointerdown', wake);
+}, { once: true });
+
 i18nSet(state.lang || i18nDetect());
 i18nApply();
 renderLimitOptions();
@@ -1995,7 +2032,8 @@ go('worlds');
 let bugCheerTimer = 0;
 
 function openBugs() {
-  bugInit($('#bugSvg'));
+  const box = boardBox($('#bugSvg').parentNode, 300);
+  bugInit($('#bugSvg'), box.w, box.h);
   clearTimeout(bugCheerTimer);
   $('#bugCheer').hidden = true;
   renderBugDots();
@@ -2041,7 +2079,8 @@ wireBugs();
 // ------------------------------------------------------- une con la flecha
 
 function openMatch() {
-  matchInit($('#matchSvg'));
+  const box = boardBox($('#matchSvg').parentNode, 440);
+  matchInit($('#matchSvg'), box.w, box.h);
   $('#matchCheer').hidden = true;
   renderMatchDots();
   matchOnDone(() => {
@@ -2085,7 +2124,8 @@ $('#matchReset').onclick = () => {
 // ------------------------------------------------------------- a pescar
 
 function openFish() {
-  fishInit($('#fishSvg'));
+  const box = boardBox($('#fishSvg').parentNode, 300);
+  fishInit($('#fishSvg'), box.w, box.h);
   $('#fishCheer').hidden = true;
   renderFishDots();
   fishOnDone(() => {
@@ -2105,3 +2145,18 @@ $('#fishReset').onclick = () => {
   $('#fishCheer').hidden = true;
   renderFishDots();
 };
+
+
+/* Turning the phone changes the shape of the board, so the open game is dealt
+   again at the new size. Debounced, because Android fires resize several times
+   during a rotation and rebuilding three times in a row is visible. */
+let boardResizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(boardResizeTimer);
+  boardResizeTimer = setTimeout(() => {
+    if (current === 'bugs') openBugs();
+    if (current === 'fish') openFish();
+    if (current === 'match') openMatch();
+    if (current === 'worm') openWorm();
+  }, 180);
+});
