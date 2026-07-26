@@ -261,6 +261,11 @@ function boardBox(el, unit) {
 }
 
 function go(name) {
+  // Every screen change silences the looping sounds. The screen we are opening
+  // starts its own again if it wants one, so this can never leave a game's
+  // sound playing somewhere it does not belong.
+  if (typeof soundStopAll === 'function') soundStopAll();
+
   if (name === 'help') helpCameFrom = current === 'help' ? helpCameFrom : current;
   if (name === 'worlds' && outOfTime()) name = 'timeup';
   $$('.screen').forEach(s => s.classList.remove('on'));

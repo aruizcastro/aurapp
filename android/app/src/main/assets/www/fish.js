@@ -339,6 +339,7 @@ function fishStep(dt) {
         if (typeof soundPlay === 'function') soundPlay('splash');
         if (fishCaught >= FISH_TOTAL) {
           fishStop();
+          if (typeof soundStopAll === 'function') soundStopAll();
           if (typeof soundPlay === 'function') soundPlay('cheer');
           if (fishDoneCb) fishDoneCb();
         }

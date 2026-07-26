@@ -21,7 +21,11 @@
        audio/water.wav   the lake — loops too
        audio/pop.mp3     one mosquito caught — very short, under half a second
        audio/splash.mp3  one fish caught
-       audio/cheer.mp3   the round finished */
+       audio/cheer.mp3   the round finished
+       audio/blow.mp3    the wolf huffing at a house
+       audio/crash.mp3   the house coming apart
+       audio/thud.mp3    the brick house holding
+       audio/swish.mp3   the wolf putting on a garment */
 
 'use strict';
 
@@ -34,7 +38,13 @@ const SOUND_FILES = {
   water: 'audio/water.wav',      // the lake, also a loop, also a WAV
   pop:   'audio/pop.mp3',
   splash: 'audio/splash.mp3',
-  cheer: 'audio/cheer.mp3'
+  cheer: 'audio/cheer.mp3',
+
+  // The two folk tales.
+  blow:  'audio/blow.mp3',       // the wolf huffing
+  crash: 'audio/crash.mp3',      // straw and sticks flying
+  thud:  'audio/thud.mp3',       // the brick house holding
+  swish: 'audio/swish.mp3'       // one more garment going on
 };
 
 /* How loud each looping bed sits under the game. The water is quieter than the
@@ -185,6 +195,21 @@ function soundStartLoop(name) {
   soundLoops[name] = { src: a, src2: b, gain: gain };
 }
 
+/* Silence every looping bed at once.
+
+   The rule this enforces: a loop belongs to the screen she is on and to the
+   round she is playing, and nothing else. Asking each game to remember to
+   switch off its own sound works until one of them forgets — and the way it
+   fails is the worst kind, a buzzing that follows her into the drawing world
+   and that a parent can only stop by closing the app.
+
+   So instead of trusting each game, everything stops on every screen change
+   and on the app losing focus, and whichever game is opening starts its own
+   again. Stopping something that is already stopped costs nothing. */
+function soundStopAll() {
+  Object.keys(soundLoops).forEach(soundStopLoop);
+}
+
 function soundStopLoop(name) {
   const loop = soundLoops[name];
   if (!loop) return;
@@ -198,3 +223,14 @@ function soundStopLoop(name) {
   }, 300);
   delete soundLoops[name];
 }
+
+
+/* Android keeps the WebView alive when she presses Home, so without this the
+   mosquitoes go on buzzing behind whatever she opens next. */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    soundStopAll();
+    if (soundCtx && soundCtx.state === 'running') soundCtx.suspend();
+  }
+});
+window.addEventListener('pagehide', soundStopAll);

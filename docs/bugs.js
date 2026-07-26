@@ -347,7 +347,7 @@ function bugTap(ev) {
 
   if (bugCaught >= BUG_COUNT) {
     bugStop();
-    if (typeof soundStopLoop === 'function') soundStopLoop('buzz');
+    if (typeof soundStopAll === 'function') soundStopAll();
     if (typeof soundPlay === 'function') soundPlay('cheer');
     if (bugDoneCb) bugDoneCb();
   }

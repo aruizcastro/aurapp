@@ -335,6 +335,7 @@ let storyRaf = 0;
 let storyLaunched = false;
 let storyPigRun = 0;
 let storyDoneCb = null;
+let storyThudded = false;   // the wolf only lands once per round
 
 function storyBlowLength() { return STORY_ROUNDS[storyRound].falls ? 2.4 : 3.4; }
 
@@ -364,6 +365,11 @@ function storyScene() {
                        Math.max(0, 1 - Math.max(0, storyT - 1.5) / 0.6) : 0;
   const shake = (!cfg.falls && gust > 0.1) ? Math.sin(storyT * 40) * 4 * gust : 0;
   const fall = (!cfg.falls && after) ? Math.max(0, Math.min(1, (storyT - 1.9) / 0.65)) : 0;
+  // The thump of the wolf hitting the ground, once, at the moment he lands.
+  if (fall > 0.9 && !storyThudded) {
+    storyThudded = true;
+    if (typeof soundPlay === 'function') soundPlay('thud');
+  }
 
   let s = '<rect x="0" y="0" width="400" height="300" fill="#BFE4F5"/>';
   s += '<circle cx="44" cy="40" r="24" fill="#FBE08A"/>';
@@ -436,10 +442,19 @@ function storyStep(now) {
   const cfg = STORY_ROUNDS[storyRound];
 
   if (storyPhase === 'inhale') {
-    if (storyT >= 1.0) { storyPhase = 'blow'; storyT = 0; }
+    // The huff starts with the blowing, not with the tap: the second she
+    // spends watching him fill his lungs has to be quiet or the sound and the
+    // picture come apart.
+    if (storyT >= 1.0) {
+      storyPhase = 'blow'; storyT = 0;
+      if (typeof soundPlay === 'function') soundPlay('blow');
+    }
   } else if (storyPhase === 'blow') {
     if (cfg.falls) {
-      if (!storyLaunched && storyT > 0.34) storyLaunchPieces();
+      if (!storyLaunched && storyT > 0.34) {
+        storyLaunchPieces();
+        if (typeof soundPlay === 'function') soundPlay('crash');
+      }
       if (storyLaunched) {
         storyPieces.forEach(p => {
           p.vy += 260 * dt;
@@ -455,6 +470,9 @@ function storyStep(now) {
     if (storyT >= storyBlowLength()) {
       storyPhase = 'done';
       storyDraw();
+      // The brick house gets the solid thud and then the cheer; the other two
+      // already had their crash.
+      if (typeof soundPlay === 'function' && !cfg.falls) soundPlay('cheer');
       if (storyDoneCb) { const cb = storyDoneCb; storyDoneCb = null; cb(); }
       storyRaf = 0;
       return;
@@ -475,6 +493,7 @@ function storySetRound(index) {
   storyStop();
   storyRound = Math.max(0, Math.min(STORY_ROUNDS.length - 1, index));
   storyPhase = 'ready';
+  storyThudded = false;
   storyPieces = storyHousePieces(storyRound);
   storyT = 0;
   storyPigRun = 0;

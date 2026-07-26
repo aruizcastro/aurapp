@@ -9,6 +9,10 @@ Aquí van las grabaciones. Los nombres tienen que ser exactamente estos:
 | `cheer.mp3` | Al terminar la ronda | 1 a 2 segundos. |
 | `water.wav` | Mientras pesca | En bucle, como el zumbido. Muy bajito: es el cuarto donde está, no el juego. **WAV.** |
 | `splash.mp3` | Cuando un pez cae al balde | Medio segundo. Un «plop» de agua. |
+| `blow.mp3` | El lobo soplando la casa | 1,5 s. Aire, no grito. |
+| `crash.mp3` | La casa que sale volando | 1 s. Paja y palitos: muchos golpecitos, no un portazo. |
+| `thud.mp3` | El lobo cae al rebotar en la casa de ladrillos | Medio segundo. Sordo y gracioso. |
+| `swish.mp3` | Cada prenda que se pone el lobo en el bosque | 0,4 s. Roce de tela. |
 
 Mono, MP3 o M4A, cualquier calidad razonable. Van dentro del APK, así que
 conviene que entre los tres no pasen de unos 300 KB.

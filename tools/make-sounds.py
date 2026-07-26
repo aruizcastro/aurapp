@@ -210,6 +210,80 @@ def make_splash(seconds=0.45):
     return splash * 1.5 + bubble * 0.55
 
 
+def make_blow(seconds=1.6):
+    """El lobo soplando. Ruido que crece y se apaga, como un fuelle."""
+    t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
+    rng = np.random.default_rng(21)
+    noise = rng.normal(0, 1, len(t))
+
+    # Un pasabajos que se abre y se vuelve a cerrar: primero se oye la
+    # inhalación sorda, luego el aire silbando, luego se acaba.
+    out = np.zeros_like(noise)
+    acc = 0.0
+    swell = np.sin(np.pi * np.clip(t / seconds, 0, 1)) ** 1.5
+    for i in range(len(noise)):
+        cutoff = 400 + 2600 * swell[i]
+        a = min(1.0, 2 * np.pi * cutoff / SR)
+        acc += a * (noise[i] - acc)
+        out[i] = acc
+    return out * swell
+
+
+def make_crash(seconds=1.1):
+    """La casa que sale volando. Paja y palitos, no ladrillos ni vidrios."""
+    t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
+    rng = np.random.default_rng(33)
+
+    # Un montón de golpecitos secos repartidos en el tiempo: eso es lo que
+    # suena a «se desarmó», mientras que un único golpe suena a portazo.
+    audio = np.zeros_like(t)
+    for start in rng.uniform(0, seconds * 0.55, 26):
+        i = int(start * SR)
+        n = int(0.045 * SR)
+        if i + n >= len(t):
+            continue
+        local = np.arange(n) / SR
+        freq = rng.uniform(180, 900)
+        tick = np.sin(2 * np.pi * freq * local) * np.exp(-local * 70)
+        tick += rng.normal(0, 0.5, n) * np.exp(-local * 130)
+        audio[i:i + n] += tick * rng.uniform(0.4, 1.0)
+
+    # Un soplo de fondo que los une.
+    audio += rng.normal(0, 1, len(t)) * np.exp(-t * 5) * 0.25
+    return audio * np.exp(-t * 1.4)
+
+
+def make_thud(seconds=0.5):
+    """La casa de ladrillos aguantando. Sólido, sordo, tranquilizador."""
+    t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
+    f = 120 * np.exp(-t * 6) + 62
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR)
+    knock = np.random.default_rng(5).normal(0, 1, len(t)) * np.exp(-t * 90) * 0.35
+    return (body + knock) * np.exp(-t * 7)
+
+
+def make_swish(seconds=0.4):
+    """Ropa. Un roce de tela, para cada prenda que se pone el lobo."""
+    t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
+    rng = np.random.default_rng(41)
+    noise = rng.normal(0, 1, len(t))
+
+    # Pasa-banda barato: un pasabajos menos otro más bajo. La tela es ruido
+    # medio-agudo sin graves; con graves suena a viento.
+    def onepole(x, cutoff):
+        out = np.zeros_like(x)
+        a = min(1.0, 2 * np.pi * cutoff / SR)
+        acc = 0.0
+        for i in range(len(x)):
+            acc += a * (x[i] - acc)
+            out[i] = acc
+        return out
+
+    band = onepole(noise, 3800) - onepole(noise, 900)
+    env = np.sin(np.pi * np.clip(t / seconds, 0, 1)) ** 2
+    return band * env
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     print('Generando los sonidos:')
@@ -218,3 +292,7 @@ if __name__ == '__main__':
     write_mp3('cheer.mp3', make_cheer(), '96k')
     write_wav('water.wav', make_water(), 11025, peak=0.55)
     write_mp3('splash.mp3', make_splash(), '96k')
+    write_mp3('blow.mp3', make_blow(), '96k')
+    write_mp3('crash.mp3', make_crash(), '96k')
+    write_mp3('thud.mp3', make_thud(), '96k')
+    write_mp3('swish.mp3', make_swish(), '96k', peak=0.6)

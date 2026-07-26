@@ -217,6 +217,9 @@ function forestAsk(onDone) {
 
   forestWorn = Math.min(FOREST_GARMENTS.length, forestWorn + 1);
   const ready = forestWorn >= FOREST_GARMENTS.length;
+  // One garment, one swish. When the last one goes on, the tale is over and
+  // the cheer takes its place — two sounds at once would be a mess.
+  if (typeof soundPlay === 'function') soundPlay(ready ? 'cheer' : 'swish');
   forestPhase = ready ? 'chase' : 'dressing';
   forestDone = onDone || null;
   forestT = 0;
