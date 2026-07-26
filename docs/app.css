@@ -228,7 +228,16 @@ html, body {
 
 #drawCanvas { width: 100%; height: 100%; display: block; touch-action: none; background: #fff; }
 
-.palette { flex: 0 0 auto; display: flex; gap: 12px; justify-content: center; }
+/* The palette wraps at every width, not just on a narrow phone.
+   Ten swatches in one unbreakable row are 628px wide; a phone held sideways is
+   about 800px, and once the screen padding and the reset button are added the
+   row no longer fits — and since the reset cannot shrink, it is the one that
+   gets pushed off the edge. Wrapping means the palette's smallest possible
+   width is one swatch, so the reset always has room. */
+.palette {
+  flex: 0 0 auto; display: flex; flex-wrap: wrap;
+  gap: 12px; justify-content: center;
+}
 .sw { width: 52px; height: 52px; border-radius: 50%; border: 4px solid transparent; cursor: pointer; padding: 0; }
 .sw.on { border-color: var(--ink); }
 
@@ -429,7 +438,10 @@ html, body {
 .worldrow input { width: 26px; height: 26px; }
 
 .paintrow { flex: 0 0 auto; display: flex; align-items: center; gap: 14px; }
-.paintrow .palette { flex: 1; justify-content: flex-start; }
+.paintrow { flex-wrap: wrap; }
+/* min-width: 0 matters as much as the wrapping: without it a flex item refuses
+   to shrink below its content, whatever else you tell it. */
+.paintrow .palette { flex: 1 1 0; min-width: 0; justify-content: flex-start; }
 
 /* The reset shows the drawing as it will end up — blank. She cannot read
    "empezar de nuevo", but she recognises her own picture with nothing in it. */
@@ -648,7 +660,7 @@ html, body {
   .card .ttl { font-size: 14px; }
   .big { width: 62px; height: 62px; font-size: 24px; }
   .sw { width: 44px; height: 44px; }
-  .palette { gap: 8px; flex-wrap: wrap; }
+  .palette { gap: 8px; }
   .tools { flex-wrap: wrap; }
   .tools .tool { flex: 1 1 40%; font-size: 15px; padding: 12px 4px; }
   .cats button { padding: 9px 16px; font-size: 15px; }
