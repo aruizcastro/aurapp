@@ -14,14 +14,16 @@ const FISH_W = 440;
 const FISH_H = 300;
 const FISH_TOTAL = 10;
 const FISH_HIT = 44;            // generous, like the mosquitoes
-const FISH_OUTLINE = '#2B4055';
+const FISH_OUTLINE = '#2B3A6B';
+const FISH_SCALE = 0.46;   // authored large, drawn small
 
 const FISH_COLORS = [
-  { body: '#F0872E', fin: '#D96F16' },
-  { body: '#E8628F', fin: '#CE4877' },
-  { body: '#F5C543', fin: '#DCA71C' },
-  { body: '#5AB9E0', fin: '#3D9CC4' },
-  { body: '#7ECB74', fin: '#5FAE55' }
+  { id: 'o', body: '#F5941F', fin: '#E07B0C' },
+  { id: 'p', body: '#F58BB8', fin: '#EE6BA3' },
+  { id: 'y', body: '#F7DB1B', fin: '#E5C40A' },
+  { id: 'b', body: '#7FCFF0', fin: '#57B8E4' },
+  { id: 'g', body: '#7CC576', fin: '#5FAE59' },
+  { id: 'v', body: '#B57BE0', fin: '#9B5FCC', stripes: true }
 ];
 
 // The water sits under a strip of sky, and the bucket stands on the bank.
@@ -32,21 +34,55 @@ const FISH_BUCKET = { x: 366, y: 214, w: 66, h: 62 };
 
 function fishArt(c, flip) {
   const O = FISH_OUTLINE;
+  const W = 3.6;
   let s = '<g transform="scale(' + (flip ? -1 : 1) + ' 1)">';
-  // Tail first, so the body outline sits on top of it.
-  s += '<path d="M-20 0 L-40 -15 L-35 0 L-40 15 Z" fill="' + c.fin +
-       '" stroke="' + O + '" stroke-width="3.5" stroke-linejoin="round"/>';
-  s += '<path d="M-2 -13 L6 -24 L14 -12 Z" fill="' + c.fin +
-       '" stroke="' + O + '" stroke-width="3.5" stroke-linejoin="round"/>';
-  s += '<ellipse cx="0" cy="0" rx="26" ry="16" fill="' + c.body +
-       '" stroke="' + O + '" stroke-width="3.5"/>';
-  // Gill line and a scale hint.
-  s += '<path d="M10 -12 Q4 0 10 12" fill="none" stroke="' + O +
-       '" stroke-width="2.6" stroke-linecap="round" opacity=".55"/>';
-  s += '<circle cx="17" cy="-4" r="4.6" fill="#fff" stroke="' + O + '" stroke-width="2.4"/>';
-  s += '<circle cx="18" cy="-4" r="2.1" fill="' + O + '"/>';
-  s += '<path d="M-6 10 Q2 15 10 11" fill="none" stroke="' + O +
-       '" stroke-width="2.4" stroke-linecap="round" opacity=".5"/>';
+
+  // Tail: a wide fan with a notch bitten out of the side that meets the body,
+  // which is the shape that reads as «fish» before any other detail does.
+  s += '<path d="M-34 0 C-46 -8 -62 -26 -78 -36 C-74 -20 -72 -8 -72 0 ' +
+       'C-72 8 -74 20 -78 36 C-62 26 -46 8 -34 0 Z" fill="' + c.fin +
+       '" stroke="' + O + '" stroke-width="' + W + '" stroke-linejoin="round"/>';
+
+  // Dorsal and pelvic fins, both rounded rather than spiky.
+  s += '<path d="M-24 -24 C-20 -48 -6 -60 6 -56 C12 -44 14 -34 16 -26 Z" fill="' + c.fin +
+       '" stroke="' + O + '" stroke-width="' + W + '" stroke-linejoin="round"/>';
+  s += '<path d="M-12 22 C-8 40 2 48 10 44 C13 36 14 29 15 23 Z" fill="' + c.fin +
+       '" stroke="' + O + '" stroke-width="' + W + '" stroke-linejoin="round"/>';
+
+  // Body.
+  s += '<ellipse cx="0" cy="0" rx="44" ry="31" fill="' + c.body +
+       '" stroke="' + O + '" stroke-width="' + W + '"/>';
+
+  if (c.stripes) {
+    // The striped one. A clip keeps the bands inside the body outline instead
+    // of running off its edge.
+    const id = 'fishclip' + (c.id || 'x');
+    s += '<clipPath id="' + id + '"><ellipse cx="0" cy="0" rx="44" ry="31"/></clipPath>';
+    s += '<g clip-path="url(#' + id + ')" fill="none" stroke="' + c.fin +
+         '" stroke-width="6" stroke-linecap="round">';
+    [-26, -14, -2].forEach(x => {
+      s += '<path d="M' + x + ' -32 C' + (x - 6) + ' -10 ' + (x - 6) + ' 10 ' + x + ' 32"/>';
+    });
+    s += '</g>';
+    s += '<ellipse cx="0" cy="0" rx="44" ry="31" fill="none" stroke="' + O +
+         '" stroke-width="' + W + '"/>';
+  }
+
+  // Pectoral fin — the little «c» on the flank.
+  s += '<path d="M-6 -4 C-16 -4 -18 10 -6 12 C-12 6 -12 0 -6 -4 Z" fill="' + c.fin +
+       '" stroke="' + O + '" stroke-width="3" stroke-linejoin="round"/>';
+
+  // Gill line.
+  s += '<path d="M14 -26 C6 -12 6 12 14 26" fill="none" stroke="' + O +
+       '" stroke-width="2.8" stroke-linecap="round"/>';
+
+  // Eye and mouth.
+  s += '<circle cx="27" cy="-9" r="9.5" fill="#fff" stroke="' + O + '" stroke-width="3"/>';
+  s += '<circle cx="28" cy="-8" r="5.4" fill="' + O + '"/>';
+  s += '<circle cx="25.6" cy="-11" r="2.3" fill="#fff"/>';
+  s += '<path d="M36 6 C40 11 45 11 47 7" fill="none" stroke="' + O +
+       '" stroke-width="2.8" stroke-linecap="round"/>';
+
   s += '</g>';
   return s;
 }
@@ -161,7 +197,7 @@ function fishPlace() {
   fishes.forEach(f => {
     if (!f.node) return;
     const wig = Math.sin(f.bob) * 4;
-    const scale = f.caught ? (1 - f.t * 0.45) : 1;
+    const scale = FISH_SCALE * (f.caught ? (1 - f.t * 0.45) : 1);
     f.node.setAttribute('transform',
       'translate(' + f.x.toFixed(1) + ' ' + (f.y + wig).toFixed(1) + ') scale(' + scale.toFixed(2) + ')');
   });
