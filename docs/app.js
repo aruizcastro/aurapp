@@ -1344,6 +1344,10 @@ let countN = 1;
 let countBusy = false;
 
 function openCounting() {
+  const chip = $('#numChip');
+  chip.classList.remove('dragging', 'hidden');
+  chip.style.width = chip.style.height = chip.style.left = chip.style.top = '';
+  $$('.countcard').forEach(c => c.classList.remove('over', 'right'));
   countN = 1;
   countBusy = false;
   renderCountRound();
@@ -1377,7 +1381,8 @@ function renderCountRound() {
   chip.classList.remove('hidden');
   chip.style.left = chip.style.top = '';
 
-  $('#countHint').textContent = 'Lleva el ' + countN + ' a los ' + round.item.name + '.';
+  $('#countHint').textContent =
+    'Lleva el ' + countN + ' a ' + (round.item.art || 'los') + ' ' + round.item.name + '.';
   renderCountDots();
 }
 
@@ -1402,7 +1407,10 @@ function renderCountRound() {
     home = r;
     grab = { x: e.clientX - r.left, y: e.clientY - r.top };
     dragging = true;
-    chip.setPointerCapture(e.pointerId);
+    // No setPointerCapture here. The dragging chip is pointer-events: none so
+    // that it does not shadow the cards underneath it, and Safari then loses
+    // the capture — the pointerup never arrives and the numeral stays stuck
+    // mid-board. Listening on the window instead is what actually holds.
     chip.classList.add('dragging');
     chip.style.width = r.width + 'px';
     chip.style.height = r.height + 'px';
@@ -1410,7 +1418,7 @@ function renderCountRound() {
     chip.style.top = r.top + 'px';
   });
 
-  chip.addEventListener('pointermove', (e) => {
+  window.addEventListener('pointermove', (e) => {
     if (!dragging) return;
     e.preventDefault();
     chip.style.left = (e.clientX - grab.x) + 'px';
@@ -1450,7 +1458,13 @@ function renderCountRound() {
     }, 1100);
   };
 
-  ['pointerup', 'pointercancel'].forEach(ev => chip.addEventListener(ev, drop));
+  // On the window, so a finger that lifts anywhere — off the board, off the
+  // screen, over a card — always ends the drag.
+  ['pointerup', 'pointercancel'].forEach(ev => window.addEventListener(ev, drop));
+
+  // Belt and braces: if the drag somehow survives leaving the screen, the next
+  // visit resets it rather than showing a numeral floating over the cards.
+  window.addEventListener('blur', () => { if (dragging) drop({ clientX: -1, clientY: -1 }); });
 })();
 
 function countCheer(card) {
