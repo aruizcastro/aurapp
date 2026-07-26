@@ -28,7 +28,7 @@ const FISH_COLORS = [
 
 // The water sits under a strip of sky, and the bucket stands on the bank.
 const FISH_WATER_TOP = 74;
-const FISH_BUCKET = { x: 366, y: 214, w: 66, h: 62 };
+const FISH_BUCKET = { x: 352, y: 202, w: 76, h: 78 };
 
 // ------------------------------------------------------------------ art
 
@@ -87,23 +87,70 @@ function fishArt(c, flip) {
   return s;
 }
 
-/* The bucket, with however many fish she has written on the front. Empty, it
-   shows nothing rather than a zero: a nought means «none» only once you can
-   already count, and she cannot yet. */
+/* The bucket, with however many fish she has written on the front, and one or
+   two of them peeking over the rim.
+
+   Empty, it shows no number at all rather than a zero: a nought means «none»
+   only once you can already count, and she cannot yet. The peeking fish are
+   decoration — the numeral is the count. */
 function fishBucketArt(n) {
-  const B = FISH_BUCKET;
-  const O = FISH_OUTLINE;
+  const B = FISH_BUCKET, O = FISH_OUTLINE;
+  const cx = B.x + B.w / 2;
+  const clip = 'fishbucketclip';
   let s = '';
-  s += '<path d="M' + B.x + ' ' + B.y + ' L' + (B.x + B.w) + ' ' + B.y +
-       ' L' + (B.x + B.w - 9) + ' ' + (B.y + B.h) + ' L' + (B.x + 9) + ' ' + (B.y + B.h) + ' Z" ' +
-       'fill="#7FC7E8" stroke="' + O + '" stroke-width="4" stroke-linejoin="round"/>';
-  s += '<rect x="' + (B.x - 4) + '" y="' + (B.y - 10) + '" width="' + (B.w + 8) +
-       '" height="14" rx="7" fill="#5AB0D8" stroke="' + O + '" stroke-width="4"/>';
+
+  // Handle first, so the rim covers where it joins.
+  s += '<path d="M' + (B.x + 5) + ' ' + (B.y + 2) + ' A ' + (B.w / 2 - 5) + ' ' +
+       (B.w / 2 - 5) + ' 0 0 1 ' + (B.x + B.w - 5) + ' ' + (B.y + 2) +
+       '" fill="none" stroke="' + O + '" stroke-width="9" stroke-linecap="round"/>';
+  s += '<path d="M' + (B.x + 5) + ' ' + (B.y + 2) + ' A ' + (B.w / 2 - 5) + ' ' +
+       (B.w / 2 - 5) + ' 0 0 1 ' + (B.x + B.w - 5) + ' ' + (B.y + 2) +
+       '" fill="none" stroke="#A9B0BD" stroke-width="4.5" stroke-linecap="round"/>';
+
+  // The fish looking out, tucked behind the rim.
   if (n > 0) {
-    s += '<text x="' + (B.x + B.w / 2) + '" y="' + (B.y + B.h / 2 + 6) +
+    // Nose up, so what clears the rim is a face and not a tail.
+    const peeking = n === 1 ? [0.6] : [-1, 1];
+    peeking.forEach((side, i) => {
+      const c = FISH_COLORS[i % 3];
+      s += '<g transform="translate(' + (cx + side * 14) + ' ' + (B.y - 9) +
+           ') rotate(' + (side < 0 ? 58 : -58) + ') scale(0.34)">' +
+           fishArt(c, side < 0) + '</g>';
+    });
+  }
+
+  // Body, tapered, with a rim across the top.
+  const body = 'M' + B.x + ' ' + B.y + ' L' + (B.x + B.w) + ' ' + B.y +
+               ' L' + (B.x + B.w - 11) + ' ' + (B.y + B.h - 4) +
+               ' Q' + (B.x + B.w - 12) + ' ' + (B.y + B.h) + ' ' + (B.x + B.w - 15) + ' ' + (B.y + B.h) +
+               ' L' + (B.x + 15) + ' ' + (B.y + B.h) +
+               ' Q' + (B.x + 12) + ' ' + (B.y + B.h) + ' ' + (B.x + 11) + ' ' + (B.y + B.h - 4) + ' Z';
+
+  s += '<clipPath id="' + clip + '"><path d="' + body + '"/></clipPath>';
+  s += '<path d="' + body + '" fill="#7FCFF0" stroke="' + O +
+       '" stroke-width="4" stroke-linejoin="round"/>';
+  // A darker slice down the right for a little volume, and the white band.
+  s += '<g clip-path="url(#' + clip + ')">';
+  s += '<rect x="' + (B.x + B.w - 14) + '" y="' + B.y + '" width="20" height="' + B.h +
+       '" fill="#5FBEE6"/>';
+  s += '<rect x="' + (B.x - 4) + '" y="' + (B.y + B.h - 22) + '" width="' + (B.w + 8) +
+       '" height="9" fill="#fff"/>';
+  s += '</g>';
+  s += '<path d="' + body + '" fill="none" stroke="' + O +
+       '" stroke-width="4" stroke-linejoin="round"/>';
+
+  // Rim.
+  s += '<rect x="' + (B.x - 3) + '" y="' + (B.y - 6) + '" width="' + (B.w + 6) +
+       '" height="12" rx="6" fill="#7FCFF0" stroke="' + O + '" stroke-width="4"/>';
+
+  if (n > 0) {
+    // Two digits need a smaller face, or «10» runs off the sides of the bucket.
+    const size = n > 9 ? 31 : 40;
+    s += '<text x="' + cx + '" y="' + (B.y + B.h / 2 + 6) +
          '" text-anchor="middle" dominant-baseline="central" ' +
-         'font-family="ui-rounded, system-ui, sans-serif" font-size="38" font-weight="700" ' +
-         'fill="#fff" stroke="' + O + '" stroke-width="1.5" paint-order="stroke">' + n + '</text>';
+         'font-family="ui-rounded, system-ui, sans-serif" font-size="' + size +
+         '" font-weight="700" fill="#fff" stroke="' + O +
+         '" stroke-width="3.5" paint-order="stroke">' + n + '</text>';
   }
   return s;
 }
