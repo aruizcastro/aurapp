@@ -172,6 +172,43 @@ Las alternativas son descargar los videos (sin anuncios y funciona sin internet,
 
 ---
 
+## Si algún día se publica en Android
+
+Decisiones ya tomadas, para no volver a discutirlas cuando llegue el momento.
+
+**La versión de Android va sin videos.** Solo los juegos y los dibujos. No se
+incluye el reproductor de YouTube ni el panel de padres para agregar enlaces.
+
+La razón es evitar problemas, no ahorrar trabajo: el programa *Designed for
+Families* de Google Play exige declarar todo el contenido de terceros, y un
+reproductor incrustado que trae videos de fuera es justo lo que más demora una
+revisión. Además, un video que alguien más borre deja un hueco en la app sin
+que nosotros hagamos nada.
+
+**Precio: 1 USD.** De ahí Google se queda con el 15 %, más los impuestos que
+correspondan. Los 25 USD de la cuenta de desarrollador se recuperan alrededor
+de las 30 ventas.
+
+**Cómo se apaga la parte de videos.** En `docs/app.js`, arriba del todo:
+
+```js
+const BUILD = {
+  videos: false      // Android
+};
+```
+
+Con eso desaparecen los mundos de video de la pantalla principal y las
+secciones de YouTube del panel de padres. El límite de tiempo se queda: sirve
+igual para los juegos. No hay que borrar ningún archivo ni tocar nada más — si
+mañana se quiere volver a activar, se pone `true`.
+
+**Lo que falta cuando se decida arrancar:** empaquetar la PWA como TWA con
+Android Studio (corre bien en el Mac mini actual), crear la cuenta de Play,
+escribir la política de privacidad —la app no recoge ningún dato, así que es
+corta— y llenar el cuestionario de contenido.
+
+---
+
 ## Sobre los dibujos
 
 Los 22 dibujos son originales, construidos con círculos, elipses y curvas. No están basados en ningún personaje existente — los personajes conocidos tienen derechos de autor y no pueden ir en la app ni para uso personal.

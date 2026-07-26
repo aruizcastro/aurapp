@@ -365,7 +365,7 @@
       <button class="btn" id="resetTime">Reiniciar el contador de hoy</button>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Buscar en YouTube</h3>
       <label>Buscar <input type="text" id="ytQuery" placeholder="canciones infantiles" autocomplete="off"></label>
       <label>Mundo <select id="ytWorld"></select></label>
@@ -376,21 +376,21 @@
       <div id="ytResults"></div>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Importar una lista de reproducción</h3>
       <label>Enlace <input type="url" id="ytList" placeholder="https://www.youtube.com/playlist?list=..." autocomplete="off"></label>
       <button class="btn" id="ytListBtn">Traer todos</button>
       <p class="hint">Solo listas públicas o no listadas. Las privadas y «Ver más tarde» necesitan iniciar sesión, que esta app no puede hacer.</p>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Pegar muchos enlaces</h3>
       <textarea id="ytBulk" rows="4" placeholder="Pega aquí varios enlaces, uno por línea"></textarea>
       <button class="btn" id="ytBulkBtn">Agregar todos</button>
       <p class="hint">Esto no necesita clave. Sirve pegar texto suelto: la app saca los enlaces que encuentre.</p>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Agregar un video</h3>
       <label>Enlace <input type="url" id="addLink" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off"></label>
       <label>Título <input type="text" id="addTitle" placeholder="Cómo lo va a ver ella"></label>
@@ -399,7 +399,7 @@
       <p class="hint" id="addHint">El título y la portada se llenan solos al pegar el enlace.</p>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Videos (<span id="videoCount">0</span>)</h3>
       <div id="videoList"></div>
       <p class="hint" id="emptyHint">Todavía no hay videos. Pega un enlace de YouTube arriba.</p>
@@ -417,7 +417,7 @@
       <p class="hint">Cambia los fondos y los botones. Los dibujos y los personajes no cambian.</p>
     </section>
 
-    <section>
+    <section class="vidonly">
       <h3>Clave de YouTube</h3>
       <label>API key <input type="text" id="ytKey" placeholder="AIza..." autocomplete="off"></label>
       <button class="btn" id="ytKeySave">Guardar clave</button>

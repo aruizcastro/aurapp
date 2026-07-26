@@ -80,6 +80,22 @@ const THEMES = [
 
 /* The worlds that are not video. Any of them can be switched off from the
    parent panel — hidden, not deleted, so turning one back on is one tap. */
+/* ------------------------------------------------------------------ build
+
+   One switch decides whether this build has the video worlds at all.
+
+   The Android build ships with VIDEOS off: no YouTube player, no parent panel
+   for links, only the games and the drawings. That keeps the app out of the
+   third-party-content rules of Google Play's family programme, and it means
+   there is nothing in it that can break when someone else's video is taken
+   down. Flip it back to true for the iPad PWA.
+
+   Everything downstream reads BUILD.videos — do not add a second flag. */
+
+const BUILD = {
+  videos: true
+};
+
 const EXTRA_WORLDS = [
   { id: 'paint',  name: 'Pintar',    sub: '22 dibujos',            icon: '🎨' },
   { id: 'pets',   name: 'Amigos',    sub: 'Capi, Michi y Coneja',  icon: '🐹' },
@@ -240,7 +256,7 @@ function renderWorlds() {
   /* An empty world is not shown at all. Greyed-out tiles teach a
      four-year-old to keep poking at something that never responds, and on a
      fresh install they filled the screen with dead squares. */
-  WORLDS.forEach((world, i) => {
+  if (BUILD.videos) WORLDS.forEach((world, i) => {
     const count = videosIn(world.id).length;
     if (count === 0) return;
 
@@ -1535,6 +1551,7 @@ $('#pinCancel').onclick = () => go('worlds');
 // -------------------------------------------------------- parent panel
 
 function renderParents() {
+  $$('.vidonly').forEach(el => { el.hidden = !BUILD.videos; });
   rollover();
   $('#limitSel').value = String(state.limit);
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
