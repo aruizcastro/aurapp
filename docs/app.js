@@ -2039,6 +2039,9 @@ let bugCheerTimer = 0;
 function openBugs() {
   const box = boardBox($('#bugSvg').parentNode, 300);
   bugInit($('#bugSvg'), box.w, box.h);
+  // bugReset() already asks for it, but asking twice costs nothing and covers
+  // the case where the audio engine only woke up on the tap that got us here.
+  if (typeof soundStartLoop === 'function') soundStartLoop('buzz');
   clearTimeout(bugCheerTimer);
   $('#bugCheer').hidden = true;
   renderBugDots();
@@ -2164,4 +2167,14 @@ window.addEventListener('resize', () => {
     if (current === 'match') openMatch();
     if (current === 'worm') openWorm();
   }, 180);
+});
+
+
+/* Coming back from the home screen: the sound was stopped when she left, so
+   whichever game is on screen gets its bed back. */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  if (typeof soundStartLoop !== 'function') return;
+  if (current === 'bugs') soundStartLoop('buzz');
+  if (current === 'fish') soundStartLoop('water');
 });

@@ -105,21 +105,28 @@ def make_buzz(seconds=3.0):
     return audio * 0.5
 
 
-def make_pop(seconds=0.28):
-    """Atrapado. Un «pop» que cae de tono, no un golpe."""
+def make_pop(seconds=0.3):
+    """Atrapado. Una gotita, no un golpe.
+
+    Rehecho pensando en el oído de un niño que tiene la tablet a treinta
+    centímetros de la cara y va a oír esto veinte veces seguidas:
+
+    · Sin chasquido. El ruido del ataque era lo que le daba el filo; también
+      era lo que lo volvía cansón a la décima vez.
+    · Más grave: de 520 a 210 Hz en vez de 900 a 260. Los agudos son lo que
+      molesta, y son justo donde el oído infantil es más sensible.
+    · Ataque suave, de 12 ms. Un ataque instantáneo es lo que el oído lee como
+      «golpe» aunque el sonido en sí sea manso."""
     t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
 
-    # Barrido de 900 a 260 Hz. La caída es lo que lo hace gracioso en vez de
-    # agresivo — un tono que sube suena a alarma.
-    f = 900 * np.exp(-t * 9) + 260
+    f = 520 * np.exp(-t * 11) + 210
     phase = 2 * np.pi * np.cumsum(f) / SR
-    body = np.sin(phase) + 0.3 * np.sin(2 * phase)
+    # Seno casi puro. El segundo armónico va bajito, solo para que no suene a
+    # pitido de electrodoméstico.
+    body = np.sin(phase) + 0.12 * np.sin(2 * phase)
 
-    # Un chasquido cortísimo al principio le da el borde de «pop».
-    click = np.random.default_rng(7).normal(0, 1, len(t)) * np.exp(-t * 260)
-
-    env = np.minimum(1.0, t * 400) * np.exp(-t * 12)
-    return (body * 0.9 + click * 0.25) * env
+    attack = np.minimum(1.0, t / 0.012) ** 2
+    return body * attack * np.exp(-t * 11)
 
 
 def make_cheer(seconds=1.3):

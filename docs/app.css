@@ -63,7 +63,11 @@ html, body {
 
 /* Header -------------------------------------------------------------- */
 
-.bar { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+/* The header row. The dots must be the part that gives way: they are the only
+   thing here that grows with the game (twenty of them in the mosquitoes), and
+   a row that cannot give way pushes the reset button off the right edge —
+   exactly what happened to the colour palette. */
+.bar { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; flex-wrap: wrap; }
 .bar h1 { margin: 0; font-size: 30px; font-weight: 600; }
 .bar .grow { flex: 1; }
 
@@ -130,13 +134,21 @@ html, body {
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-.dots { display: flex; justify-content: center; gap: 10px; flex: 0 0 auto; }
+.dots {
+  display: flex; justify-content: center; gap: 10px;
+  flex: 1 1 auto; min-width: 0; flex-wrap: wrap;
+}
 .dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-soft); }
 
-/* Twenty dots at full size run off the side of a phone, so past a dozen they
-   shrink instead of wrapping — a wrapped row would push the board down. */
+/* Twenty dots at full size run off the side of a phone. Past a dozen they get
+   smaller, and if they still do not fit they wrap — never at the cost of the
+   buttons beside them. */
 .dots.many { gap: 5px; }
 .dots.many i { width: 9px; height: 9px; }
+@media (max-width: 760px) {
+  .dots.many { gap: 4px; }
+  .dots.many i { width: 7px; height: 7px; }
+}
 .dots i.on { background: var(--accent); }
 
 /* Player -------------------------------------------------------------- */

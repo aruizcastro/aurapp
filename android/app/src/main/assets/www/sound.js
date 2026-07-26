@@ -47,10 +47,23 @@ const SOUND_FILES = {
   swish: 'audio/swish.mp3'       // one more garment going on
 };
 
-/* How loud each looping bed sits under the game. The water is quieter than the
-   buzzing on purpose: the mosquitoes are the thing she is chasing, the lake is
-   only the room she is in. */
-const SOUND_BED = { buzz: 0.08, water: 0.05 };
+/* How loud each sound is, relative to the file.
+
+   This table is the whole mix, and it was missing: one-shots used to go
+   straight to the speaker at full scale while the looping beds were turned
+   down to 0.08. The result was exactly backwards — the catch sound landed like
+   a slap and the buzzing, the thing that makes the game feel alive, was too
+   quiet to hear on a phone.
+
+   The catch is the softest thing here on purpose. She hears it twenty times in
+   a row with the tablet a hand's width from her face. */
+const SOUND_LEVEL = {
+  pop: 0.34, splash: 0.5, cheer: 0.55,
+  blow: 0.5, crash: 0.45, thud: 0.5, swish: 0.4
+};
+
+/* The looping beds. Loud enough to be there, quiet enough to talk over. */
+const SOUND_BED = { buzz: 0.22, water: 0.16 };
 
 let soundOn = true;          // the parent's switch
 let soundCtx = null;         // the WebAudio context, made on first touch
@@ -94,8 +107,10 @@ function soundPlay(name) {
   const buf = soundBuffers[name];
   if (buf) {
     const src = soundCtx.createBufferSource();
+    const gain = soundCtx.createGain();
+    gain.gain.value = SOUND_LEVEL[name] !== undefined ? SOUND_LEVEL[name] : 0.5;
     src.buffer = buf;
-    src.connect(soundCtx.destination);
+    src.connect(gain); gain.connect(soundCtx.destination);
     src.start();
     return;
   }
@@ -132,9 +147,10 @@ function soundSynth(name) {
   if (name === 'pop') {
     const osc = soundCtx.createOscillator();
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(680, t);
-    osc.frequency.exponentialRampToValueAtTime(180, t + 0.16);
-    gain.gain.setValueAtTime(0.22, t);
+    // Same shape as the file: low and round, no click.
+    osc.frequency.setValueAtTime(520, t);
+    osc.frequency.exponentialRampToValueAtTime(210, t + 0.18);
+    gain.gain.setValueAtTime(SOUND_LEVEL.pop * 0.6, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
     osc.connect(gain); osc.start(t); osc.stop(t + 0.2);
     return;
