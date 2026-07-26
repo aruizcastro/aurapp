@@ -380,6 +380,33 @@ html, body {
 .worldrow b { flex: 1; font-weight: 500; font-size: 16px; }
 .worldrow input { width: 26px; height: 26px; }
 
+.paintrow { flex: 0 0 auto; display: flex; align-items: center; gap: 14px; }
+.paintrow .palette { flex: 1; justify-content: flex-start; }
+
+/* The reset shows the drawing as it will end up — blank. She cannot read
+   "empezar de nuevo", but she recognises her own picture with nothing in it. */
+.bigreset {
+  position: relative; flex: 0 0 auto;
+  width: 78px; height: 66px; padding: 4px;
+  border: 4px solid var(--accent); border-radius: 18px;
+  background: #fff; cursor: pointer;
+}
+.bigreset svg { display: block; width: 100%; height: 100%; }
+.bigreset svg .rg { fill: #fff; stroke: #9a9a94; stroke-width: 5; }
+.bigreset svg .ln { fill: none; }
+.bigreset .badge {
+  position: absolute; right: -8px; bottom: -8px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 18px; line-height: 30px; text-align: center;
+}
+.bigreset:active { transform: scale(.94); }
+
+@media (max-width: 760px) {
+  .bigreset { width: 62px; height: 54px; }
+  .bigreset .badge { width: 25px; height: 25px; font-size: 15px; line-height: 25px; }
+}
+
 /* PIN ----------------------------------------------------------------- */
 
 #s-pin { align-items: center; justify-content: center; gap: 20px; }

@@ -95,12 +95,17 @@
     <button class="round" data-go="paint" aria-label="Atrás">‹</button>
     <h1 id="colorTitle" style="font-size:24px"></h1>
     <div class="grow"></div>
-    <button class="round" id="colorReset" aria-label="Empezar de nuevo">↺</button>
   </div>
   <div class="cats" id="silCats"></div>
   <div class="picker" id="silPicker"></div>
   <div id="canvasWrap"><svg id="colorSvg" viewBox="0 0 320 300" preserveAspectRatio="xMidYMid meet"></svg></div>
-  <div class="palette" id="palColor"></div>
+  <div class="paintrow">
+    <div class="palette" id="palColor"></div>
+    <button class="bigreset" id="colorReset" aria-label="Empezar de nuevo">
+      <svg id="colorResetArt" viewBox="0 0 320 300" aria-hidden="true"></svg>
+      <span class="badge">↺</span>
+    </button>
+  </div>
 </div>
 
 <!-- Free draw --------------------------------------------------------- -->
@@ -137,7 +142,13 @@
       <div class="cats" id="petModes"></div>
       <div class="meter" id="petMeter"><div></div></div>
       <div class="petitems" id="petItems"></div>
-      <div class="palette" id="petPal"></div>
+      <div class="paintrow">
+        <div class="palette" id="petPal"></div>
+        <button class="bigreset" id="petReset" aria-label="Empezar de nuevo">
+          <svg id="petResetArt" viewBox="30 0 240 240" aria-hidden="true"></svg>
+          <span class="badge">↺</span>
+        </button>
+      </div>
       <p class="pethint" id="petHint"></p>
     </div>
   </div>

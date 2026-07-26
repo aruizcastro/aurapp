@@ -9,7 +9,7 @@
    Bumping CACHE below is optional now — the old copies get overwritten on
    every successful fetch anyway. */
 
-const CACHE = 'aurapp-v12';
+const CACHE = 'aurapp-v13';
 
 const SHELL = [
   './',

@@ -463,6 +463,7 @@ function buildPicker() {
 
 function drawSilhouette() {
   $('#colorTitle').textContent = silhouette.name;
+  updateColorResetArt();
   const svg = $('#colorSvg');
   svg.innerHTML = silhouette.svg;
 
@@ -478,6 +479,11 @@ function drawSilhouette() {
 }
 
 $('#colorReset').onclick = () => drawSilhouette();
+
+/** Keeps the reset button showing whichever drawing she is on. */
+function updateColorResetArt() {
+  $('#colorResetArt').innerHTML = silhouette.svg;
+}
 
 // Door artwork reuses the unicorn.
 $('#doorArt').innerHTML = SILHOUETTES[0].svg;
@@ -634,11 +640,37 @@ function openPets() {
    stays pure drawing. */
 let petScene = { bath: false, foam: [], sponge: null, toy: null };
 
+/* One reset per activity: undress, empty the tub, take the toy away. Same
+   button, same place, so she only has to learn it once. */
+$('#petReset').onclick = () => {
+  const p = petState();
+  if (petMode === 'bath') {
+    petScene.foam = [];
+    petScene.sponge = null;
+  } else if (petMode === 'play') {
+    petScene.toy = null;
+  } else {
+    p.outfit = 'none';
+    p.acc = {};
+    save();
+  }
+  petMood = petMode === 'sleep' ? 'asleep' : 'idle';
+  renderPetPanel();
+  drawPet();
+};
+
+function updatePetResetArt() {
+  const p = petState();
+  // Shows the friend plain: no clothes, no accessories, no foam.
+  $('#petResetArt').innerHTML = PET_HEADS[petWho](p.fur, 'idle');
+}
+
 function drawPet() {
   const p = petState();
   $('#petName').textContent = PET_NAMES[petWho];
   $('#petSvg').innerHTML = petArt(petWho, p.fur, petMood, p.outfit, p.acc,
                                   petMode === 'sleep', petScene);
+  updatePetResetArt();
 }
 
 function renderPetTabs() {
@@ -690,6 +722,8 @@ function renderPetPanel() {
   items.innerHTML = '';
   pal.innerHTML = '';
   meter.style.display = 'none';
+
+  $('#petReset').style.display = petMode === 'sleep' ? 'none' : '';
 
   if (petMode === 'sleep') {
     hint.textContent = 'Está durmiendo. Vuelve mañana o cámbiale de actividad.';

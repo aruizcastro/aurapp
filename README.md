@@ -18,11 +18,11 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 **Límite de tiempo.** El contador solo corre mientras un video está efectivamente reproduciéndose, no mientras ella navega. Al agotarse aparece una pantalla de "el unicornio se fue a dormir" que ofrece ir a pintar. Se reinicia solo al cambiar el día.
 
-**Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
+**Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. El botón de empezar de nuevo va junto a la paleta, donde ya está su mano, y muestra el dibujo actual sin pintar — no puede leer "empezar de nuevo", pero reconoce su propio dibujo en blanco. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
 
 **Amigos.** Tres personajes en estilo sticker — Capi el capibara, Michi la gata y Coneja — que comparten un mismo cuerpo, así que la ropa le queda a los tres. Cinco actividades: vestir, darles de comer, bañarlos, jugar y dormir.
 
-En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde frota va quedando espuma, que nunca se borra sola. Al llenarla de espuma la mascota sonríe y salen destellos. Jugando, toca un juguete y este llega volando en arco hasta caer a su lado. Las pestañas son dibujos, no palabras: se elige el amigo por su cara y la actividad por el objeto.
+En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde frota va quedando espuma, que nunca se borra sola. Al llenarla de espuma la mascota sonríe y salen destellos. Jugando, toca un juguete y este llega volando en arco hasta caer a su lado. Las pestañas son dibujos, no palabras: se elige el amigo por su cara y la actividad por el objeto. El botón de empezar de nuevo muestra al amigo tal como queda: desvestido, sin espuma, sin juguete.
 
 **Fotos** *(oculto por ahora)*. Cámara con seis disfraces combinables (sombrero, gafas, corbata, orejas de gato, nariz de perro y cuerno de unicornio). Cada uno se arrastra donde ella quiera y todos quedan quemados en la foto. Las fotos se guardan en IndexedDB en el propio dispositivo, con tope de 30 — al llegar, la más vieja se borra sola. Nunca salen del iPad: no hay servidor.
 
