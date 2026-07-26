@@ -677,6 +677,17 @@ $('#petReset').onclick = () => {
   drawPet();
 };
 
+/* Replays a short animation on the friend. The class has to come off before
+   it can go back on, or a second tap in a row does nothing. */
+function petReact(kind) {
+  const svg = $('#petSvg');
+  if (!svg) return;
+  svg.classList.remove('pop', 'wiggle');
+  void svg.offsetWidth;            // forces the browser to notice the removal
+  svg.classList.add(kind);
+  setTimeout(() => svg.classList.remove(kind), 600);
+}
+
 function updatePetResetArt() {
   const p = petState();
   // Shows the friend plain: no clothes, no accessories, no foam.
@@ -794,7 +805,13 @@ function renderPetPanel() {
     btn.innerHTML = petThumb(outfit.draw ? outfit.draw(outfit.color) : '', '56 200 188 150') +
                     '<span></span>';
     btn.querySelector('span').textContent = outfit.name;
-    btn.onclick = () => { p.outfit = outfit.id; save(); renderPetPanel(); drawPet(); };
+    btn.onclick = () => {
+      p.outfit = outfit.id;
+      save();
+      renderPetPanel();
+      drawPet();
+      petReact('pop');            // clothes drop on: a bounce
+    };
     items.appendChild(btn);
   });
 
@@ -803,7 +820,13 @@ function renderPetPanel() {
     btn.className = 'petitem' + (p.acc[acc.id] ? ' on' : '');
     btn.innerHTML = petThumb(acc.draw(acc.color), '40 0 220 250') + '<span></span>';
     btn.querySelector('span').textContent = acc.name;
-    btn.onclick = () => { p.acc[acc.id] = !p.acc[acc.id]; save(); renderPetPanel(); drawPet(); };
+    btn.onclick = () => {
+      p.acc[acc.id] = !p.acc[acc.id];
+      save();
+      renderPetPanel();
+      drawPet();
+      petReact('wiggle');         // accessories perch on: a shimmy
+    };
     items.appendChild(btn);
   });
 
@@ -812,7 +835,13 @@ function renderPetPanel() {
     swatch.className = 'sw' + (p.fur === color ? ' on' : '');
     swatch.style.background = color;
     swatch.setAttribute('aria-label', 'color');
-    swatch.onclick = () => { p.fur = color; save(); renderPetPanel(); drawPet(); };
+    swatch.onclick = () => {
+      p.fur = color;
+      save();
+      renderPetPanel();
+      drawPet();
+      petReact('pop');
+    };
     pal.appendChild(swatch);
   });
 }

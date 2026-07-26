@@ -24,6 +24,8 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde frota va quedando espuma, que nunca se borra sola. Al llenarla de espuma la mascota sonríe y salen destellos. Jugando, toca un juguete y este llega volando en arco hasta caer a su lado. Las pestañas son dibujos, no palabras: se elige el amigo por su cara y la actividad por el objeto. El botón de empezar de nuevo muestra al amigo tal como queda: desvestido, sin espuma, sin juguete.
 
+Al ponerle una prenda el amigo **rebota**, y al ponerle un accesorio **se menea**. Sin esa reacción el juego se siente roto: tocas algo, aparece, y no pasa nada. El rebote se ancla en los pies para que lea como el personaje aterrizando y no como la imagen entera creciendo. Si el dispositivo tiene activado reducir movimiento, las animaciones se apagan.
+
 **Fotos** *(oculto por ahora)*. Cámara con seis disfraces combinables (sombrero, gafas, corbata, orejas de gato, nariz de perro y cuerno de unicornio). Cada uno se arrastra donde ella quiera y todos quedan quemados en la foto. Las fotos se guardan en IndexedDB en el propio dispositivo, con tope de 30 — al llegar, la más vieja se borra sola. Nunca salen del iPad: no hay servidor.
 
 **El lobo y los tres cerditos.** Tres rondas: casa de paja, de palitos y de ladrillos. Un botón enorme sopla, las dos primeras casas vuelan por los aires y los cerditos corren; la de ladrillos aguanta y el lobo se cae de espaldas. El lobo nunca alcanza a nadie y siempre pierde.

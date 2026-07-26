@@ -253,6 +253,33 @@ html, body {
 }
 .petstage svg { display: block; width: 100%; height: 100%; }
 
+/* A dressing-up game with no reaction feels broken: you tap, something
+   appears, nothing happens. The bounce is anchored at the feet so it reads
+   as the friend landing, not as the whole picture scaling. */
+.petstage svg { transform-origin: 50% 92%; }
+.petstage svg.pop    { animation: petPop .52s cubic-bezier(.3,1.4,.5,1); }
+.petstage svg.wiggle { animation: petWiggle .55s ease-in-out; }
+
+@keyframes petPop {
+  0%   { transform: scale(1, 1) translateY(0); }
+  28%  { transform: scale(1.07, .92) translateY(8px); }
+  55%  { transform: scale(.96, 1.06) translateY(-12px); }
+  78%  { transform: scale(1.03, .97) translateY(3px); }
+  100% { transform: scale(1, 1) translateY(0); }
+}
+
+@keyframes petWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  22%  { transform: rotate(-5deg); }
+  55%  { transform: rotate(5deg); }
+  80%  { transform: rotate(-2deg); }
+}
+
+/* Some children are motion sensitive, and iOS exposes the setting. */
+@media (prefers-reduced-motion: reduce) {
+  .petstage svg.pop, .petstage svg.wiggle { animation: none; }
+}
+
 .petside { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 
 .petitems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-content: start; }
