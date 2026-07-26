@@ -16,10 +16,13 @@
 
 const BUG_W = 400;
 const BUG_H = 300;
-const BUG_COUNT = 8;
-const BUG_HIT = 48;           // tap radius in viewBox units — deliberately huge
+const BUG_COUNT = 20;      // the jar counts all the way to twenty
+/* Tap radius. Still bigger than the drawing, but smaller than it was with
+   eight mosquitoes: with twenty on the board a huge radius meant every tap
+   anywhere hit something, and the game stopped being about aiming at all. */
+const BUG_HIT = 34;
 const BUG_SPEED = 26;         // units per second
-const BUG_SCALE = 0.62;       // the drawing is authored large, then shrunk
+const BUG_SCALE = 0.52;       // the drawing is authored large, then shrunk
 const BUG_MARGIN = 40;        // keeps a whole mosquito inside the board
 
 const BUG_OUTLINE = '#4A2E28';
@@ -127,7 +130,7 @@ function bugArt(colors, dizzy) {
 /* The jar in the corner: how many she has caught, as a numeral. Same idea as
    the bucket in the fishing game — the number is the reward, and it is the
    part she is actually learning. Empty, it shows nothing rather than a zero. */
-const BUG_JAR = { x: 316, y: 214, w: 62, h: 66 };
+const BUG_JAR = { x: 312, y: 210, w: 70, h: 70 };
 
 function bugJarArt(n) {
   const J = BUG_JAR, O = BUG_OUTLINE;
@@ -139,10 +142,11 @@ function bugJarArt(n) {
   s += '<rect x="' + J.x + '" y="' + J.y + '" width="' + J.w + '" height="' + J.h +
        '" rx="14" fill="#DCEEF9" fill-opacity=".92" stroke="' + O + '" stroke-width="4"/>';
   if (n > 0) {
+    // Two digits need a smaller face, or «20» runs off the sides of the jar.
     s += '<text x="' + (J.x + J.w / 2) + '" y="' + (J.y + J.h / 2 + 2) +
          '" text-anchor="middle" dominant-baseline="central" ' +
-         'font-family="ui-rounded, system-ui, sans-serif" font-size="40" font-weight="700" ' +
-         'fill="' + O + '">' + n + '</text>';
+         'font-family="ui-rounded, system-ui, sans-serif" font-size="' + (n > 9 ? 32 : 42) +
+         '" font-weight="700" fill="' + O + '">' + n + '</text>';
   }
   return s;
 }
@@ -186,10 +190,15 @@ function bugReset() {
   bugStop();
   bugCaught = 0;
   bugs = [];
+  // Same as the lake: a loose grid keeps twenty of them from starting in a
+  // heap. They drift apart from there on their own.
+  const cols = 5, rows = Math.ceil(BUG_COUNT / cols);
+  const cellW = (BUG_W - BUG_MARGIN * 2) / cols, cellH = (BUG_H - BUG_MARGIN * 2) / rows;
   for (let i = 0; i < BUG_COUNT; i++) {
+    const col = i % cols, row = Math.floor(i / cols);
     bugs.push({
-      x: BUG_MARGIN + Math.random() * (BUG_W - BUG_MARGIN * 2),
-      y: BUG_MARGIN + Math.random() * (BUG_H - BUG_MARGIN * 2),
+      x: BUG_MARGIN + col * cellW + cellW * (0.15 + Math.random() * 0.7),
+      y: BUG_MARGIN + row * cellH + cellH * (0.15 + Math.random() * 0.7),
       dir: Math.random() * Math.PI * 2,
       turn: (Math.random() - 0.5) * 1.2,   // radians per second of drift
       wob: Math.random() * 6,

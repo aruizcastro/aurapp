@@ -2008,13 +2008,17 @@ function openBugs() {
   });
 }
 
-function renderBugDots() {
-  const host = $('#bugDots');
-  const s = bugState();
+function renderBugDots() { renderDots($('#bugDots'), bugState().caught, bugState().total); }
+
+/* One dot per thing to catch, filled in as she goes. Past a dozen they shrink
+   rather than wrap. */
+function renderDots(host, done, total) {
+  if (!host) return;
+  host.className = 'dots' + (total > 12 ? ' many' : '');
   host.innerHTML = '';
-  for (let i = 0; i < s.total; i++) {
+  for (let i = 0; i < total; i++) {
     const dot = document.createElement('i');
-    if (i < s.caught) dot.className = 'on';
+    if (i < done) dot.className = 'on';
     host.appendChild(dot);
   }
 }
@@ -2090,16 +2094,7 @@ function openFish() {
   });
 }
 
-function renderFishDots() {
-  const host = $('#fishDots');
-  const s = fishState();
-  host.innerHTML = '';
-  for (let i = 0; i < s.total; i++) {
-    const dot = document.createElement('i');
-    if (i < s.caught) dot.className = 'on';
-    host.appendChild(dot);
-  }
-}
+function renderFishDots() { renderDots($('#fishDots'), fishState().caught, fishState().total); }
 
 $('#fishSvg').addEventListener('pointerdown', () => setTimeout(renderFishDots, 700));
 $('#fishReset').onclick = () => {

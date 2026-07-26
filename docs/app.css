@@ -124,6 +124,11 @@ html, body {
 
 .dots { display: flex; justify-content: center; gap: 10px; flex: 0 0 auto; }
 .dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-soft); }
+
+/* Twenty dots at full size run off the side of a phone, so past a dozen they
+   shrink instead of wrapping — a wrapped row would push the board down. */
+.dots.many { gap: 5px; }
+.dots.many i { width: 9px; height: 9px; }
 .dots i.on { background: var(--accent); }
 
 /* Player -------------------------------------------------------------- */

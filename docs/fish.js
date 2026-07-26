@@ -12,10 +12,10 @@
 
 const FISH_W = 440;
 const FISH_H = 300;
-const FISH_TOTAL = 10;
-const FISH_HIT = 44;            // generous, like the mosquitoes
+const FISH_TOTAL = 20;          // the bucket counts all the way to twenty
+const FISH_HIT = 32;            // generous, but not «anywhere wins» — see bugs.js
 const FISH_OUTLINE = '#2B3A6B';
-const FISH_SCALE = 0.46;   // authored large, drawn small
+const FISH_SCALE = 0.40;   // authored large, drawn small
 
 const FISH_COLORS = [
   { id: 'o', body: '#F5941F', fin: '#E07B0C' },
@@ -145,7 +145,7 @@ function fishBucketArt(n) {
 
   if (n > 0) {
     // Two digits need a smaller face, or «10» runs off the sides of the bucket.
-    const size = n > 9 ? 31 : 40;
+    const size = n > 9 ? 32 : 40;
     s += '<text x="' + cx + '" y="' + (B.y + B.h / 2 + 6) +
          '" text-anchor="middle" dominant-baseline="central" ' +
          'font-family="ui-rounded, system-ui, sans-serif" font-size="' + size +
@@ -245,11 +245,16 @@ function fishReset() {
   fishStop();
   fishCaught = 0;
   fishes = [];
+  // Laid out on a loose grid with a random nudge: twenty at pure random pile
+  // up in one corner and leave the rest of the lake empty.
+  const cols = 5, rows = Math.ceil(FISH_TOTAL / cols);
+  const cellW = (FISH_W - 60) / cols, cellH = (FISH_H - FISH_WATER_TOP - 60) / rows;
   for (let i = 0; i < FISH_TOTAL; i++) {
     const dir = Math.random() < 0.5 ? -1 : 1;
+    const col = i % cols, row = Math.floor(i / cols);
     fishes.push({
-      x: 40 + Math.random() * (FISH_W - 120),
-      y: FISH_WATER_TOP + 34 + Math.random() * (FISH_H - FISH_WATER_TOP - 70),
+      x: 30 + col * cellW + cellW * (0.2 + Math.random() * 0.6),
+      y: FISH_WATER_TOP + 30 + row * cellH + cellH * (0.15 + Math.random() * 0.7),
       dir: dir,
       speed: 20 + Math.random() * 18,
       bob: Math.random() * 6,
