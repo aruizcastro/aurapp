@@ -28,8 +28,40 @@ android {
 }
 
 dependencies {
+    /*
+     * Kotlin BOM. There is not a line of Kotlin in this project, but the
+     * AndroidX libraries are written in it, and they do not all ask for the
+     * same version.
+     *
+     * From Kotlin 1.8 onwards, kotlin-stdlib-jdk7 and kotlin-stdlib-jdk8 were
+     * folded into kotlin-stdlib itself. So when one dependency drags in
+     * stdlib 1.8.22 and another still asks for stdlib-jdk8 1.6.21, the same
+     * classes arrive twice and the build fails with a wall of
+     * «Duplicate class kotlin.…». Pinning every kotlin-* module to one version
+     * through the BOM turns the jdk7/jdk8 artifacts back into the empty shims
+     * they are meant to be.
+     *
+     * To see who is asking for what:
+     *   ./gradlew :app:dependencies --configuration releaseRuntimeClasspath | grep kotlin
+     */
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.24')
+
     implementation 'androidx.appcompat:appcompat:1.7.0'
+
     // WebViewAssetLoader serves the bundled files over https://appassets.androidplatform.net/
     // instead of file://, which is what makes localStorage behave normally.
     implementation 'androidx.webkit:webkit:1.11.0'
+}
+
+/*
+ * Belt and braces: even with the BOM, a dependency can pin an old jdk7/jdk8
+ * artifact explicitly. This forces them to follow the main stdlib whatever
+ * anyone asks for.
+ */
+configurations.configureEach {
+    resolutionStrategy {
+        force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24'
+        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24'
+    }
 }

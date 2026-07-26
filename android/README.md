@@ -40,6 +40,28 @@ deja que sincronice, y:
 
 ---
 
+## Si el build falla
+
+**«Duplicate class kotlin.…»** — desde Kotlin 1.8, `kotlin-stdlib-jdk7` y
+`kotlin-stdlib-jdk8` viven dentro de `kotlin-stdlib`. Si una librería pide la
+nueva y otra sigue pidiendo las viejas, las mismas clases llegan dos veces.
+`app/build.gradle` ya trae el BOM de Kotlin y un `force` para las tres, que es
+la solución. Si vuelve a aparecer con otro nombre, para ver quién lo pide:
+
+```bash
+cd android
+./gradlew :app:dependencies --configuration releaseRuntimeClasspath | grep kotlin
+```
+
+Y después de tocar `build.gradle`: *File → Sync Project with Gradle Files*, y si
+insiste, *Build → Clean Project*.
+
+**Gradle no encuentra el wrapper** — abre la carpeta `android/` con *Open*, no
+con *Import*; Android Studio genera el wrapper solo. También sirve
+`gradle wrapper` si tienes Gradle instalado.
+
+---
+
 ## La llave de firma
 
 La primera vez, Android Studio te ofrece crear un *keystore*. **Guárdalo y
