@@ -155,24 +155,67 @@ function fishBucketArt(n) {
   return s;
 }
 
+/* The lake. Everything here is flat colour with no outline, on purpose: the
+   fish carry the heavy navy stroke, so the background has to stay quiet or
+   she cannot pick them out of it.
+
+   The middle of the water is deliberately empty. That is where the fish
+   swim. */
 function fishSceneArt() {
+  const W = FISH_W, H = FISH_H, top = FISH_WATER_TOP;
   let s = '';
-  s += '<rect width="' + FISH_W + '" height="' + FISH_H + '" fill="#CDEBF7"/>';
-  // Sun and a couple of hills above the waterline.
-  s += '<circle cx="56" cy="34" r="22" fill="#F8DE72"/>';
-  s += '<path d="M0 ' + FISH_WATER_TOP + ' Q90 20 180 ' + FISH_WATER_TOP + ' Z" fill="#9FD6A4"/>';
-  s += '<path d="M150 ' + FISH_WATER_TOP + ' Q250 26 350 ' + FISH_WATER_TOP + ' Z" fill="#8ACB93"/>';
+
+  // Sky and sun.
+  s += '<rect width="' + W + '" height="' + H + '" fill="#BFE4F0"/>';
+  s += '<circle cx="' + (W - 108) + '" cy="30" r="21" fill="#F7DD72"/>';
+
+  // Three hills, the far one darker, meeting the waterline.
+  s += '<path d="M0 ' + top + ' L0 44 C60 20 130 24 190 ' + top + ' Z" fill="#7DB33F"/>';
+  s += '<path d="M' + (W - 190) + ' ' + top + ' C' + (W - 130) + ' 26 ' + (W - 50) + ' 22 ' +
+       W + ' 40 L' + W + ' ' + top + ' Z" fill="#6DA336"/>';
+  s += '<path d="M120 ' + top + ' C190 34 260 34 330 ' + top + ' Z" fill="#8CC24C"/>';
+
   // Water.
-  s += '<rect y="' + FISH_WATER_TOP + '" width="' + FISH_W + '" height="' +
-       (FISH_H - FISH_WATER_TOP) + '" fill="#4FA8D8"/>';
-  s += '<path d="M0 ' + FISH_WATER_TOP + ' q22 9 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0" ' +
-       'fill="none" stroke="#BFE6F6" stroke-width="6" stroke-linecap="round"/>';
-  // Weeds on the bed.
-  [40, 120, 250, 330].forEach((x, i) => {
-    s += '<path d="M' + x + ' ' + FISH_H + ' q' + (i % 2 ? 14 : -14) + ' -30 ' +
-         (i % 2 ? 4 : -4) + ' -54" fill="none" stroke="#2E7D52" stroke-width="8" ' +
-         'stroke-linecap="round" opacity=".65"/>';
-  });
+  s += '<rect y="' + top + '" width="' + W + '" height="' + (H - top) + '" fill="#83B0DC"/>';
+
+  // The scalloped ripple line, a chain of half circles.
+  let scallop = 'M0 ' + (top + 26);
+  for (let x = 0; x < W; x += 40) scallop += ' a 20 20 0 0 1 40 0';
+  s += '<path d="' + scallop + '" fill="none" stroke="#CFE8F7" stroke-width="7" ' +
+       'stroke-linecap="round"/>';
+
+  // The bed: a darker wave across the bottom.
+  let bed = 'M0 ' + (H - 46);
+  for (let x = 0; x < W; x += 110) bed += ' q 55 -16 110 0';
+  bed += ' L' + W + ' ' + H + ' L0 ' + H + ' Z';
+  s += '<path d="' + bed + '" fill="#6B9FCB"/>';
+
+  // Weeds: a curved stem with two leaves, at the sides and one in the middle.
+  const weed = (x, h, flip) => {
+    const f = flip ? -1 : 1;
+    let g = '<g transform="translate(' + x + ' ' + H + ') scale(' + f + ' 1)">';
+    g += '<path d="M0 0 C' + (-14) + ' ' + (-h * 0.4) + ' 14 ' + (-h * 0.7) + ' 2 ' + (-h) +
+         '" fill="none" stroke="#7FA84A" stroke-width="6" stroke-linecap="round"/>';
+    g += '<path d="M4 ' + (-h * 0.72) + ' C20 ' + (-h * 0.86) + ' 30 ' + (-h * 0.78) + ' 30 ' +
+         (-h * 0.66) + ' C18 ' + (-h * 0.62) + ' 8 ' + (-h * 0.66) + ' 4 ' + (-h * 0.72) + ' Z" fill="#7FA84A"/>';
+    g += '<path d="M-2 ' + (-h * 0.42) + ' C-18 ' + (-h * 0.54) + ' -28 ' + (-h * 0.46) + ' -28 ' +
+         (-h * 0.34) + ' C-16 ' + (-h * 0.3) + ' -6 ' + (-h * 0.36) + ' -2 ' + (-h * 0.42) + ' Z" fill="#7FA84A"/>';
+    g += '</g>';
+    return g;
+  };
+  s += weed(40, 150, false) + weed(84, 108, true) +
+       weed(212, 112, false) +
+       weed(W - 78, 158, true) + weed(W - 42, 116, false);
+
+  // Two stones sitting on the bed, with a lighter top.
+  const stone = (x, y, rx, ry) =>
+    '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="#7E858B"/>' +
+    '<ellipse cx="' + (x - rx * 0.2) + '" cy="' + (y - ry * 0.42) + '" rx="' + (rx * 0.46) +
+    '" ry="' + (ry * 0.3) + '" fill="#9CA3A9"/>';
+  // They sit on the very bottom, so only the dome shows — like stones half
+  // buried in the bed rather than pebbles floating on it.
+  s += stone(76, H + 4, 38, 32) + stone(W - 118, H + 6, 32, 26);
+
   return s;
 }
 
