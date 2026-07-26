@@ -42,7 +42,6 @@ const I18N = {
     'x.worm': 'El gusanito',       'x.worm.sub': 'Come las naranjas',
     'x.bugs': 'Los mosquitos',     'x.bugs.sub': 'Atrápalos con el dedo',
     'x.fish': 'A pescar',          'x.fish.sub': 'Llena el balde',
-    'x.camera': 'Fotos',           'x.camera.sub': 'Con disfraces',
     'x.story': 'El lobo',          'x.story.sub': 'y los tres cerditos',
     'x.forest': 'El bosque',       'x.forest.sub': 'Juguemos con el lobo',
     'x.count': 'Los números',      'x.count.sub': 'Contar del 1 al 9',
@@ -64,7 +63,6 @@ const I18N = {
     'draw.confirm': '¿Empezamos un dibujo nuevo?',
 
     'pets.sleeping': 'Está durmiendo. Vuelve mañana o cámbiale de actividad.',
-    'cam.denied': 'No pude encender la cámara. Pídele ayuda a un adulto.',
 
     'story.straw': '¡Voló la paja!',
     'story.stick': '¡Volaron los palitos!',
@@ -166,7 +164,6 @@ const I18N = {
     'x.worm': 'The little worm',  'x.worm.sub': 'Eat the berries',
     'x.bugs': 'The mosquitoes',   'x.bugs.sub': 'Catch them with your finger',
     'x.fish': 'Fishing',          'x.fish.sub': 'Fill up the bucket',
-    'x.camera': 'Photos',         'x.camera.sub': 'With costumes',
     'x.story': 'The wolf',        'x.story.sub': 'and the three little pigs',
     'x.forest': 'The forest',     'x.forest.sub': "Let's play with the wolf",
     'x.count': 'Numbers',         'x.count.sub': 'Counting 1 to 9',
@@ -188,7 +185,6 @@ const I18N = {
     'draw.confirm': 'Start a new drawing?',
 
     'pets.sleeping': "They're asleep. Come back tomorrow, or try something else.",
-    'cam.denied': "I couldn't turn the camera on. Ask a grown-up for help.",
 
     'story.straw': 'The straw flew away!',
     'story.stick': 'The sticks flew away!',
@@ -290,7 +286,6 @@ const I18N = {
     'x.worm': 'A minhoca',         'x.worm.sub': 'Come as frutinhas',
     'x.bugs': 'Os mosquitos',      'x.bugs.sub': 'Pegue com o dedo',
     'x.fish': 'Pescaria',          'x.fish.sub': 'Encha o balde',
-    'x.camera': 'Fotos',           'x.camera.sub': 'Com fantasias',
     'x.story': 'O lobo',           'x.story.sub': 'e os três porquinhos',
     'x.forest': 'A floresta',      'x.forest.sub': 'Vamos brincar com o lobo',
     'x.count': 'Os números',       'x.count.sub': 'Contar de 1 a 9',
@@ -312,7 +307,6 @@ const I18N = {
     'draw.confirm': 'Vamos começar um desenho novo?',
 
     'pets.sleeping': 'Está dormindo. Volte amanhã ou mude de atividade.',
-    'cam.denied': 'Não consegui ligar a câmera. Peça ajuda a um adulto.',
 
     'story.straw': 'A palha voou!',
     'story.stick': 'As varetas voaram!',

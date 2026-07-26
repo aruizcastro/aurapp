@@ -85,16 +85,18 @@ se pierde.
 | --- | --- |
 | Mundos | Los 9: pintar, dibujar, amigos, gusanito, mosquitos, pescar, lobo, bosque, números, unir la flecha |
 | Videos | **No.** `BUILD.videos = false` |
-| Cámara | **No.** Sigue oculta, para no pedir el permiso |
+| Cámara | **Eliminada.** Ni el mundo ni el código |
 | Permisos | **Ninguno**, ni siquiera internet |
 | Idiomas | Español, inglés y portugués, según el idioma del teléfono |
 | Tamaño | Alrededor de 1 MB. Todo el arte es SVG generado por código |
 
-**Por qué la cámara sigue afuera:** activarla obliga a pedir el permiso
+**Por qué se eliminó la cámara:** activarla obliga a pedir el permiso
 `CAMERA`, a declararlo en el formulario de seguridad de datos y a justificarlo
 ante la revisión de la categoría infantil, que es la más estricta de Play. Por
-un mundo que además guarda fotos de una niña en el dispositivo, no vale la pena
-todavía.
+un mundo que además guarda fotos de una niña en el aparato, no valía la pena.
+Se quitó entera —el mundo, la pantalla, el CSS y `camera.js`— en vez de dejarla
+apagada: código que nadie ejecuta es código que nadie mantiene, y en una
+revisión hay que explicarlo igual.
 
 **Por qué no está el límite de tiempo:** ese contador solo corre mientras se
 reproduce un video. Sin videos no cuenta nada, así que la sección desaparece

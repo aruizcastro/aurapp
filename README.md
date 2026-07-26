@@ -26,7 +26,6 @@ En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde
 
 Al ponerle una prenda el amigo **rebota**, y al ponerle un accesorio **se menea**. Sin esa reacción el juego se siente roto: tocas algo, aparece, y no pasa nada. El rebote se ancla en los pies para que lea como el personaje aterrizando y no como la imagen entera creciendo. Si el dispositivo tiene activado reducir movimiento, las animaciones se apagan.
 
-**Fotos** *(oculto por ahora)*. Cámara con seis disfraces combinables (sombrero, gafas, corbata, orejas de gato, nariz de perro y cuerno de unicornio). Cada uno se arrastra donde ella quiera y todos quedan quemados en la foto. Las fotos se guardan en IndexedDB en el propio dispositivo, con tope de 30 — al llegar, la más vieja se borra sola. Nunca salen del iPad: no hay servidor.
 
 **El lobo y los tres cerditos.** Tres rondas: casa de paja, de palitos y de ladrillos. Un botón enorme sopla, las dos primeras casas vuelan por los aires y los cerditos corren; la de ladrillos aguanta y el lobo se cae de espaldas. El lobo nunca alcanza a nadie y siempre pierde.
 
@@ -40,7 +39,7 @@ No se puede perder. Las paredes lo detienen sin castigo, se atraviesa a sí mism
 
 Soltar el número en el grupo equivocado no cuesta nada: la tarjeta vuelve a su sitio y ya. Sin pitido, sin puntaje, sin nada perdido. Contar es el ejercicio, y regañarla por contar mal es la forma más rápida de que deje de contar.
 
-**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, Fotos, El lobo, El bosque, El gusanito, Los números— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
+**Mundos visibles.** Cada mundo que no es de video —Pintar, Amigos, El lobo, El bosque, El gusanito, Los números— se puede ocultar de la pantalla de inicio desde el panel de padres. Se ocultan, no se borran. *Fotos* viene oculto de fábrica.
 
 **Colores de la app.** Tres paletas en el panel de padres: Unicornio (rosados y morados, la de siempre), Mar (azules y verdes) y Bosque (verdes y tierra). Cambia fondos, botones, acentos y mosaicos. Los personajes y los dibujos para colorear no cambian: son ilustración, no interfaz.
 
@@ -149,7 +148,6 @@ docs/
 ├── app.js                   Estado, navegación, reproductor, pintar
 ├── silhouettes.js           Los 22 dibujos para colorear
 ├── pets.js                  Capi, Michi y Coneja, y su clóset compartido
-├── camera.js                Disfraces y guardado de fotos en IndexedDB
 ├── story.js                 El lobo y los tres cerditos
 ├── forest.js                Juguemos en el bosque (reusa el lobo de story.js)
 ├── worm.js                  El gusanito que come naranjas
@@ -222,9 +220,11 @@ actual. Hay que volver a correr el script cada vez que cambie algo en `docs/`.
   más demora una revisión. Además un video que alguien borre deja un hueco en
   la app sin que nosotros hagamos nada. Con eso se cae también la sección de
   tiempo, que solo contaba minutos de video.
-- **Sin permisos.** La cámara se queda oculta por ahora: activarla obliga a
-  pedir el permiso, declararlo y justificarlo. Cero permisos hace que el
-  formulario de seguridad de datos sean tres «no».
+- **Sin permisos.** Ni siquiera internet. El mundo de la cámara se eliminó:
+  pedir el permiso obliga a declararlo, justificarlo ante la revisión de la
+  categoría infantil —la más estricta de Play— y responder por fotos de una
+  niña guardadas en el aparato. Cero permisos hace que el formulario de
+  seguridad de datos sean tres «no».
 - **Gratis por ahora, con todos los mundos abiertos.** Primero reseñas, después
   precio. El interruptor `BUILD.premiumLocked` ya existe y está apagado.
 
@@ -236,8 +236,8 @@ actual. Hay que volver a correr el script cada vez que cambie algo en `docs/`.
 | Pintar | Los números |
 | Amigos | El lobo y los tres cerditos |
 | El gusanito | Juguemos en el bosque |
-| Los mosquitos | Fotos con disfraces |
-| A pescar | Une la flecha |
+| Los mosquitos | Une la flecha |
+| A pescar | |
 
 Dos reglas que no se rompen: **los mundos se venden enteros** —nunca media
 mascota— y **la niña nunca ve el candado**: con `premiumLocked` en `true` los

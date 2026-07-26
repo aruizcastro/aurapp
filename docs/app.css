@@ -58,9 +58,9 @@ html, body {
 /* Screens ------------------------------------------------------------- */
 
 /* Padding respects the notch and the home bar. On a phone with a cutout, or
-   an iPad in full screen, a flat 20px puts the home button under the camera
-   hole or under the gesture bar. env() is zero on everything else, so this
-   costs nothing where it is not needed. */
+   an iPad in full screen, a flat 20px puts the home button under the cut-out
+   or under the gesture bar. env() is zero on everything else, so this costs
+   nothing where it is not needed. */
 .screen {
   position: fixed; inset: 0; display: none; flex-direction: column; gap: 14px;
   padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
@@ -366,51 +366,6 @@ html, body {
   .petitem svg { height: 44px; }
   .petitem span { font-size: 11px; }
 }
-
-/* Camera --------------------------------------------------------------- */
-
-.camwrap {
-  flex: 1; position: relative; min-height: 0;
-  background: #2A2340; border-radius: 20px; overflow: hidden;
-}
-.camwrap video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.camwrap video.mirror { transform: scaleX(-1); }
-.camwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
-
-.camflash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
-.camflash.on { opacity: .9; }
-
-.camshot {
-  position: absolute; right: 12px; bottom: 12px; width: 84px; height: 66px;
-  border-radius: 10px; border: 3px solid #fff; overflow: hidden; background: #000;
-  opacity: 0; transform: scale(.6); transition: all .35s; pointer-events: none;
-}
-.camshot.on { opacity: 1; transform: scale(1); }
-.camshot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-.camdenied {
-  position: absolute; inset: 0; margin: 0; display: none;
-  align-items: center; justify-content: center; text-align: center; padding: 28px;
-  color: #fff; font-size: 18px; line-height: 1.5;
-}
-.camdenied.on { display: flex; }
-
-.camrow { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; }
-.camcostumes { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-.camcostume {
-  background: #fff; border: 4px solid transparent; border-radius: 14px;
-  padding: 2px; cursor: pointer; font-family: inherit;
-}
-.camcostume.on { border-color: var(--accent); background: var(--bg-main); }
-.camcostume svg { display: block; width: 100%; height: 44px; }
-
-.camshutter {
-  width: 88px; height: 88px; flex: 0 0 auto; border-radius: 50%;
-  border: 6px solid #fff; background: var(--accent-strong); cursor: pointer; padding: 0;
-  display: grid; place-items: center; box-shadow: 0 0 0 4px var(--accent-strong);
-}
-.camshutter:active { transform: scale(.94); }
-.camshutter svg { width: 48px; height: 48px; }
 
 /* Wolf and the three pigs ---------------------------------------------- */
 

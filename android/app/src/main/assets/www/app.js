@@ -122,7 +122,6 @@ const EXTRA_WORLDS = [
   { id: 'bugs',   name: 'Los mosquitos', sub: 'Atrápalos con el dedo', icon: '🦟' },
   { id: 'fish',   name: 'A pescar',   sub: 'Llena el balde',        icon: '🎣' },
 
-  { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷', premium: true },
   { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺', premium: true },
   { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲', premium: true },
   { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢', premium: true },
@@ -153,7 +152,7 @@ const PET_DEFAULT = () => {
 };
 
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
-                   theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT(),
+                   theme: 'unicorn', ytKey: '', hidden: {}, pets: PET_DEFAULT(),
                    // '' means «whatever the device speaks»; a code pins it.
                    lang: '',
                    /* Silent until the parent says otherwise. An app that
@@ -282,7 +281,6 @@ function go(name) {
   if (name === 'color') openColoring();
   if (name === 'draw') setupDraw();
   if (name === 'pets') openPets();
-  if (name === 'camera') openCamera();
   if (name === 'story') openStory();
   if (name === 'forest') openForest();
   if (name === 'worm') openWorm();
@@ -290,7 +288,6 @@ function go(name) {
   if (name === 'bugs') openBugs(); else bugStop();
   if (name === 'fish') openFish(); else fishStop();
   if (name === 'match') openMatch();
-  if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
 
@@ -1125,142 +1122,6 @@ function throwToy(toy) {
   requestAnimationFrame(step);
 }
 
-// -------------------------------------------------------------- camera
-
-let camStream = null;
-let camFacing = 'user';
-let camPlaced = [];      // [{id, x, y, scale}] in preview pixels
-let camDrag = null;
-
-const CAM_SCALE = 0.9;
-
-async function openCamera() {
-  renderCamCostumes();
-  drawCamOverlay();
-
-  const video = $('#camVideo');
-  video.classList.toggle('mirror', camFacing === 'user');
-
-  camStream = await cameraStart(video, camFacing);
-  $('#camDenied').classList.toggle('on', !camStream);
-  if (!camStream) $('#camDenied').textContent = CAMERA_DENIED_TEXT;
-}
-
-function closeCamera() {
-  if (camStream) { cameraStop(camStream); camStream = null; }
-}
-
-function camBox() {
-  const r = $('#camWrap').getBoundingClientRect();
-  return { w: r.width, h: r.height, left: r.left, top: r.top };
-}
-
-function drawCamOverlay() {
-  const box = camBox();
-  const svg = $('#camOverlay');
-  svg.setAttribute('viewBox', '0 0 ' + Math.round(box.w) + ' ' + Math.round(box.h));
-  svg.innerHTML = camPlaced.map(p =>
-    '<g data-id="' + p.id + '" transform="translate(' + p.x + ' ' + p.y +
-    ') scale(' + p.scale + ')">' + costumeToSVG(cameraCostume(p.id)) + '</g>'
-  ).join('');
-}
-
-function renderCamCostumes() {
-  const host = $('#camCostumes');
-  host.innerHTML = '';
-  CAMERA_COSTUMES.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'camcostume' + (camPlaced.some(p => p.id === c.id) ? ' on' : '');
-    btn.setAttribute('aria-label', c.name);
-    btn.title = c.name;
-    btn.innerHTML = '<svg viewBox="-95 -95 190 190" aria-hidden="true">' + costumeToSVG(c) + '</svg>';
-    btn.onclick = () => {
-      const at = camPlaced.findIndex(p => p.id === c.id);
-      if (at >= 0) {
-        camPlaced.splice(at, 1);              // tapping again takes it off
-      } else {
-        const box = camBox();
-        camPlaced.push({
-          id: c.id,
-          x: box.w / 2,
-          y: box.h / 2 + c.defaultY * CAM_SCALE,
-          scale: CAM_SCALE
-        });
-      }
-      renderCamCostumes();
-      drawCamOverlay();
-    };
-    host.appendChild(btn);
-  });
-}
-
-(function bindCameraDrag() {
-  const svg = $('#camOverlay');
-
-  const at = (e) => {
-    const box = camBox();
-    return { x: e.clientX - box.left, y: e.clientY - box.top };
-  };
-
-  svg.addEventListener('pointerdown', (e) => {
-    const p = at(e);
-    // Topmost first: the last one she added is the one she means to move.
-    for (let i = camPlaced.length - 1; i >= 0; i--) {
-      const placed = camPlaced[i];
-      const costume = cameraCostume(placed.id);
-      if (Math.hypot(p.x - placed.x, p.y - placed.y) < costume.radius * placed.scale) {
-        camDrag = { i, dx: p.x - placed.x, dy: p.y - placed.y };
-        svg.setPointerCapture(e.pointerId);
-        return;
-      }
-    }
-  });
-
-  svg.addEventListener('pointermove', (e) => {
-    if (!camDrag) return;
-    e.preventDefault();
-    const p = at(e);
-    const box = camBox();
-    const placed = camPlaced[camDrag.i];
-    placed.x = Math.max(20, Math.min(box.w - 20, p.x - camDrag.dx));
-    placed.y = Math.max(20, Math.min(box.h - 20, p.y - camDrag.dy));
-    drawCamOverlay();
-  });
-
-  ['pointerup', 'pointercancel'].forEach(ev =>
-    svg.addEventListener(ev, () => { camDrag = null; }));
-})();
-
-$('#camFlip').onclick = async () => {
-  camFacing = camFacing === 'user' ? 'environment' : 'user';
-  closeCamera();
-  await openCamera();
-};
-
-$('#camShutter').onclick = async () => {
-  if (!camStream) return;
-
-  const flash = $('#camFlash');
-  flash.classList.add('on');
-  setTimeout(() => flash.classList.remove('on'), 90);
-
-  const box = camBox();
-  const blob = await capturePhoto($('#camVideo'), camPlaced, camFacing === 'user', box.w, box.h);
-  if (!blob) return;
-
-  await photoSave(blob);
-  showLastPhoto();
-};
-
-async function showLastPhoto() {
-  const record = await photoLast();
-  if (!record) return;
-  const shot = $('#camShot');
-  const url = URL.createObjectURL(record.blob);
-  shot.innerHTML = '<img alt="">';
-  shot.firstElementChild.src = url;
-  shot.classList.add('on');
-}
 
 // -------------------------------------------------- wolf and three pigs
 
