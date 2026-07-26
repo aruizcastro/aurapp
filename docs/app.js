@@ -87,7 +87,8 @@ const EXTRA_WORLDS = [
   { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺' },
   { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' },
   { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' },
-  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢' }
+  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢' },
+  { id: 'bugs',   name: 'Los mosquitos', sub: 'Atrápalos con el dedo', icon: '🦟' }
 ];
 
 function applyTheme(id) {
@@ -214,6 +215,7 @@ function go(name) {
   if (name === 'forest') openForest();
   if (name === 'worm') openWorm();
   if (name === 'count') openCounting();
+  if (name === 'bugs') openBugs(); else bugStop();
   if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
@@ -1859,3 +1861,38 @@ if ('serviceWorker' in navigator) {
 rollover();
 applyTheme(state.theme);
 go('worlds');
+
+
+// ----------------------------------------------------------- mosquitos
+
+function openBugs() {
+  bugInit($('#bugSvg'));
+  $('#bugCheer').hidden = true;
+  renderBugDots();
+  bugOnDone(() => {
+    renderBugDots();
+    $('#bugCheer').textContent = '🎉';
+    $('#bugCheer').hidden = false;
+  });
+}
+
+function renderBugDots() {
+  const host = $('#bugDots');
+  const s = bugState();
+  host.innerHTML = '';
+  for (let i = 0; i < s.total; i++) {
+    const dot = document.createElement('i');
+    if (i < s.caught) dot.className = 'on';
+    host.appendChild(dot);
+  }
+}
+
+function wireBugs() {
+  $('#bugSvg').addEventListener('pointerdown', () => setTimeout(renderBugDots, 0));
+  $('#bugReset').onclick = () => {
+    bugReset();
+    $('#bugCheer').hidden = true;
+    renderBugDots();
+  };
+}
+wireBugs();

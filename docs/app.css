@@ -657,3 +657,47 @@ html, body {
   .picker { display: none; }
   .big { width: 54px; height: 54px; font-size: 21px; }
 }
+
+/* Mosquitos ------------------------------------------------------------ */
+
+.bugwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+
+.bugboard {
+  width: 100%; max-width: 780px; border-radius: 22px; overflow: hidden;
+  background: #E9F3FA; box-shadow: 0 4px 0 rgba(38,33,92,.10);
+  touch-action: none;              /* the tap must not scroll or zoom the page */
+}
+.bugboard svg { display: block; width: 100%; height: auto; }
+
+/* The wings flap on the compositor instead of in the animation loop. */
+.bug .wing {
+  animation: bugflap .12s ease-in-out infinite alternate;
+  animation-delay: var(--flap-delay, 0s);
+  transform-origin: center;
+}
+.bug .wl { transform-origin: 0 -15px; }
+.bug .wr { transform-origin: 0 -15px; }
+@keyframes bugflap {
+  from { transform: scaleY(1);   opacity: .9; }
+  to   { transform: scaleY(.35); opacity: .6; }
+}
+
+.bugpoof { animation: bugpoof .55s ease-out forwards; }
+@keyframes bugpoof {
+  from { transform: scale(.4);  opacity: 1; }
+  to   { transform: scale(1.5); opacity: 0; }
+}
+
+.bugcheer {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 84px; pointer-events: none;
+  animation: bugcheer .5s ease-out;
+}
+@keyframes bugcheer {
+  from { transform: scale(.5); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .bugcheer { font-size: 60px; }
+}

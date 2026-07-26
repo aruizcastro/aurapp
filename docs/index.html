@@ -230,6 +230,20 @@
   </div>
 </div>
 
+<!-- Mosquitos ---------------------------------------------------------- -->
+<div class="screen" id="s-bugs">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <div class="dots" id="bugDots"></div>
+    <div class="grow"></div>
+    <button class="round wormrestart" id="bugReset" aria-label="Empezar de nuevo">↺</button>
+  </div>
+  <div class="bugwrap">
+    <div class="bugboard"><svg id="bugSvg" aria-label="los mosquitos"></svg></div>
+    <div class="bugcheer" id="bugCheer" hidden></div>
+  </div>
+</div>
+
 <!-- Counting ------------------------------------------------------------ -->
 <div class="screen" id="s-count">
   <div class="bar">
@@ -434,6 +448,7 @@
 <script src="forest.js"></script>
 <script src="worm.js"></script>
 <script src="counting.js"></script>
+<script src="bugs.js"></script>
 <script src="youtube.js"></script>
 <script src="app.js"></script>
 </body>
