@@ -66,7 +66,15 @@ Para usarlo: abre AurApp y da tres clics rápidos al botón lateral. El iPad que
 
 ## Agregar videos
 
-Mantén apretado el candado 2 segundos, escribe el PIN (viene en `1234`, cámbialo) y pega enlaces de YouTube. El título y la portada se llenan solos: la app se los pide a YouTube por oEmbed, que no necesita API key.
+Mantén apretado el candado 2 segundos y escribe el PIN (viene en `1234`, cámbialo). Hay cuatro formas, de más a menos cómoda:
+
+**Buscar en YouTube.** Escribes qué buscar, salen los resultados con miniatura y tocas «Agregar» en los que quieras. Es la forma más rápida y no hay que copiar ningún enlace. Va con **búsqueda segura estricta** y filtrada a videos que se puedan reproducir dentro de la app — sin ese segundo filtro aparecerían resultados que al tocarlos no arrancan.
+
+**Importar una lista de reproducción.** Pegas el enlace de una playlist y trae todos sus videos. Solo listas públicas o no listadas: las privadas y «Ver más tarde» necesitan iniciar sesión, que una PWA no puede hacer.
+
+**Pegar muchos enlaces.** Un cuadro de texto donde pegas varios de una vez. Acepta texto sucio: saca los enlaces que encuentre e ignora el resto.
+
+**Uno por uno.** Pegas un enlace y listo.
 
 Sirve cualquier forma de enlace:
 
@@ -75,6 +83,22 @@ https://www.youtube.com/watch?v=XXXXXXXXXXX
 https://youtu.be/XXXXXXXXXXX
 https://www.youtube.com/shorts/XXXXXXXXXXX
 ```
+
+### La clave de YouTube
+
+Buscar e importar playlists necesitan una API key. Pegar enlaces y agregar uno por uno **no**, así que la app funciona completa sin configurar nada.
+
+Es gratuita y **no pide tarjeta de crédito**:
+
+1. Entra a [console.cloud.google.com](https://console.cloud.google.com) y crea un proyecto.
+2. En *APIs y servicios → Biblioteca*, busca **YouTube Data API v3** y habilítala.
+3. En *Credenciales → Crear credenciales → Clave de API*, genera la clave.
+4. Edítala y en *Restricciones de aplicación* elige **Sitios web**, agregando `https://TU-USUARIO.github.io/*`.
+5. Pégala en el panel de padres, sección *Clave de YouTube*.
+
+La clave queda visible en el código de la página — es inevitable en una app sin servidor. Por eso importa el paso 4: restringida a tu dominio, no sirve en ningún otro sitio. Y no tiene nada más colgado: lo peor que puede pasar es que alguien gaste la cuota gratuita.
+
+Esa cuota son 10.000 unidades diarias. Una búsqueda cuesta 100 y leer una playlist cuesta 1 por cada 50 videos, así que da para unas 100 búsquedas al día.
 
 ---
 
@@ -120,6 +144,7 @@ docs/
 ├── forest.js                Juguemos en el bosque (reusa el lobo de story.js)
 ├── worm.js                  El gusanito que come naranjas
 ├── counting.js              Los números del 1 al 9 y sus grupos
+├── youtube.js               Buscar, importar playlists y pegado masivo
 ├── manifest.webmanifest     Para que se instale como app
 ├── sw.js                    Service worker: pintar funciona sin internet
 └── icons/                   Íconos de 180, 192 y 512

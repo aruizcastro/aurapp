@@ -89,7 +89,7 @@ const PET_DEFAULT = () => {
 };
 
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
-                   theme: 'unicorn', hidden: { camera: true }, pets: PET_DEFAULT() };
+                   theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT() };
 
 let state = load();
 
@@ -1453,6 +1453,8 @@ function renderParents() {
   $('#limitSel').value = String(state.limit);
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
   $('#pinInput').value = state.pin;
+  ytWorldPicker();
+  ytSyncKeyUI();
   renderWorldToggles();
   renderThemePicker();
   $('#videoCount').textContent = state.videos.length;
@@ -1535,7 +1537,9 @@ function renderThemePicker() {
       state.theme = theme.id;
       save();
       applyTheme(theme.id);
-      renderWorldToggles();
+      ytWorldPicker();
+  ytSyncKeyUI();
+  renderWorldToggles();
   renderThemePicker();
     };
     host.appendChild(btn);
@@ -1582,6 +1586,125 @@ $('#addBtn').onclick = () => {
   $('#addLink').value = '';
   $('#addTitle').value = '';
   $('#addHint').textContent = 'Agregado.';
+  renderParents();
+};
+
+// YouTube: search, playlists and bulk paste -----------------------------
+
+function ytWorldPicker() {
+  const sel = $('#ytWorld');
+  if (!sel.childElementCount) {
+    WORLDS.filter(w => w.id !== favoritesWorldID()).forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w.id;
+      opt.textContent = w.name;
+      sel.appendChild(opt);
+    });
+  }
+  return sel.value || 'songs';
+}
+
+// The video list uses a plain string for the favourites world; keep the
+// name in one place so a rename cannot silently break the picker.
+function favoritesWorldID() { return 'favorites'; }
+
+function ytSyncKeyUI() {
+  const has = ytHasKey(state.ytKey);
+  $('#ytKey').value = state.ytKey || '';
+  $('#ytSearchBtn').disabled = !has;
+  $('#ytListBtn').disabled = !has;
+  $('#ytHint').textContent = has
+    ? 'Escribe qué buscar y toca Buscar.'
+    : 'Necesita una clave de YouTube. Ponla más abajo. Pegar enlaces sí funciona sin clave.';
+}
+
+$('#ytKeySave').onclick = () => {
+  state.ytKey = $('#ytKey').value.trim();
+  save();
+  ytSyncKeyUI();
+};
+
+/** Adds a batch, skipping anything already in the list. Returns how many landed. */
+function ytAddBatch(videos, world) {
+  let added = 0;
+  videos.forEach(v => {
+    if (state.videos.some(existing => existing.id === v.id)) return;
+    state.videos.push({ id: v.id, title: v.title || 'Video', world: world, plays: 0 });
+    added++;
+  });
+  if (added) save();
+  return added;
+}
+
+$('#ytSearchBtn').onclick = async () => {
+  const query = $('#ytQuery').value.trim();
+  if (!query) return;
+  const world = ytWorldPicker();
+
+  $('#ytHint').textContent = 'Buscando…';
+  $('#ytResults').innerHTML = '';
+
+  try {
+    const found = await ytSearch(query, state.ytKey);
+    $('#ytHint').textContent = found.length
+      ? 'Toca «Agregar» en los que quieras.'
+      : 'No encontré nada con eso.';
+
+    found.forEach(video => {
+      const already = state.videos.some(v => v.id === video.id);
+      const row = document.createElement('div');
+      row.className = 'ytresult';
+      row.innerHTML = '<img alt="" src="' + thumbURL(video.id) + '">' +
+                      '<div class="m"><b></b><span></span></div><button></button>';
+      row.querySelector('b').textContent = video.title;
+      row.querySelector('.m span').textContent = video.channel;
+
+      const btn = row.querySelector('button');
+      const mark = (done) => {
+        btn.textContent = done ? 'Agregado' : 'Agregar';
+        btn.classList.toggle('added', done);
+        btn.disabled = done;
+      };
+      mark(already);
+      btn.onclick = () => {
+        ytAddBatch([video], ytWorldPicker());
+        mark(true);
+        renderParents();
+      };
+      $('#ytResults').appendChild(row);
+    });
+  } catch (err) {
+    $('#ytHint').textContent = 'YouTube respondió: ' + err.message;
+  }
+};
+
+$('#ytListBtn').onclick = async () => {
+  const listID = ytPlaylistID($('#ytList').value);
+  const world = ytWorldPicker();
+  if (!listID) { $('#ytHint').textContent = 'Ese enlace no tiene una lista.'; return; }
+
+  $('#ytHint').textContent = 'Trayendo la lista…';
+  try {
+    const videos = await ytPlaylist(listID, state.ytKey);
+    const added = ytAddBatch(videos, world);
+    $('#ytHint').textContent = 'Traje ' + videos.length + ' videos, ' + added + ' nuevos.';
+    $('#ytList').value = '';
+    renderParents();
+  } catch (err) {
+    $('#ytHint').textContent = 'YouTube respondió: ' + err.message;
+  }
+};
+
+$('#ytBulkBtn').onclick = async () => {
+  const ids = ytLinksFrom($('#ytBulk').value);
+  const world = ytWorldPicker();
+  if (!ids.length) { $('#ytHint').textContent = 'No encontré enlaces en ese texto.'; return; }
+
+  $('#ytHint').textContent = 'Leyendo ' + ids.length + ' enlaces…';
+  const videos = await ytTitles(ids);
+  const added = ytAddBatch(videos, world);
+  $('#ytHint').textContent = 'Encontré ' + ids.length + ', agregué ' + added + '.';
+  $('#ytBulk').value = '';
   renderParents();
 };
 

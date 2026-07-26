@@ -286,7 +286,30 @@
     </section>
 
     <section>
-      <h3>Agregar video</h3>
+      <h3>Buscar en YouTube</h3>
+      <label>Buscar <input type="text" id="ytQuery" placeholder="canciones infantiles" autocomplete="off"></label>
+      <label>Mundo <select id="ytWorld"></select></label>
+      <button class="btn primary" id="ytSearchBtn">Buscar</button>
+      <p class="hint" id="ytHint">Necesita una clave de YouTube. Ponla más abajo.</p>
+      <div id="ytResults"></div>
+    </section>
+
+    <section>
+      <h3>Importar una lista de reproducción</h3>
+      <label>Enlace <input type="url" id="ytList" placeholder="https://www.youtube.com/playlist?list=..." autocomplete="off"></label>
+      <button class="btn" id="ytListBtn">Traer todos</button>
+      <p class="hint">Solo listas públicas o no listadas. Las privadas y «Ver más tarde» necesitan iniciar sesión, que esta app no puede hacer.</p>
+    </section>
+
+    <section>
+      <h3>Pegar muchos enlaces</h3>
+      <textarea id="ytBulk" rows="4" placeholder="Pega aquí varios enlaces, uno por línea"></textarea>
+      <button class="btn" id="ytBulkBtn">Agregar todos</button>
+      <p class="hint">Esto no necesita clave. Sirve pegar texto suelto: la app saca los enlaces que encuentre.</p>
+    </section>
+
+    <section>
+      <h3>Agregar un video</h3>
       <label>Enlace <input type="url" id="addLink" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off"></label>
       <label>Título <input type="text" id="addTitle" placeholder="Cómo lo va a ver ella"></label>
       <label>Mundo <select id="addWorld"></select></label>
@@ -313,6 +336,13 @@
     </section>
 
     <section>
+      <h3>Clave de YouTube</h3>
+      <label>API key <input type="text" id="ytKey" placeholder="AIza..." autocomplete="off"></label>
+      <button class="btn" id="ytKeySave">Guardar clave</button>
+      <p class="hint">Gratuita, se crea en Google Cloud y se pega una sola vez. Sin ella siguen funcionando el pegado masivo y agregar uno a uno. Restringe la clave a tu dominio de GitHub Pages.</p>
+    </section>
+
+    <section>
       <h3>Seguridad</h3>
       <label>PIN <input type="text" id="pinInput" inputmode="numeric" maxlength="4"></label>
       <button class="btn" id="savePin">Guardar PIN</button>
@@ -336,6 +366,7 @@
 <script src="forest.js"></script>
 <script src="worm.js"></script>
 <script src="counting.js"></script>
+<script src="youtube.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
