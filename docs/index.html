@@ -244,6 +244,34 @@
   </div>
 </div>
 
+<!-- Une con la flecha --------------------------------------------------- -->
+<div class="screen" id="s-match">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <div class="dots" id="matchDots"></div>
+    <div class="grow"></div>
+    <button class="round wormrestart" id="matchReset" aria-label="Empezar de nuevo">↺</button>
+  </div>
+  <div class="matchwrap">
+    <div class="matchboard"><svg id="matchSvg" aria-label="une los conjuntos con su numero"></svg></div>
+    <div class="bugcheer" id="matchCheer" hidden></div>
+  </div>
+</div>
+
+<!-- A pescar ------------------------------------------------------------ -->
+<div class="screen" id="s-fish">
+  <div class="bar">
+    <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
+    <div class="dots" id="fishDots"></div>
+    <div class="grow"></div>
+    <button class="round wormrestart" id="fishReset" aria-label="Empezar de nuevo">↺</button>
+  </div>
+  <div class="bugwrap">
+    <div class="bugboard"><svg id="fishSvg" aria-label="a pescar"></svg></div>
+    <div class="bugcheer" id="fishCheer" hidden></div>
+  </div>
+</div>
+
 <!-- Counting ------------------------------------------------------------ -->
 <div class="screen" id="s-count">
   <div class="bar">
@@ -449,6 +477,8 @@
 <script src="worm.js"></script>
 <script src="counting.js"></script>
 <script src="bugs.js"></script>
+<script src="match.js"></script>
+<script src="fish.js"></script>
 <script src="youtube.js"></script>
 <script src="app.js"></script>
 </body>

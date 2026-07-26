@@ -120,11 +120,13 @@ const EXTRA_WORLDS = [
   { id: 'pets',   name: 'Amigos',    sub: 'Capi, Michi y Coneja',  icon: '🐹' },
   { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' },
   { id: 'bugs',   name: 'Los mosquitos', sub: 'Atrápalos con el dedo', icon: '🦟' },
+  { id: 'fish',   name: 'A pescar',   sub: 'Llena el balde',        icon: '🎣' },
 
   { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷', premium: true },
   { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺', premium: true },
   { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲', premium: true },
-  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢', premium: true }
+  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢', premium: true },
+  { id: 'match',  name: 'Une la flecha', sub: 'Del grupo a su número', icon: '➡️', premium: true }
 ];
 
 function applyTheme(id) {
@@ -252,6 +254,8 @@ function go(name) {
   if (name === 'worm') openWorm();
   if (name === 'count') openCounting();
   if (name === 'bugs') openBugs(); else bugStop();
+  if (name === 'fish') openFish(); else fishStop();
+  if (name === 'match') openMatch();
   if (name !== 'camera') closeCamera();
   if (name !== 'player') stopPlayer();
 }
@@ -1957,3 +1961,81 @@ function wireBugs() {
   };
 }
 wireBugs();
+
+
+// ------------------------------------------------------- une con la flecha
+
+function openMatch() {
+  matchInit($('#matchSvg'));
+  $('#matchCheer').hidden = true;
+  renderMatchDots();
+  matchOnDone(() => {
+    renderMatchDots();
+    const cheer = $('#matchCheer');
+    cheer.textContent = '🎉';
+    cheer.hidden = false;
+    // A finished board is a finished board: it clears itself and deals a new
+    // one, so she never has to find a button to keep playing.
+    setTimeout(() => {
+      cheer.hidden = true;
+      matchReset();
+      renderMatchDots();
+    }, 1600);
+  });
+}
+
+function renderMatchDots() {
+  const host = $('#matchDots');
+  const s = matchState();
+  host.innerHTML = '';
+  for (let i = 0; i < s.total; i++) {
+    const dot = document.createElement('i');
+    if (i < s.linked) dot.className = 'on';
+    host.appendChild(dot);
+  }
+}
+
+/* The line follows the finger anywhere and always ends when it lifts, even
+   off the edge of the board — the same lesson as the counting game. */
+window.addEventListener('pointermove', (e) => { if (current === 'match') matchMove(e); });
+['pointerup', 'pointercancel'].forEach(ev =>
+  window.addEventListener(ev, (e) => { if (current === 'match') { matchUp(e); renderMatchDots(); } }));
+
+$('#matchReset').onclick = () => {
+  matchReset();
+  $('#matchCheer').hidden = true;
+  renderMatchDots();
+};
+
+// ------------------------------------------------------------- a pescar
+
+function openFish() {
+  fishInit($('#fishSvg'));
+  $('#fishCheer').hidden = true;
+  renderFishDots();
+  fishOnDone(() => {
+    renderFishDots();
+    const cheer = $('#fishCheer');
+    cheer.textContent = '🎉';
+    cheer.hidden = false;
+    setTimeout(() => { cheer.hidden = true; }, 2200);
+  });
+}
+
+function renderFishDots() {
+  const host = $('#fishDots');
+  const s = fishState();
+  host.innerHTML = '';
+  for (let i = 0; i < s.total; i++) {
+    const dot = document.createElement('i');
+    if (i < s.caught) dot.className = 'on';
+    host.appendChild(dot);
+  }
+}
+
+$('#fishSvg').addEventListener('pointerdown', () => setTimeout(renderFishDots, 700));
+$('#fishReset').onclick = () => {
+  fishReset();
+  $('#fishCheer').hidden = true;
+  renderFishDots();
+};

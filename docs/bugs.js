@@ -124,6 +124,29 @@ function bugArt(colors, dizzy) {
   return s;
 }
 
+/* The jar in the corner: how many she has caught, as a numeral. Same idea as
+   the bucket in the fishing game — the number is the reward, and it is the
+   part she is actually learning. Empty, it shows nothing rather than a zero. */
+const BUG_JAR = { x: 316, y: 214, w: 62, h: 66 };
+
+function bugJarArt(n) {
+  const J = BUG_JAR, O = BUG_OUTLINE;
+  let s = '';
+  s += '<rect x="' + (J.x + 18) + '" y="' + (J.y - 14) + '" width="' + (J.w - 36) +
+       '" height="14" fill="#CFE6F5" stroke="' + O + '" stroke-width="3.5"/>';
+  s += '<rect x="' + (J.x + 8) + '" y="' + (J.y - 24) + '" width="' + (J.w - 16) +
+       '" height="12" rx="5" fill="#F0B23C" stroke="' + O + '" stroke-width="3.5"/>';
+  s += '<rect x="' + J.x + '" y="' + J.y + '" width="' + J.w + '" height="' + J.h +
+       '" rx="14" fill="#DCEEF9" fill-opacity=".92" stroke="' + O + '" stroke-width="4"/>';
+  if (n > 0) {
+    s += '<text x="' + (J.x + J.w / 2) + '" y="' + (J.y + J.h / 2 + 2) +
+         '" text-anchor="middle" dominant-baseline="central" ' +
+         'font-family="ui-rounded, system-ui, sans-serif" font-size="40" font-weight="700" ' +
+         'fill="' + O + '">' + n + '</text>';
+  }
+  return s;
+}
+
 /* What she sees where the mosquito was: a burst of stars and a dizzy swirl.
    It fades out on its own and is then removed from the board. */
 function bugPoofArt() {
@@ -183,7 +206,8 @@ function bugBuild() {
   if (!bugSvg) return;
   bugSvg.innerHTML =
     '<rect width="' + BUG_W + '" height="' + BUG_H + '" fill="#E9F3FA"/>' +
-    '<g id="bugPoofs"></g><g id="bugHost"></g>';
+    '<g id="bugPoofs"></g><g id="bugHost"></g><g id="bugJar"></g>';
+  bugDrawJar();
   const host = bugSvg.querySelector('#bugHost');
   bugs.forEach((b, i) => {
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -294,12 +318,18 @@ function bugTap(ev) {
     setTimeout(() => { if (node) node.style.display = 'none'; }, 900);
   }
   bugCaught++;
+  bugDrawJar();
   bugPoof(best.x, best.y);
 
   if (bugCaught >= BUG_COUNT) {
     bugStop();
     if (bugDoneCb) bugDoneCb();
   }
+}
+
+function bugDrawJar() {
+  const host = bugSvg && bugSvg.querySelector('#bugJar');
+  if (host) host.innerHTML = bugJarArt(bugCaught);
 }
 
 function bugPoof(x, y) {

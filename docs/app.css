@@ -714,3 +714,13 @@ html, body {
 @media (max-width: 760px) {
   .bugcheer { font-size: 60px; }
 }
+
+/* Une con la flecha ----------------------------------------------------- */
+
+.matchwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+.matchboard {
+  width: 100%; max-width: 900px; border-radius: 22px; padding: 10px;
+  background: #fff; box-shadow: 0 4px 0 rgba(38,33,92,.10);
+  touch-action: none;            /* the finger paints a line, it does not scroll */
+}
+.matchboard svg { display: block; width: 100%; height: auto; }
