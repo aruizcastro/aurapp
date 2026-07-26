@@ -9,7 +9,7 @@
    Bumping CACHE below is optional now — the old copies get overwritten on
    every successful fetch anyway. */
 
-const CACHE = 'aurapp-v40';
+const CACHE = 'aurapp-v41';
 
 const SHELL = [
   './',
@@ -27,6 +27,9 @@ const SHELL = [
   './match.js',
   './fish.js',
   './sound.js',
+  './audio/buzz.wav',
+  './audio/pop.mp3',
+  './audio/cheer.mp3',
   './i18n.js',
   './i18n-help.js',
   './youtube.js',

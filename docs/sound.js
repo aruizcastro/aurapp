@@ -10,21 +10,25 @@
    · The parent can turn it all off, and that setting is remembered. Sound in a
      children's app is the single most common reason a grown-up deletes it.
 
-   · A missing file is not an error. If `audio/buzz.mp3` is not there, the game
+   · A missing file is not an error. If `audio/buzz.wav` is not there, the game
      plays a synthesised stand-in instead of throwing — so the games work today
      and get better the day the real recordings are dropped in.
 
    To use real recordings, drop the files into `docs/audio/` with these exact
    names. Anything short and mono is fine; MP3 or M4A both work.
 
-       audio/buzz.mp3   the mosquitoes flying — loops, so it must join up
+       audio/buzz.wav   the mosquitoes flying — loops, so it must join up
        audio/pop.mp3    one mosquito caught — very short, under half a second
        audio/cheer.mp3  the round finished */
 
 'use strict';
 
 const SOUND_FILES = {
-  buzz:  'audio/buzz.mp3',
+  // The buzz is a WAV, not an MP3, and that is deliberate: an MP3 decoder adds
+  // a few milliseconds of silence at each end, which in a loop is an audible
+  // gap every three seconds. A WAV decodes to exactly the samples it was given.
+  // It costs 66 KB instead of 20, which is a fair price for a clean loop.
+  buzz:  'audio/buzz.wav',
   pop:   'audio/pop.mp3',
   cheer: 'audio/cheer.mp3'
 };
