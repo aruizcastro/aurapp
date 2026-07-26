@@ -199,69 +199,55 @@ puede cambiar en caliente.
 
 ---
 
-## Si algún día se publica en Android
+## La app de Android
 
-Decisiones ya tomadas, para no volver a discutirlas cuando llegue el momento.
+Ya está armada, en `android/`. Ver **[android/README.md](android/README.md)**
+para compilarla y publicarla.
 
-**La versión de Android va sin videos.** Solo los juegos y los dibujos. No se
-incluye el reproductor de YouTube ni el panel de padres para agregar enlaces.
+Es la misma app web dentro de un APK, con los archivos empaquetados y servidos
+por `WebViewAssetLoader`. Va **sin videos y sin ningún permiso** — ni siquiera
+internet.
 
-La razón es evitar problemas, no ahorrar trabajo: el programa *Designed for
-Families* de Google Play exige declarar todo el contenido de terceros, y un
-reproductor incrustado que trae videos de fuera es justo lo que más demora una
-revisión. Además, un video que alguien más borre deja un hueco en la app sin
-que nosotros hagamos nada.
-
-**Precio: gratis al principio, y después un solo pago por los mundos extra.**
-
-No se cobra por descargar. La idea es juntar reseñas reales antes de cobrar
-nada, porque en Play las primeras reseñas pesan más que los primeros cien
-dólares. Cuando haya, se activa la compra de una sola vez —no suscripción— que
-desbloquea la otra mitad de los mundos.
-
-El reparto está escrito en `docs/app.js`, en `EXTRA_WORLDS`:
-
-| Gratis | De pago (`premium: true`) |
-| --- | --- |
-| Pintar (22 dibujos y dibujo libre) | Los números |
-| Amigos (las tres mascotas) | El lobo y los tres cerditos |
-| El gusanito | Juguemos en el bosque |
-| Los mosquitos | Fotos con disfraces |
-
-Dos reglas que no se rompen:
-
-1. **Los mundos se venden enteros.** Nunca media mascota ni la mitad de los
-   dibujos. Una mascota a la que se le puede poner ropa pero no darle de comer
-   se siente rota, no se siente una invitación a comprar.
-2. **La niña nunca ve el candado.** Con `BUILD.premiumLocked = true` los
-   mundos de pago sencillamente no aparecen en su pantalla: sin candados, sin
-   fichas apagadas, sin «pídeselo a tus papás». Una niña de cuatro años que
-   toca una ficha bloqueada aprende que la app la ignora. La compra vive en el
-   panel de padres, detrás del PIN — que además es justo lo que la política de
-   familias de Google exige.
-
-Cobrar dentro de la app necesita Google Play Billing. Una PWA empaquetada como
-TWA lo hace con la Digital Goods API; con Capacitor, con un plugin de compras.
-Eso es trabajo real y no está hecho: hoy `premiumLocked` está en `false` y la
-app entrega todo.
-
-**Cómo se apaga la parte de videos.** En `docs/app.js`, arriba del todo:
-
-```js
-const BUILD = {
-  videos: false      // Android
-};
+```bash
+./android/sync-web.sh     # docs/ → android/app/src/main/assets/www, videos apagados
 ```
 
-Con eso desaparecen los mundos de video de la pantalla principal y las
-secciones de YouTube del panel de padres. El límite de tiempo se queda: sirve
-igual para los juegos. No hay que borrar ningún archivo ni tocar nada más — si
-mañana se quiere volver a activar, se pone `true`.
+Después se abre `android/` en Android Studio, que corre bien en el Mac mini
+actual. Hay que volver a correr el script cada vez que cambie algo en `docs/`.
 
-**Lo que falta cuando se decida arrancar:** empaquetar la PWA como TWA con
-Android Studio (corre bien en el Mac mini actual), crear la cuenta de Play,
-escribir la política de privacidad —la app no recoge ningún dato, así que es
-corta— y llenar el cuestionario de contenido.
+**Decisiones ya tomadas, para no volver a discutirlas:**
+
+- **Sin videos.** El programa *Designed for Families* de Google Play exige
+  declarar todo el contenido de terceros, y un reproductor incrustado es lo que
+  más demora una revisión. Además un video que alguien borre deja un hueco en
+  la app sin que nosotros hagamos nada. Con eso se cae también la sección de
+  tiempo, que solo contaba minutos de video.
+- **Sin permisos.** La cámara se queda oculta por ahora: activarla obliga a
+  pedir el permiso, declararlo y justificarlo. Cero permisos hace que el
+  formulario de seguridad de datos sean tres «no».
+- **Gratis por ahora, con todos los mundos abiertos.** Primero reseñas, después
+  precio. El interruptor `BUILD.premiumLocked` ya existe y está apagado.
+
+**El reparto para cuando se cobre** (marcado con `premium: true` en
+`EXTRA_WORLDS`, hoy sin efecto):
+
+| Gratis | De pago |
+| --- | --- |
+| Pintar | Los números |
+| Amigos | El lobo y los tres cerditos |
+| El gusanito | Juguemos en el bosque |
+| Los mosquitos | Fotos con disfraces |
+| A pescar | Une la flecha |
+
+Dos reglas que no se rompen: **los mundos se venden enteros** —nunca media
+mascota— y **la niña nunca ve el candado**: con `premiumLocked` en `true` los
+mundos de pago sencillamente no aparecen en su pantalla. Una niña de cuatro
+años que toca una ficha bloqueada aprende que la app la ignora. La compra vive
+en el panel de padres, detrás del PIN, que es además lo que exige la política
+de familias de Google.
+
+Cobrar dentro de la app necesita Google Play Billing (Digital Goods API). Eso
+no está hecho.
 
 ---
 

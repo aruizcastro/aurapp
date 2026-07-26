@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The name under the icon is the one string the app itself cannot
+         translate at runtime, so it is translated here instead. -->
+    <string name="app_name">Let\'s Play</string>
+</resources>

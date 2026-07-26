@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'io.github.aruizcastro.aurapp'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "io.github.aruizcastro.aurapp"
+        minSdk 24                 // Android 7. Below that the WebView is too old to trust.
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false   // there is no Java to shrink; everything is in assets
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    // WebViewAssetLoader serves the bundled files over https://appassets.androidplatform.net/
+    // instead of file://, which is what makes localStorage behave normally.
+    implementation 'androidx.webkit:webkit:1.11.0'
+}

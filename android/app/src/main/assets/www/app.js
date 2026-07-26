@@ -93,7 +93,7 @@ const THEMES = [
    Everything downstream reads BUILD.videos — do not add a second flag. */
 
 const BUILD = {
-  videos: true,
+  videos: false,   // set by android/sync-web.sh
 
   /* The paid half. When `locked` is true the premium worlds simply are not on
      her screen — no padlocks, no greyed-out tiles, no "ask your parents".
@@ -1978,9 +1978,7 @@ $('#importFile').onchange = async (e) => {
 
 window.addEventListener('resize', () => { if (current === 'draw') setupDraw(); });
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+// No service worker in the packaged build: the files are already local.
 
 rollover();
 i18nSet(state.lang || i18nDetect());

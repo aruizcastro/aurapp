@@ -1,0 +1,731 @@
+/* AurApp — styles. Everything is sized for small, imprecise fingers:
+   no tap target under 52px, no text she has to read in order to navigate. */
+
+/* Palette ------------------------------------------------------------
+   Every mood colour lives here so the whole app can be re-tinted from the
+   parent panel. The characters and the colouring pages are deliberately not
+   themed — those are artwork, not chrome. */
+
+:root {
+  --bg-main: #FBEAF0;
+  --bg-alt: #EEEDFE;
+  --bg-paint: #E7F4EF;
+  --bg-plain: #F5F5F4;
+  --ink: #26215C;
+  --accent: #D4537E;
+  --accent-soft: #F4C0D1;
+  --accent-strong: #E86A9A;
+  --accent-2: #CECBF6;
+  --ok: #1D9E75;
+  --door-1: #9FE1CB;
+  --door-2: #FAC775;
+  --stage-deep: #3C3489;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* The browser hides [hidden] elements with `display: none` from its own
+   stylesheet, which any class rule of ours that sets `display` silently beats.
+   That is how the 🎉 stayed on screen after the mosquitoes were caught — and
+   how both story buttons were showing at once. One rule fixes the family. */
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+  background: var(--bg-main);
+  color: var(--ink);
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Screens ------------------------------------------------------------- */
+
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; padding: 20px; gap: 14px; }
+.screen.on { display: flex; }
+
+#s-worlds, #s-paint { background: var(--bg-main); }
+#s-grid, #s-timeup  { background: var(--bg-alt); }
+#s-color            { background: var(--bg-paint); }
+#s-draw             { background: var(--bg-main); }
+#s-player           { background: var(--ink); }
+#s-pin, #s-parents  { background: var(--bg-plain); }
+
+/* Header -------------------------------------------------------------- */
+
+.bar { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+.bar h1 { margin: 0; font-size: 30px; font-weight: 600; }
+.bar .grow { flex: 1; }
+
+.pill {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 999px;
+  background: rgba(255,255,255,.72); font-size: 18px; font-weight: 500;
+}
+
+.round {
+  width: 52px; height: 52px; flex: 0 0 auto;
+  border: 0; border-radius: 50%;
+  background: #fff; color: var(--ink);
+  font-size: 22px; display: grid; place-items: center; cursor: pointer;
+}
+.round.lock { background: rgba(255,255,255,.7); color: #6b6b6b; }
+
+/* World tiles --------------------------------------------------------- */
+
+.worlds {
+  flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; align-content: start;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+
+.tile {
+  border: 0; border-radius: 26px; padding: 22px 12px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: inherit; color: var(--ink);
+}
+.tile .ico { font-size: 44px; line-height: 1; }
+.tile .name { font-size: 21px; font-weight: 600; }
+.tile .sub { font-size: 14px; opacity: .62; }
+
+/* Video grid ---------------------------------------------------------- */
+
+.row { flex: 1; display: flex; align-items: center; gap: 12px; min-height: 0; }
+
+.arrow {
+  width: 62px; flex: 0 0 auto; align-self: stretch; max-height: 240px;
+  border: 0; border-radius: 20px; cursor: pointer;
+  background: var(--accent); color: #fff; font-size: 30px;
+}
+.arrow:disabled { background: rgba(255,255,255,.6); color: rgba(38,33,92,.25); }
+
+.grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-content: center; }
+
+.card {
+  border: 0; padding: 9px; border-radius: 20px; background: #fff; cursor: pointer;
+  font-family: inherit; text-align: left; color: var(--ink);
+}
+.card .thumb {
+  position: relative; width: 100%; aspect-ratio: 16/9;
+  border-radius: 14px; overflow: hidden; background: var(--accent-2);
+}
+.card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .thumb .play {
+  position: absolute; top: 8px; left: 8px;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(255,255,255,.92); display: grid; place-items: center; font-size: 15px;
+}
+.card .ttl {
+  margin-top: 7px; font-size: 16px; font-weight: 500; line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.dots { display: flex; justify-content: center; gap: 10px; flex: 0 0 auto; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: var(--accent-soft); }
+
+/* Twenty dots at full size run off the side of a phone, so past a dozen they
+   shrink instead of wrapping — a wrapped row would push the board down. */
+.dots.many { gap: 5px; }
+.dots.many i { width: 9px; height: 9px; }
+.dots i.on { background: var(--accent); }
+
+/* Player -------------------------------------------------------------- */
+
+#stage { flex: 1; border-radius: 18px; overflow: hidden; position: relative; background: var(--stage-deep); min-height: 0; }
+#stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* Swallows every tap on the video. Without this, tapping the iframe opens
+   YouTube itself: the title bar, the share button, "More videos", or a whole
+   new window. She controls playback with our buttons underneath instead. */
+#stage .block { position: absolute; inset: 0; z-index: 3; }
+
+/* YouTube paints its own "More videos" grid the moment a video pauses, and
+   rel=0 no longer removes it. So while paused we cover the frame entirely. */
+#stage .veil {
+  position: absolute; inset: 0; z-index: 4;
+  background: var(--ink); color: var(--accent-soft); font-size: 76px;
+  display: none; align-items: center; justify-content: center;
+}
+#stage .veil.on { display: flex; }
+
+.controls { flex: 0 0 auto; display: flex; align-items: center; gap: 18px; }
+.big {
+  width: 76px; height: 76px; flex: 0 0 auto;
+  border: 0; border-radius: 50%; cursor: pointer;
+  font-size: 30px; color: var(--ink); display: grid; place-items: center;
+}
+.big.pink { background: var(--accent-soft); }
+.big.lilac { background: var(--accent-2); }
+
+.track { flex: 1; height: 14px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
+.track div { height: 100%; width: 0; border-radius: 999px; background: var(--accent-soft); }
+
+/* Time up ------------------------------------------------------------- */
+
+#s-timeup { align-items: center; justify-content: center; text-align: center; }
+#s-timeup .moon {
+  width: 132px; height: 132px; border-radius: 50%; background: var(--accent-2);
+  display: grid; place-items: center; font-size: 60px; margin-bottom: 6px;
+}
+#s-timeup h2 { margin: 0; font-size: 32px; font-weight: 600; }
+#s-timeup p { margin: 0; font-size: 20px; opacity: .7; }
+
+.cta {
+  border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
+  padding: 16px 30px; font-size: 21px; font-weight: 500;
+  background: var(--accent-soft); color: var(--ink); margin-top: 14px;
+}
+.quiet { border: 0; background: none; color: #777; font-size: 16px; cursor: pointer; font-family: inherit; }
+
+/* Paint --------------------------------------------------------------- */
+
+.doors { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-content: center; }
+.door {
+  border: 0; border-radius: 28px; padding: 30px 16px; cursor: pointer;
+  font-family: inherit; color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.door svg { height: 130px; }
+.door .name { font-size: 26px; font-weight: 600; }
+.door .sub { font-size: 16px; opacity: .6; }
+
+.cats { flex: 0 0 auto; display: flex; gap: 10px; }
+.cats button {
+  border: 0; border-radius: 999px; cursor: pointer; font-family: inherit;
+  padding: 10px 22px; font-size: 17px; font-weight: 500;
+  background: #fff; color: var(--ink);
+}
+.cats button.on { background: var(--accent); color: #fff; }
+
+.picker { flex: 0 0 auto; display: flex; gap: 9px; overflow-x: auto; padding-bottom: 4px; }
+.picker::-webkit-scrollbar { display: none; }
+.pk {
+  flex: 0 0 auto; width: 74px; padding: 6px 4px 3px;
+  border: 2px solid transparent; border-radius: 12px; background: #fff; cursor: pointer;
+  font-family: inherit; text-align: center;
+}
+.pk.on { border-color: var(--accent); background: var(--bg-main); }
+.pk svg { width: 100%; height: 40px; display: block; }
+.pk svg .rg { fill: #9e9e98; stroke: #9e9e98; stroke-width: 5; }
+.pk svg .ln { fill: none; }
+.pk.on svg .rg { fill: #993556; stroke: #993556; }
+.pk span { font-size: 11px; color: #6b6b6b; }
+
+#canvasWrap { flex: 1; background: #fff; border-radius: 18px; min-height: 0; position: relative; overflow: hidden; }
+#colorSvg { width: 100%; height: 100%; display: block; }
+#colorSvg .rg { fill: #F1EFE8; stroke: #2C2C2A; stroke-width: 4; stroke-linejoin: round; cursor: pointer; }
+#colorSvg .ln { fill: none; stroke-linecap: round; }
+
+#drawCanvas { width: 100%; height: 100%; display: block; touch-action: none; background: #fff; }
+
+.palette { flex: 0 0 auto; display: flex; gap: 12px; justify-content: center; }
+.sw { width: 52px; height: 52px; border-radius: 50%; border: 4px solid transparent; cursor: pointer; padding: 0; }
+.sw.on { border-color: var(--ink); }
+
+.tools { flex: 0 0 auto; display: flex; gap: 10px; }
+.tool {
+  flex: 1; border: 0; border-radius: 14px; padding: 14px 6px; cursor: pointer;
+  background: #fff; color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 500;
+}
+.tool.on { background: var(--accent); color: #fff; }
+
+/* Friends -------------------------------------------------------------- */
+
+.whotabs { display: flex; gap: 8px; }
+
+/* Picture tabs. She cannot read, so the friend is chosen by its own face
+   and the activity by the thing itself. */
+.facetab {
+  width: 64px; height: 64px; padding: 2px; cursor: pointer;
+  border: 4px solid transparent; border-radius: 50%;
+  background: #fff; overflow: hidden;
+}
+.facetab.on { border-color: var(--ok); background: #E1F5EE; }
+.facetab svg { display: block; width: 100%; height: 100%; }
+
+.icontab {
+  width: 68px; height: 68px; flex: 0 0 auto; padding: 6px; cursor: pointer;
+  border: 4px solid transparent; border-radius: 18px; background: #fff;
+}
+.icontab.cat svg .rg { fill: #9e9e98; stroke: #9e9e98; stroke-width: 5; }
+.icontab.cat svg .ln { fill: none; }
+.icontab.cat.on svg .rg { fill: #993556; stroke: #993556; }
+.icontab.on { border-color: var(--accent); background: var(--bg-main); }
+.icontab svg { display: block; width: 100%; height: 100%; }
+
+.petsrow { flex: 1; display: flex; gap: 14px; min-height: 0; }
+
+.petstage {
+  flex: 0 0 40%; background: #FDF3E7; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.petstage svg { display: block; width: 100%; height: 100%; }
+
+/* A dressing-up game with no reaction feels broken: you tap, something
+   appears, nothing happens. The bounce is anchored at the feet so it reads
+   as the friend landing, not as the whole picture scaling. */
+.petstage svg { transform-origin: 50% 92%; }
+.petstage svg.pop    { animation: petPop .52s cubic-bezier(.3,1.4,.5,1); }
+.petstage svg.wiggle { animation: petWiggle .55s ease-in-out; }
+
+@keyframes petPop {
+  0%   { transform: scale(1, 1) translateY(0); }
+  28%  { transform: scale(1.07, .92) translateY(8px); }
+  55%  { transform: scale(.96, 1.06) translateY(-12px); }
+  78%  { transform: scale(1.03, .97) translateY(3px); }
+  100% { transform: scale(1, 1) translateY(0); }
+}
+
+@keyframes petWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  22%  { transform: rotate(-5deg); }
+  55%  { transform: rotate(5deg); }
+  80%  { transform: rotate(-2deg); }
+}
+
+/* Some children are motion sensitive, and iOS exposes the setting. */
+@media (prefers-reduced-motion: reduce) {
+  .petstage svg.pop, .petstage svg.wiggle { animation: none; }
+}
+
+.petside { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.petitems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-content: start; }
+.petitem {
+  background: #fff; border: 3px solid transparent; border-radius: 16px;
+  padding: 6px; cursor: pointer; font-family: inherit;
+}
+.petitem.on { border-color: var(--accent); background: var(--bg-main); }
+.petitem svg { display: block; width: 100%; height: 54px; }
+.petitem span { display: block; font-size: 13px; color: var(--ink); text-align: center; margin-top: 2px; }
+
+.pethint { margin: 0; font-size: 14px; color: #6b6b6b; }
+
+.meter {
+  height: 18px; border-radius: 999px; background: #fff;
+  overflow: hidden; flex: 0 0 auto;
+}
+.meter > div {
+  height: 100%; width: 0; border-radius: 999px;
+  background: #97C459; transition: width .5s;
+}
+
+@media (orientation: portrait) {
+  .petsrow { flex-direction: column; }
+  .petstage { flex: 0 0 44%; }
+  .petitems { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 760px) {
+  .whotabs button { padding: 9px 14px; font-size: 14px; }
+  .petitem svg { height: 44px; }
+  .petitem span { font-size: 11px; }
+}
+
+/* Camera --------------------------------------------------------------- */
+
+.camwrap {
+  flex: 1; position: relative; min-height: 0;
+  background: #2A2340; border-radius: 20px; overflow: hidden;
+}
+.camwrap video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.camwrap video.mirror { transform: scaleX(-1); }
+.camwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+
+.camflash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+.camflash.on { opacity: .9; }
+
+.camshot {
+  position: absolute; right: 12px; bottom: 12px; width: 84px; height: 66px;
+  border-radius: 10px; border: 3px solid #fff; overflow: hidden; background: #000;
+  opacity: 0; transform: scale(.6); transition: all .35s; pointer-events: none;
+}
+.camshot.on { opacity: 1; transform: scale(1); }
+.camshot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.camdenied {
+  position: absolute; inset: 0; margin: 0; display: none;
+  align-items: center; justify-content: center; text-align: center; padding: 28px;
+  color: #fff; font-size: 18px; line-height: 1.5;
+}
+.camdenied.on { display: flex; }
+
+.camrow { flex: 0 0 auto; display: flex; align-items: center; gap: 12px; }
+.camcostumes { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.camcostume {
+  background: #fff; border: 4px solid transparent; border-radius: 14px;
+  padding: 2px; cursor: pointer; font-family: inherit;
+}
+.camcostume.on { border-color: var(--accent); background: var(--bg-main); }
+.camcostume svg { display: block; width: 100%; height: 44px; }
+
+.camshutter {
+  width: 88px; height: 88px; flex: 0 0 auto; border-radius: 50%;
+  border: 6px solid #fff; background: var(--accent-strong); cursor: pointer; padding: 0;
+  display: grid; place-items: center; box-shadow: 0 0 0 4px var(--accent-strong);
+}
+.camshutter:active { transform: scale(.94); }
+.camshutter svg { width: 48px; height: 48px; }
+
+/* Wolf and the three pigs ---------------------------------------------- */
+
+.storywrap {
+  flex: 1; min-height: 0; background: #CFE9F7;
+  border-radius: 20px; overflow: hidden; display: flex;
+}
+.storywrap svg { display: block; width: 100%; height: 100%; }
+
+.storyrow { flex: 0 0 auto; display: flex; justify-content: center; gap: 14px; }
+.storybtn {
+  border: 0; border-radius: 26px; cursor: pointer; font-family: inherit;
+  width: 112px; height: 100px; padding: 10px;
+  background: var(--accent-strong);
+  display: grid; place-items: center;
+  box-shadow: 0 3px 0 rgba(38,33,92,.14);
+}
+.storybtn svg { display: block; width: 100%; height: 100%; }
+.storybtn.next { background: var(--ok); }
+.storybtn:active { transform: scale(.96); }
+
+@media (orientation: portrait) {
+  .camcostumes { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 760px) {
+  .camshutter { width: 74px; height: 74px; }
+  .camshutter svg { width: 40px; height: 40px; }
+  .camcostume svg { height: 36px; }
+  .storybtn { width: 88px; height: 78px; border-radius: 22px; }
+}
+
+.foresthint {
+  flex: 0 0 auto; margin: 0; text-align: center;
+  font-size: 20px; font-weight: 500; color: var(--ink); min-height: 26px;
+}
+@media (max-width: 760px) { .foresthint { font-size: 16px; } }
+
+.themes { display: flex; gap: 12px; flex-wrap: wrap; }
+.themeswatch {
+  border: 4px solid transparent; border-radius: 16px; padding: 8px 10px;
+  cursor: pointer; font-family: inherit; background: #fff; min-width: 104px;
+}
+.themeswatch.on { border-color: var(--accent); }
+.themeswatch .chips { display: flex; gap: 4px; margin-bottom: 6px; }
+.themeswatch .chips i { width: 22px; height: 22px; border-radius: 6px; }
+.themeswatch span { font-size: 14px; color: var(--ink); }
+
+.worldrow { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #f0f0f0; }
+.worldrow .ico { font-size: 24px; }
+.worldrow b { flex: 1; font-weight: 500; font-size: 16px; }
+.worldrow input { width: 26px; height: 26px; }
+
+.paintrow { flex: 0 0 auto; display: flex; align-items: center; gap: 14px; }
+.paintrow .palette { flex: 1; justify-content: flex-start; }
+
+/* The reset shows the drawing as it will end up — blank. She cannot read
+   "empezar de nuevo", but she recognises her own picture with nothing in it. */
+.bigreset {
+  position: relative; flex: 0 0 auto;
+  width: 78px; height: 66px; padding: 4px;
+  border: 4px solid var(--accent); border-radius: 18px;
+  background: #fff; cursor: pointer;
+}
+.bigreset svg { display: block; width: 100%; height: 100%; }
+.bigreset svg .rg { fill: #fff; stroke: #9a9a94; stroke-width: 5; }
+.bigreset svg .ln { fill: none; }
+.bigreset .badge {
+  position: absolute; right: -8px; bottom: -8px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 18px; line-height: 30px; text-align: center;
+}
+.bigreset:active { transform: scale(.94); }
+
+@media (max-width: 760px) {
+  .bigreset { width: 62px; height: 54px; }
+  .bigreset .badge { width: 25px; height: 25px; font-size: 15px; line-height: 25px; }
+}
+
+/* Worm ----------------------------------------------------------------- */
+
+#s-worm { background: var(--bg-main); }
+
+.wormrow { flex: 1; display: flex; align-items: center; gap: 16px; min-height: 0; }
+
+.wormboard {
+  flex: 1; min-width: 0; min-height: 0;
+  background: #E8F4DC; border-radius: 20px; overflow: hidden;
+  display: flex; align-items: center;
+}
+.wormboard svg { display: block; width: 100%; height: auto; }
+
+/* A real cross, not a row: at four the arrows have to sit where they point. */
+.pad4 {
+  flex: 0 0 auto;
+  display: grid; grid-template-columns: repeat(3, 78px); grid-template-rows: repeat(3, 78px);
+  gap: 8px;
+}
+.dirbtn {
+  border: 0; border-radius: 20px; cursor: pointer;
+  background: var(--accent); color: #fff; font-size: 30px;
+  display: grid; place-items: center; font-family: inherit;
+}
+.dirbtn:active { transform: scale(.94); }
+.dirbtn.up    { grid-column: 2; grid-row: 1; }
+.dirbtn.left  { grid-column: 1; grid-row: 2; }
+.dirbtn.right { grid-column: 3; grid-row: 2; }
+.dirbtn.down  { grid-column: 2; grid-row: 3; }
+.wormrestart { background: var(--ok); color: #fff; }
+
+@media (orientation: portrait) {
+  .wormrow { flex-direction: column; }
+  .pad4 { grid-template-columns: repeat(3, 72px); grid-template-rows: repeat(3, 72px); }
+}
+@media (max-width: 760px) {
+  .pad4 { grid-template-columns: repeat(3, 62px); grid-template-rows: repeat(3, 62px); gap: 6px; }
+  .dirbtn { font-size: 24px; border-radius: 16px; }
+}
+
+/* Counting -------------------------------------------------------------- */
+
+#s-count { background: var(--bg-alt); }
+
+.countboard {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: stretch;
+}
+.countcard {
+  background: #fff; border: 5px solid transparent; border-radius: 22px;
+  padding: 12px; display: flex; align-items: center; justify-content: center;
+  min-height: 0;
+}
+.countcard svg { display: block; width: 100%; height: 100%; max-height: 100%; }
+.countcard.over { border-color: var(--accent); }
+.countcard.right { border-color: var(--ok); background: #E8F6EE; }
+
+.countrow { flex: 0 0 auto; display: flex; align-items: center; gap: 18px; }
+
+.numchip {
+  width: 112px; height: 112px; flex: 0 0 auto; cursor: grab;
+  border-radius: 26px; background: var(--accent); color: #fff;
+  display: grid; place-items: center; touch-action: none;
+}
+.numchip svg { width: 100%; height: 100%; }
+.numchip.dragging { position: fixed; z-index: 50; pointer-events: none; }
+.numchip.hidden { visibility: hidden; }
+
+.counthint { margin: 0; font-size: 20px; font-weight: 500; color: var(--ink); }
+
+@media (orientation: portrait) {
+  .countboard { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .numchip { width: 88px; height: 88px; border-radius: 20px; }
+  .counthint { font-size: 16px; }
+  .countcard { padding: 8px; border-width: 4px; border-radius: 18px; }
+}
+
+#s-parents textarea {
+  font-family: inherit; font-size: 15px; padding: 10px 12px; width: 100%;
+  border: 1px solid #ddd; border-radius: 10px; resize: vertical;
+}
+
+.suggests { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.suggest {
+  border: 1px solid #ddd; border-radius: 999px; cursor: pointer; font-family: inherit;
+  padding: 9px 15px; font-size: 14px; background: #fff; color: var(--ink);
+  display: flex; align-items: center; gap: 7px;
+}
+.suggest .ico { font-size: 17px; }
+.suggest:active { background: var(--bg-main); }
+
+.ytresult { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #f0f0f0; }
+.ytresult img { width: 92px; height: 52px; object-fit: cover; border-radius: 8px; background: #eee; flex: 0 0 auto; }
+.ytresult .m { flex: 1; min-width: 0; }
+.ytresult .m b { display: block; font-weight: 500; font-size: 15px; line-height: 1.3; }
+.ytresult .m span { font-size: 13px; color: #888; }
+.ytresult button {
+  border: 0; border-radius: 12px; cursor: pointer; font-family: inherit;
+  padding: 10px 16px; font-size: 15px; font-weight: 500;
+  background: var(--ok); color: #fff; flex: 0 0 auto;
+}
+.ytresult button.added { background: #E8E8E6; color: #888; }
+
+/* Help ------------------------------------------------------------------ */
+
+#s-help { background: var(--bg-plain); display: none; overflow-y: auto; }
+#s-help.on { display: block; }
+#s-help .wrap { max-width: 720px; margin: 0 auto; padding-bottom: 40px; }
+#s-help section { background: #fff; border-radius: 16px; padding: 16px 18px; margin-bottom: 16px; }
+#s-help h3 { margin: 0 0 10px; font-size: 17px; font-weight: 600; color: var(--ink); }
+#s-help p { margin: 0 0 10px; font-size: 15px; line-height: 1.6; color: #3b3b3b; }
+#s-help p:last-child { margin-bottom: 0; }
+#s-help a { color: var(--accent); font-weight: 500; }
+#s-help code {
+  background: #F0EFEC; border-radius: 5px; padding: 1px 5px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 14px;
+}
+#s-help .steps { margin: 0 0 10px; padding-left: 22px; }
+#s-help .steps li { font-size: 15px; line-height: 1.7; color: #3b3b3b; }
+
+/* PIN ----------------------------------------------------------------- */
+
+#s-pin { align-items: center; justify-content: center; gap: 20px; }
+#s-pin h2 { margin: 0; font-size: 22px; font-weight: 500; }
+.pips { display: flex; gap: 14px; }
+.pips i { width: 18px; height: 18px; border-radius: 50%; background: #dcdcdc; }
+.pips i.on { background: var(--accent); }
+.pips.bad { animation: shake .4s; }
+@keyframes shake { 25% { transform: translateX(9px) } 75% { transform: translateX(-9px) } }
+
+.pad { display: grid; grid-template-columns: repeat(3, 92px); gap: 14px; }
+.pad button {
+  height: 62px; border: 0; border-radius: 16px; background: #fff; cursor: pointer;
+  font-family: inherit; font-size: 26px; font-weight: 500; color: #2C2C2A;
+}
+.pad button.blank { background: none; cursor: default; }
+
+/* Parent panel -------------------------------------------------------- */
+
+#s-parents { overflow-y: auto; display: none; }
+#s-parents.on { display: block; }
+#s-parents .wrap { max-width: 720px; margin: 0 auto; padding-bottom: 40px; }
+#s-parents h2 { font-size: 24px; }
+#s-parents section { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+#s-parents h3 { margin: 0 0 12px; font-size: 15px; text-transform: uppercase; letter-spacing: .04em; color: #888; font-weight: 500; }
+#s-parents label { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 0; font-size: 16px; }
+#s-parents input[type=text], #s-parents input[type=url], #s-parents select {
+  font-family: inherit; font-size: 16px; padding: 10px 12px;
+  border: 1px solid #ddd; border-radius: 10px; background: #fff; min-width: 0; flex: 1;
+}
+#s-parents .btn {
+  border: 0; border-radius: 12px; padding: 12px 18px; cursor: pointer;
+  font-family: inherit; font-size: 16px; font-weight: 500; background: var(--bg-alt); color: var(--ink);
+}
+#s-parents .btn.primary { background: var(--accent); color: #fff; }
+#s-parents .btn.danger { background: none; color: #b3261e; padding: 6px 8px; }
+#s-parents .vrow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #f0f0f0; }
+#s-parents .vrow img { width: 74px; height: 42px; object-fit: cover; border-radius: 6px; background: #eee; }
+#s-parents .vrow .m { flex: 1; min-width: 0; }
+#s-parents .vrow .m b { display: block; font-weight: 500; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#s-parents .vrow .m span { font-size: 13px; color: #888; }
+#s-parents .hint { font-size: 13px; color: #888; line-height: 1.5; margin: 8px 0 0; }
+
+/* Portrait and phones -------------------------------------------------
+   The app used to demand landscape. A four-year-old does not turn the
+   tablet on request, and half the time she is handed a phone instead, so
+   every screen now reflows rather than nagging. */
+
+@media (orientation: portrait) {
+  .worlds { grid-template-columns: repeat(2, 1fr); }
+  .grid   { grid-template-columns: repeat(2, 1fr); }
+  .doors  { grid-template-columns: 1fr; }
+  .arrow  { max-height: 200px; }
+  .bar h1 { font-size: 24px; }
+  #s-timeup h2 { font-size: 26px; }
+}
+
+/* Phone-sized: shrink chrome, never the tap targets. */
+@media (max-width: 760px) {
+  .screen { padding: 12px; gap: 10px; }
+  .bar h1 { font-size: 21px; }
+  .pill { padding: 7px 12px; font-size: 15px; }
+  .round { width: 46px; height: 46px; font-size: 19px; }
+  .tile { padding: 14px 8px; border-radius: 20px; }
+  .tile .ico { font-size: 34px; }
+  .tile .name { font-size: 17px; }
+  .tile .sub { font-size: 12px; }
+  .arrow { width: 48px; font-size: 24px; }
+  .card .ttl { font-size: 14px; }
+  .big { width: 62px; height: 62px; font-size: 24px; }
+  .sw { width: 44px; height: 44px; }
+  .palette { gap: 8px; flex-wrap: wrap; }
+  .tools { flex-wrap: wrap; }
+  .tools .tool { flex: 1 1 40%; font-size: 15px; padding: 12px 4px; }
+  .cats button { padding: 9px 16px; font-size: 15px; }
+  .pk { width: 62px; }
+  .door svg { height: 96px; }
+  .door .name { font-size: 21px; }
+  #s-timeup .moon { width: 96px; height: 96px; font-size: 44px; }
+  #s-timeup h2 { font-size: 23px; }
+  #s-timeup p { font-size: 16px; }
+}
+
+/* Short and wide (phone held sideways): the video grid would otherwise
+   push its own controls off the bottom. */
+@media (orientation: landscape) and (max-height: 460px) {
+  .screen { padding: 10px; gap: 8px; }
+  .bar h1 { font-size: 19px; }
+  .worlds { gap: 9px; }
+  .tile { padding: 10px 6px; }
+  .tile .ico { font-size: 26px; }
+  .tile .name { font-size: 15px; }
+  .tile .sub { font-size: 11px; }
+  .grid { gap: 9px; }
+  .arrow { max-height: 130px; }
+  .palette .sw { width: 40px; height: 40px; }
+  .picker { display: none; }
+  .big { width: 54px; height: 54px; font-size: 21px; }
+}
+
+/* Mosquitos ------------------------------------------------------------ */
+
+.bugwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+
+.bugboard {
+  width: 100%; max-width: 780px; border-radius: 22px; overflow: hidden;
+  background: #E9F3FA; box-shadow: 0 4px 0 rgba(38,33,92,.10);
+  touch-action: none;              /* the tap must not scroll or zoom the page */
+}
+.bugboard svg { display: block; width: 100%; height: auto; }
+
+/* The wings flap on the compositor instead of in the animation loop.
+   Each pair pivots at the shoulder, so they sweep rather than squash. */
+.bug .wing {
+  animation: bugflap .11s ease-in-out infinite alternate;
+  animation-delay: var(--flap-delay, 0s);
+}
+.bug .wl { transform-origin: -6px -10px; }
+.bug .wr { transform-origin: 6px -10px; }
+@keyframes bugflap {
+  from { transform: scaleY(1)   rotate(0deg); }
+  to   { transform: scaleY(.55) rotate(0deg); }
+}
+
+/* Caught: the dizzy bug tumbles away and fades. */
+.bugout { animation: bugout .9s ease-in forwards; }
+@keyframes bugout {
+  from { transform: scale(.62) translateY(0)   rotate(0deg);   opacity: 1; }
+  to   { transform: scale(.62) translateY(90px) rotate(220deg); opacity: 0; }
+}
+
+.bugpoof { animation: bugpoof .55s ease-out forwards; }
+@keyframes bugpoof {
+  from { transform: scale(.4);  opacity: 1; }
+  to   { transform: scale(1.5); opacity: 0; }
+}
+
+.bugcheer {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-size: 84px; pointer-events: none;
+  animation: bugcheer .5s ease-out;
+}
+@keyframes bugcheer {
+  from { transform: scale(.5); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .bugcheer { font-size: 60px; }
+}
+
+/* Une con la flecha ----------------------------------------------------- */
+
+.matchwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+.matchboard {
+  width: 100%; max-width: 900px; border-radius: 22px; padding: 10px;
+  background: #fff; box-shadow: 0 4px 0 rgba(38,33,92,.10);
+  touch-action: none;            /* the finger paints a line, it does not scroll */
+}
+.matchboard svg { display: block; width: 100%; height: auto; }
