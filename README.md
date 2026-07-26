@@ -185,9 +185,38 @@ reproductor incrustado que trae videos de fuera es justo lo que más demora una
 revisión. Además, un video que alguien más borre deja un hueco en la app sin
 que nosotros hagamos nada.
 
-**Precio: 1 USD.** De ahí Google se queda con el 15 %, más los impuestos que
-correspondan. Los 25 USD de la cuenta de desarrollador se recuperan alrededor
-de las 30 ventas.
+**Precio: gratis al principio, y después un solo pago por los mundos extra.**
+
+No se cobra por descargar. La idea es juntar reseñas reales antes de cobrar
+nada, porque en Play las primeras reseñas pesan más que los primeros cien
+dólares. Cuando haya, se activa la compra de una sola vez —no suscripción— que
+desbloquea la otra mitad de los mundos.
+
+El reparto está escrito en `docs/app.js`, en `EXTRA_WORLDS`:
+
+| Gratis | De pago (`premium: true`) |
+| --- | --- |
+| Pintar (22 dibujos y dibujo libre) | Los números |
+| Amigos (las tres mascotas) | El lobo y los tres cerditos |
+| El gusanito | Juguemos en el bosque |
+| Los mosquitos | Fotos con disfraces |
+
+Dos reglas que no se rompen:
+
+1. **Los mundos se venden enteros.** Nunca media mascota ni la mitad de los
+   dibujos. Una mascota a la que se le puede poner ropa pero no darle de comer
+   se siente rota, no se siente una invitación a comprar.
+2. **La niña nunca ve el candado.** Con `BUILD.premiumLocked = true` los
+   mundos de pago sencillamente no aparecen en su pantalla: sin candados, sin
+   fichas apagadas, sin «pídeselo a tus papás». Una niña de cuatro años que
+   toca una ficha bloqueada aprende que la app la ignora. La compra vive en el
+   panel de padres, detrás del PIN — que además es justo lo que la política de
+   familias de Google exige.
+
+Cobrar dentro de la app necesita Google Play Billing. Una PWA empaquetada como
+TWA lo hace con la Digital Goods API; con Capacitor, con un plugin de compras.
+Eso es trabajo real y no está hecho: hoy `premiumLocked` está en `false` y la
+app entrega todo.
 
 **Cómo se apaga la parte de videos.** En `docs/app.js`, arriba del todo:
 

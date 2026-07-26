@@ -93,18 +93,38 @@ const THEMES = [
    Everything downstream reads BUILD.videos — do not add a second flag. */
 
 const BUILD = {
-  videos: true
+  videos: true,
+
+  /* The paid half. When `locked` is true the premium worlds simply are not on
+     her screen — no padlocks, no greyed-out tiles, no "ask your parents".
+
+     That is a deliberate rule, not a shortcut: a four-year-old who taps a
+     locked tile learns that the app ignores her, and the parent gets an app
+     that nags a child for money. Google's family policy asks for the same
+     thing from the other side — any purchase has to sit behind a parental
+     gate. Ours is the PIN panel that already exists.
+
+     Flipping `locked` to true is all the child-facing side of the paywall
+     needs. The buying itself belongs in the parent panel, and only makes
+     sense once there is a Play build to buy it in. */
+  premiumLocked: false
 };
 
+/* `premium: true` marks a world as part of the paid upgrade. The free half is
+   whole on its own — drawing, the three pets and two games — so nobody feels
+   handed a demo. Nothing inside a world is ever crippled; worlds are sold
+   entire, because a pet she can dress but not feed reads as broken, not as an
+   invitation to buy. */
 const EXTRA_WORLDS = [
   { id: 'paint',  name: 'Pintar',    sub: '22 dibujos',            icon: '🎨' },
   { id: 'pets',   name: 'Amigos',    sub: 'Capi, Michi y Coneja',  icon: '🐹' },
-  { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷' },
-  { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺' },
-  { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲' },
   { id: 'worm',   name: 'El gusanito', sub: 'Come las naranjas',   icon: '🐛' },
-  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢' },
-  { id: 'bugs',   name: 'Los mosquitos', sub: 'Atrápalos con el dedo', icon: '🦟' }
+  { id: 'bugs',   name: 'Los mosquitos', sub: 'Atrápalos con el dedo', icon: '🦟' },
+
+  { id: 'camera', name: 'Fotos',     sub: 'Con disfraces',         icon: '📷', premium: true },
+  { id: 'story',  name: 'El lobo',   sub: 'y los tres cerditos',   icon: '🐺', premium: true },
+  { id: 'forest', name: 'El bosque', sub: 'Juguemos con el lobo',  icon: '🌲', premium: true },
+  { id: 'count',  name: 'Los números',  sub: 'Contar del 1 al 9',   icon: '🔢', premium: true }
 ];
 
 function applyTheme(id) {
@@ -272,6 +292,7 @@ function renderWorlds() {
 
   EXTRA_WORLDS.forEach((extra, i) => {
     if (state.hidden[extra.id]) return;
+    if (extra.premium && BUILD.premiumLocked) return;
     const tile = document.createElement('button');
     tile.className = 'tile';
     tile.style.background = tint[(6 + i) % tint.length];
