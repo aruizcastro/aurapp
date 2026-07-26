@@ -17,60 +17,109 @@
 const BUG_W = 400;
 const BUG_H = 300;
 const BUG_COUNT = 8;
-const BUG_HIT = 46;           // tap radius in viewBox units — deliberately huge
+const BUG_HIT = 48;           // tap radius in viewBox units — deliberately huge
 const BUG_SPEED = 26;         // units per second
-const BUG_MARGIN = 34;        // keeps a whole mosquito inside the board
+const BUG_SCALE = 0.62;       // the drawing is authored large, then shrunk
+const BUG_MARGIN = 40;        // keeps a whole mosquito inside the board
 
-const BUG_OUTLINE = '#3A2E4A';
-const BUG_BODY = '#8E7CB0';
-const BUG_BODY_DARK = '#6F5F91';
+const BUG_OUTLINE = '#4A2E28';
 const BUG_WING = '#CFE6F5';
+const BUG_WING_DARK = '#B4D6EC';
+
+/* Six colourways. Five to catch, plus the dizzy cream one she sees for a
+   moment after a hit. */
+const BUG_COLORS = [
+  { body: '#8B7BC8', band: '#6F5FAF', tip: '#7A69BE' },   // morado
+  { body: '#7CBF4D', band: '#62A337', tip: '#6BAE3E' },   // verde
+  { body: '#3E9DD6', band: '#2A82BA', tip: '#3690C8' },   // azul
+  { body: '#E8628F', band: '#CE4877', tip: '#DC5583' },   // rosado
+  { body: '#F5942E', band: '#DC7A18', tip: '#E98722' }    // naranja
+];
+const BUG_DIZZY = { body: '#C4AC90', band: '#AD9377', tip: '#AD9377' };
 
 // ---------------------------------------------------------------- art
 
 /* The mosquito is drawn once, at the origin, and then only its <g> transform
    changes each frame. Rebuilding the whole SVG sixty times a second is what
-   makes these games stutter on an old iPad. */
-function bugArt() {
+   makes these games stutter on an old iPad.
+
+   Four wings a side, big glossy eyes, banded abdomen — the shape follows the
+   reference sheet rather than my earlier, plainer bug. */
+function bugArt(colors, dizzy) {
+  const c = colors || BUG_COLORS[0];
   const O = BUG_OUTLINE;
   let s = '';
 
-  // Wings behind the body. The flap is a CSS animation on scaleY so that the
-  // main loop never has to touch them.
-  s += '<ellipse class="wing wl" cx="-13" cy="-15" rx="15" ry="8" fill="' + BUG_WING +
-       '" fill-opacity=".8" stroke="' + O + '" stroke-width="2.5"/>';
-  s += '<ellipse class="wing wr" cx="13" cy="-15" rx="15" ry="8" fill="' + BUG_WING +
-       '" fill-opacity=".8" stroke="' + O + '" stroke-width="2.5"/>';
+  // --- Wings. Two pairs, the upper one sweeping up and out, the lower one
+  // shorter and tucked beneath. Both flap from the shoulder via CSS.
+  const wing = (side) => {
+    const f = side;   // -1 left, +1 right
+    let w = '<g class="wing w' + (f < 0 ? 'l' : 'r') + '">';
+    w += '<ellipse cx="' + (f * 36) + '" cy="-20" rx="32" ry="12" ' +
+         'transform="rotate(' + (f * -14) + ' ' + (f * 36) + ' -20)" fill="' + BUG_WING +
+         '" stroke="' + O + '" stroke-width="3"/>';
+    w += '<ellipse cx="' + (f * 30) + '" cy="-1" rx="25" ry="9.5" ' +
+         'transform="rotate(' + (f * 12) + ' ' + (f * 30) + ' -1)" fill="' + BUG_WING_DARK +
+         '" stroke="' + O + '" stroke-width="3"/>';
+    w += '</g>';
+    return w;
+  };
+  s += wing(-1) + wing(1);
 
-  // Legs — four thin strokes, two a side.
-  s += '<g fill="none" stroke="' + O + '" stroke-width="2.5" stroke-linecap="round">' +
-       '<path d="M-6 10 C-14 16 -18 20 -20 26"/>' +
-       '<path d="M-4 12 C-10 20 -12 24 -12 30"/>' +
-       '<path d="M6 10 C14 16 18 20 20 26"/>' +
-       '<path d="M4 12 C10 20 12 24 12 30"/></g>';
+  // --- Legs: three thin curls a side, drawn before the body so they tuck in.
+  s += '<g fill="none" stroke="' + O + '" stroke-width="2.6" stroke-linecap="round">';
+  [-1, 1].forEach(f => {
+    s += '<path d="M' + (f * 11) + ' 4 C' + (f * 26) + ' 6 ' + (f * 34) + ' 12 ' + (f * 36) + ' 21"/>';
+    s += '<path d="M' + (f * 13) + ' 14 C' + (f * 26) + ' 19 ' + (f * 31) + ' 26 ' + (f * 30) + ' 35"/>';
+    s += '<path d="M' + (f * 12) + ' 24 C' + (f * 21) + ' 31 ' + (f * 24) + ' 38 ' + (f * 21) + ' 45"/>';
+  });
+  s += '</g>';
 
-  // Body: a fat little abdomen with two stripes.
-  s += '<ellipse cx="0" cy="6" rx="11" ry="14" fill="' + BUG_BODY +
-       '" stroke="' + O + '" stroke-width="3"/>';
-  s += '<path d="M-10 3 H10" stroke="' + BUG_BODY_DARK + '" stroke-width="4" ' +
-       'stroke-linecap="round" fill="none"/>';
-  s += '<path d="M-9 11 H9" stroke="' + BUG_BODY_DARK + '" stroke-width="4" ' +
-       'stroke-linecap="round" fill="none"/>';
+  // --- Antennae, ending in a little coloured bead.
+  s += '<g fill="none" stroke="' + O + '" stroke-width="3" stroke-linecap="round">' +
+       '<path d="M-6 -26 C-12 -36 -16 -42 -19 -48"/>' +
+       '<path d="M6 -26 C12 -36 16 -42 19 -48"/></g>';
+  s += '<circle cx="-20" cy="-50" r="4.2" fill="' + c.tip + '" stroke="' + O + '" stroke-width="2.6"/>';
+  s += '<circle cx="20" cy="-50" r="4.2" fill="' + c.tip + '" stroke="' + O + '" stroke-width="2.6"/>';
 
-  // Head, antennae, and a friendly face. The proboscis points down so it
-  // reads as a mosquito and not as a bee.
-  s += '<g fill="none" stroke="' + O + '" stroke-width="2.5" stroke-linecap="round">' +
-       '<path d="M-5 -14 C-9 -22 -12 -25 -16 -27"/>' +
-       '<path d="M5 -14 C9 -22 12 -25 16 -27"/></g>';
-  s += '<circle cx="-16" cy="-28" r="2.6" fill="' + O + '"/>';
-  s += '<circle cx="16" cy="-28" r="2.6" fill="' + O + '"/>';
-  s += '<circle cx="0" cy="-10" r="10" fill="' + BUG_BODY +
-       '" stroke="' + O + '" stroke-width="3"/>';
-  s += '<circle cx="-3.6" cy="-12" r="3.2" fill="#fff"/>';
-  s += '<circle cx="3.6" cy="-12" r="3.2" fill="#fff"/>';
-  s += '<circle cx="-3" cy="-11.4" r="1.7" fill="' + O + '"/>';
-  s += '<circle cx="4.2" cy="-11.4" r="1.7" fill="' + O + '"/>';
-  s += '<path d="M0 -2 V4" stroke="' + O + '" stroke-width="2.5" stroke-linecap="round"/>';
+  // --- Abdomen: a teardrop with three bands.
+  s += '<path d="M0 -6 C13 -6 15 8 14 20 C13 32 7 40 0 40 C-7 40 -13 32 -14 20 C-15 8 -13 -6 0 -6 Z" ' +
+       'fill="' + c.body + '" stroke="' + O + '" stroke-width="3.4" stroke-linejoin="round"/>';
+  s += '<g fill="none" stroke="' + c.band + '" stroke-width="5" stroke-linecap="round">' +
+       '<path d="M-13 6 H13"/><path d="M-13.5 17 H13.5"/><path d="M-11 28 H11"/></g>';
+  // Re-stroke the outline so the bands stop cleanly at the edge.
+  s += '<path d="M0 -6 C13 -6 15 8 14 20 C13 32 7 40 0 40 C-7 40 -13 32 -14 20 C-15 8 -13 -6 0 -6 Z" ' +
+       'fill="none" stroke="' + O + '" stroke-width="3.4" stroke-linejoin="round"/>';
+
+  // --- Head.
+  s += '<ellipse cx="0" cy="-18" rx="20.5" ry="16.5" fill="' + c.body +
+       '" stroke="' + O + '" stroke-width="3.4"/>';
+
+  // --- Eyes. Huge, round, with a highlight — this is what makes her read the
+  // bug as a friend rather than as something to be afraid of.
+  [-1, 1].forEach(f => {
+    s += '<circle cx="' + (f * 8.5) + '" cy="-20" r="9.8" fill="#fff" stroke="' + O +
+         '" stroke-width="3"/>';
+    if (dizzy) {
+      // A spiral: two turns, drawn as a single stroked path.
+      s += '<path d="M' + (f * 8.5) + ' -20 m0 -5.5 a5.5 5.5 0 1 1 -5.5 5.5 a4 4 0 1 1 4 -4 a2.4 2.4 0 1 1 -2.4 2.4" ' +
+           'fill="none" stroke="' + O + '" stroke-width="2.2" stroke-linecap="round"/>';
+    } else {
+      s += '<circle cx="' + (f * 8.5) + '" cy="-19" r="5.6" fill="#3A2118"/>';
+      s += '<circle cx="' + (f * 8.5 - 1.9) + '" cy="-21.6" r="2.2" fill="#fff"/>';
+    }
+  });
+
+  // --- Proboscis: a long narrow V running down over the abdomen. Without
+  // this the drawing reads as a bee; with it, she names it straight away.
+  s += '<g fill="none" stroke="' + O + '" stroke-width="3" stroke-linecap="round">' +
+       '<path d="M-7 -8 L0 32"/><path d="M7 -8 L0 32"/></g>';
+
+  // --- Mouth: a small smile, or a wobble when dizzy.
+  s += dizzy
+    ? '<path d="M-5 -6 q2.5 -2.6 5 0 q2.5 2.6 5 0" fill="none" stroke="' + O +
+      '" stroke-width="2.4" stroke-linecap="round"/>'
+    : '';
 
   return s;
 }
@@ -121,6 +170,7 @@ function bugReset() {
       dir: Math.random() * Math.PI * 2,
       turn: (Math.random() - 0.5) * 1.2,   // radians per second of drift
       wob: Math.random() * 6,
+      colors: BUG_COLORS[i % BUG_COLORS.length],
       gone: false
     });
   }
@@ -135,23 +185,28 @@ function bugBuild() {
     '<rect width="' + BUG_W + '" height="' + BUG_H + '" fill="#E9F3FA"/>' +
     '<g id="bugPoofs"></g><g id="bugHost"></g>';
   const host = bugSvg.querySelector('#bugHost');
-  const art = bugArt();
   bugs.forEach((b, i) => {
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('class', 'bug');
     // Staggered so the eight of them do not flap in lockstep.
     g.style.setProperty('--flap-delay', (i * 0.043).toFixed(3) + 's');
-    g.innerHTML = art;
+    // The inner group carries the drawing and, later, the fly-away animation,
+    // so the outer transform stays free for the position set each frame.
+    const inner = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    inner.setAttribute('class', 'bugin');
+    inner.setAttribute('transform', 'scale(' + BUG_SCALE + ')');
+    inner.innerHTML = bugArt(b.colors, false);
+    g.appendChild(inner);
     host.appendChild(g);
     b.node = g;
+    b.inner = inner;
   });
   bugPlace();
 }
 
 function bugPlace() {
   bugs.forEach(b => {
-    if (!b.node) return;
-    if (b.gone) { b.node.style.display = 'none'; return; }
+    if (!b.node || b.gone) return;
     // The body tilts a little into the direction of travel; a mosquito that
     // slides sideways without leaning looks like a sticker being dragged.
     const lean = Math.sin(b.dir) * 12;
@@ -229,8 +284,15 @@ function bugTap(ev) {
   });
   if (!best) return;
 
+  // Caught: it goes cross-eyed and tumbles off the board rather than simply
+  // disappearing. She gets to see that she hit it.
   best.gone = true;
-  if (best.node) best.node.style.display = 'none';
+  if (best.inner) {
+    best.inner.innerHTML = bugArt(BUG_DIZZY, true);
+    best.inner.setAttribute('class', 'bugin bugout');
+    const node = best.node;
+    setTimeout(() => { if (node) node.style.display = 'none'; }, 900);
+  }
   bugCaught++;
   bugPoof(best.x, best.y);
 

@@ -669,17 +669,24 @@ html, body {
 }
 .bugboard svg { display: block; width: 100%; height: auto; }
 
-/* The wings flap on the compositor instead of in the animation loop. */
+/* The wings flap on the compositor instead of in the animation loop.
+   Each pair pivots at the shoulder, so they sweep rather than squash. */
 .bug .wing {
-  animation: bugflap .12s ease-in-out infinite alternate;
+  animation: bugflap .11s ease-in-out infinite alternate;
   animation-delay: var(--flap-delay, 0s);
-  transform-origin: center;
 }
-.bug .wl { transform-origin: 0 -15px; }
-.bug .wr { transform-origin: 0 -15px; }
+.bug .wl { transform-origin: -6px -10px; }
+.bug .wr { transform-origin: 6px -10px; }
 @keyframes bugflap {
-  from { transform: scaleY(1);   opacity: .9; }
-  to   { transform: scaleY(.35); opacity: .6; }
+  from { transform: scaleY(1)   rotate(0deg); }
+  to   { transform: scaleY(.55) rotate(0deg); }
+}
+
+/* Caught: the dizzy bug tumbles away and fades. */
+.bugout { animation: bugout .9s ease-in forwards; }
+@keyframes bugout {
+  from { transform: scale(.62) translateY(0)   rotate(0deg);   opacity: 1; }
+  to   { transform: scale(.62) translateY(90px) rotate(220deg); opacity: 0; }
 }
 
 .bugpoof { animation: bugpoof .55s ease-out forwards; }
