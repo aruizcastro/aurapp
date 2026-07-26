@@ -1170,6 +1170,7 @@ function openStory() {
   storyInit($('#storySvg'));
   storyReset();
   renderStoryDots();
+  $('#storyBlow').innerHTML = storyBlowIcon();
   $('#storyBlow').hidden = false;
   $('#storyNext').hidden = true;
 }
@@ -1188,7 +1189,13 @@ function renderStoryDots() {
 $('#storyBlow').onclick = () => {
   const started = storyBlow(() => {
     const next = $('#storyNext');
-    next.lastElementChild.textContent = STORY_ROUNDS[storyState().round].nextLabel;
+    const round = storyState().round;
+    // The button shows the house she is about to face, or the restart arrow
+    // once the brick one has held.
+    const last = round >= STORY_ROUNDS.length - 1;
+    next.innerHTML = last ? storyAgainIcon() : storyHouseIcon(round + 1);
+    next.setAttribute('aria-label', last ? 'Otra vez' : STORY_ROUNDS[round + 1].name);
+    next.style.background = last ? 'var(--ok)' : '#fff';
     next.hidden = false;
     $('#storyBlow').hidden = true;
   });
@@ -1207,6 +1214,9 @@ $('#storyNext').onclick = () => {
 function openForest() {
   forestInit($('#forestSvg'));
   renderForestDots();
+  $('#forestAsk').innerHTML = forestWolfIcon();
+  $('#forestAgain').innerHTML = forestAgainIcon();
+  $('#forestAsk').style.background = '#fff';
   $('#forestAsk').hidden = false;
   $('#forestAgain').hidden = true;
   $('#forestHint').textContent = 'Pregúntale si ya está listo.';

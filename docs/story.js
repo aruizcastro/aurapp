@@ -253,6 +253,74 @@ function storyPig(mood, t) {
   return s;
 }
 
+/* Icons for the buttons. She cannot read «¡Sopla!», so the blow button shows
+   a gust and the advance button shows the very house she is about to face —
+   the same trick as the reset button in the painting screen. */
+function storyBlowIcon() {
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    '<g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round">' +
+    '<path d="M8 22 C22 12 36 14 42 22"/>' +
+    '<path d="M8 34 C26 24 44 26 52 34"/>' +
+    '<path d="M8 46 C22 38 34 40 40 46"/></g>' +
+    '<circle cx="50" cy="20" r="9" fill="none" stroke="#fff" stroke-width="7"/></svg>';
+}
+
+function storyHouseIcon(index) {
+  const cfg = STORY_ROUNDS[index] || STORY_ROUNDS[0];
+  const W = STORY_OUTLINE;
+  let tex = '';
+
+  // The three houses must be told apart at 90 px by a four-year-old, so the
+  // difference cannot be the door colour: each one wears its own material.
+  if (cfg.id === 'straw') {
+    for (let i = 0; i < 5; i++) {
+      const x = 17 + i * 7.5;
+      tex += '<path d="M' + x + ' 32 L' + (x - 3) + ' 53" stroke="' + cfg.wall2 +
+             '" stroke-width="2.6" stroke-linecap="round" fill="none"/>';
+    }
+  } else if (cfg.id === 'stick') {
+    for (let i = 0; i < 4; i++) {
+      const x = 19 + i * 8.6;
+      tex += '<rect x="' + (x - 3) + '" y="31" width="6" height="23" rx="3" fill="' +
+             cfg.wall2 + '" stroke="' + W + '" stroke-width="1.8"/>';
+    }
+  } else {
+    for (let r = 0; r < 3; r++) {
+      const y = 34 + r * 7;
+      tex += '<path d="M15 ' + y + ' H49" stroke="' + W +
+             '" stroke-width="2" opacity=".55" fill="none"/>';
+      for (let c = 0; c < 3; c++) {
+        const x = 15 + (r % 2 ? 5 : 11) + c * 12;
+        if (x < 49) tex += '<path d="M' + x + ' ' + y + ' V' + (y + 7) +
+                           '" stroke="' + W + '" stroke-width="2" opacity=".55" fill="none"/>';
+      }
+    }
+  }
+
+  // A straw roof is a shaggy dome; the other two are pitched planks.
+  const roof = cfg.id === 'straw'
+    ? '<path d="M9 31 C12 12 52 12 55 31 L48 29 L44 33 L38 29 L32 33 L26 29 L20 33 L15 29 Z" fill="' +
+      cfg.roof + '" stroke="' + W + '" stroke-width="4" stroke-linejoin="round"/>'
+    : '<path d="M7 31 L32 11 L57 31 Z" fill="' + cfg.roof + '" stroke="' + W +
+      '" stroke-width="4.5" stroke-linejoin="round"/>';
+
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    roof +
+    '<rect x="13" y="30" width="38" height="25" fill="' + cfg.wall + '" stroke="' + W +
+      '" stroke-width="4.5" stroke-linejoin="round"/>' +
+    tex +
+    '<rect x="27" y="40" width="11" height="15" rx="5.5" fill="#33200F" stroke="' + W +
+      '" stroke-width="2"/>' +
+    '<rect x="13" y="30" width="38" height="25" fill="none" stroke="' + W +
+      '" stroke-width="4.5" stroke-linejoin="round"/></svg>';
+}
+
+function storyAgainIcon() {
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    '<path d="M50 32 A18 18 0 1 1 44 18" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>' +
+    '<path d="M46 6 L48 20 L34 19 Z" fill="#fff"/></svg>';
+}
+
 // ---------------------------------------------------------------- state
 
 const STORY_PIGS = [{ x: 272, s: 0.68 }, { x: 310, s: 0.76 }, { x: 348, s: 0.64 }];

@@ -59,6 +59,25 @@ function forestEllipse(x, y, rx, ry, fill, width) {
          '" stroke-width="' + (width || 5) + '"/>';
 }
 
+/* The ask button shows the wolf's face rather than the words «¿Lobo, estás?».
+   Drawn small and plain: at 34 px the full character turns to mush. */
+function forestWolfIcon() {
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    '<path d="M14 26 L10 6 L26 18 Z" fill="#9C9C97" stroke="' + FOREST_OUTLINE + '" stroke-width="4"/>' +
+    '<path d="M50 26 L54 6 L38 18 Z" fill="#9C9C97" stroke="' + FOREST_OUTLINE + '" stroke-width="4"/>' +
+    '<circle cx="32" cy="34" r="20" fill="#9C9C97" stroke="' + FOREST_OUTLINE + '" stroke-width="4"/>' +
+    '<ellipse cx="32" cy="42" rx="12" ry="9" fill="#D8D6D0"/>' +
+    '<circle cx="25" cy="30" r="3.4" fill="' + FOREST_OUTLINE + '"/>' +
+    '<circle cx="39" cy="30" r="3.4" fill="' + FOREST_OUTLINE + '"/>' +
+    '<ellipse cx="32" cy="39" rx="4.5" ry="3.4" fill="' + FOREST_OUTLINE + '"/></svg>';
+}
+
+function forestAgainIcon() {
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    '<path d="M50 32 A18 18 0 1 1 44 18" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>' +
+    '<path d="M46 6 L48 20 L34 19 Z" fill="#fff"/></svg>';
+}
+
 // ------------------------------------------------------------- state
 
 let forestSvg = null;
