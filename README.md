@@ -172,6 +172,33 @@ Las alternativas son descargar los videos (sin anuncios y funciona sin internet,
 
 ---
 
+## Idiomas
+
+La app habla **español, inglés y portugués**. Arranca en el idioma del
+dispositivo; si es otro distinto, cae en español. El papá puede fijarlo en
+Ajustes → Idioma.
+
+Los textos viven en dos archivos:
+
+- `docs/i18n.js` — las etiquetas cortas, los nombres de los mundos, los
+  mensajes del panel y los nombres de los objetos que se cuentan.
+- `docs/i18n-help.js` — la pantalla de instrucciones, como un bloque de HTML
+  por idioma. La prosa traducida entera suena a persona; traducida frase por
+  frase suena a máquina.
+
+En el HTML, un texto traducible se marca con `data-t="clave"` (texto),
+`data-thtml` (bloque de HTML), `data-tph` (placeholder) o `data-tlabel`
+(aria-label). `i18nApply()` los llena todos.
+
+Agregar un idioma es agregar un objeto más con las mismas claves. Si falta
+alguna, cae en español en vez de mostrar la clave cruda.
+
+Lo único que no cambia de idioma es el nombre bajo el icono en la pantalla de
+inicio del iPad: eso lo fija el `manifest.webmanifest` al instalar y no se
+puede cambiar en caliente.
+
+---
+
 ## Si algún día se publica en Android
 
 Decisiones ya tomadas, para no volver a discutirlas cuando llegue el momento.

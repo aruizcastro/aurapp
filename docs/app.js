@@ -153,7 +153,9 @@ const PET_DEFAULT = () => {
 };
 
 const DEFAULTS = { videos: [], limit: 30, pin: '1234', seconds: 0, day: '',
-                   theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT() };
+                   theme: 'unicorn', ytKey: '', hidden: { camera: true }, pets: PET_DEFAULT(),
+                   // '' means «whatever the device speaks»; a code pins it.
+                   lang: '' };
 
 let state = load();
 
@@ -288,8 +290,8 @@ function renderWorlds() {
     tile.className = 'tile';
     tile.style.background = tint[i % tint.length];
     tile.innerHTML = '<span class="ico">' + world.icon + '</span>' +
-                     '<span class="name">' + world.name + '</span>' +
-                     '<span class="sub">' + count + ' videos</span>';
+                     '<span class="name">' + t('w.' + world.id) + '</span>' +
+                     '<span class="sub">' + count + ' ' + t('bar.videos') + '</span>';
     tile.onclick = () => openWorld(world);
     host.appendChild(tile);
   });
@@ -301,8 +303,8 @@ function renderWorlds() {
     tile.className = 'tile';
     tile.style.background = tint[(6 + i) % tint.length];
     tile.innerHTML = '<span class="ico">' + extra.icon + '</span>' +
-                     '<span class="name">' + extra.name + '</span>' +
-                     '<span class="sub">' + extra.sub + '</span>';
+                     '<span class="name">' + t('x.' + extra.id) + '</span>' +
+                     '<span class="sub">' + t('x.' + extra.id + '.sub') + '</span>';
     tile.onclick = () => go(extra.id);
     host.appendChild(tile);
   });
@@ -688,7 +690,7 @@ $$('.tool[data-tool]').forEach(btn => {
 
 $('#undoBtn').onclick = () => { strokes.pop(); repaint(); };
 $('#clearDraw').onclick = () => {
-  if (confirm('¿Empezamos un dibujo nuevo?')) { strokes = []; repaint(); }
+  if (confirm(t('draw.confirm'))) { strokes = []; repaint(); }
 };
 
 // ------------------------------------------------------------- friends
@@ -827,7 +829,7 @@ function renderPetPanel() {
   $('#petReset').style.display = petMode === 'sleep' ? 'none' : '';
 
   if (petMode === 'sleep') {
-    hint.textContent = 'Está durmiendo. Vuelve mañana o cámbiale de actividad.';
+    hint.textContent = t('pets.sleeping');
     return;
   }
 
@@ -1262,7 +1264,7 @@ function openForest() {
   $('#forestAsk').style.background = '#fff';
   $('#forestAsk').hidden = false;
   $('#forestAgain').hidden = true;
-  $('#forestHint').textContent = 'Pregúntale si ya está listo.';
+  $('#forestHint').textContent = t('forest.ask');
 }
 
 function renderForestDots() {
@@ -1282,14 +1284,14 @@ $('#forestAsk').onclick = () => {
     if (ended === 'chase') {
       $('#forestAsk').hidden = true;
       $('#forestAgain').hidden = false;
-      $('#forestHint').textContent = '¡Salió! Nadie lo alcanzó.';
+      $('#forestHint').textContent = t('forest.escaped');
     } else {
-      $('#forestHint').textContent = 'Se está poniendo ' + forestLastGarment() + '.';
+      $('#forestHint').textContent = t('forest.putting') + forestLastGarment() + '.';
     }
   });
   if (!phase) return;
   renderForestDots();
-  $('#forestHint').textContent = phase === 'chase' ? '¡Ya está listo!' : '…';
+  $('#forestHint').textContent = phase === 'chase' ? t('forest.ready') : '…';
 };
 
 $('#forestAgain').onclick = () => {
@@ -1297,7 +1299,7 @@ $('#forestAgain').onclick = () => {
   renderForestDots();
   $('#forestAgain').hidden = true;
   $('#forestAsk').hidden = false;
-  $('#forestHint').textContent = 'Pregúntale si ya está listo.';
+  $('#forestHint').textContent = t('forest.ask');
 };
 
 $('#helpBack').onclick = () => go(helpCameFrom === 'parents' ? 'parents' : 'worlds');
@@ -1388,6 +1390,16 @@ function renderCountDots() {
   }
 }
 
+/* The object's name and its article, per language. Spanish and Portuguese
+   need the gender; English needs neither, which is why the template for
+   English simply has no {art} in it. */
+function countName(item) {
+  return (COUNT_NAMES[i18nLang] && COUNT_NAMES[i18nLang][item.id]) || item.name;
+}
+function countArticle(item) {
+  return (COUNT_ARTS[i18nLang] && COUNT_ARTS[i18nLang][item.id]) || '';
+}
+
 function renderCountRound() {
   const round = countRound(countN);
   const board = $('#countBoard');
@@ -1406,8 +1418,11 @@ function renderCountRound() {
   chip.classList.remove('hidden');
   chip.style.left = chip.style.top = '';
 
-  $('#countHint').textContent =
-    'Lleva el ' + countN + ' a ' + (round.item.art || 'los') + ' ' + round.item.name + '.';
+  $('#countHint').textContent = t('count.hint', {
+    n: countN,
+    art: countArticle(round.item),
+    name: countName(round.item)
+  });
   renderCountDots();
 }
 
@@ -1475,7 +1490,7 @@ function renderCountRound() {
       countBusy = false;
       if (countN >= COUNT_MAX) {
         countN = 1;
-        $('#countHint').textContent = '¡Contaste hasta ' + COUNT_MAX + '! Otra vez.';
+        $('#countHint').textContent = t('count.done', { n: COUNT_MAX });
       } else {
         countN++;
       }
@@ -1592,7 +1607,6 @@ $('#pinCancel').onclick = () => go('worlds');
 function renderParents() {
   $$('.vidonly').forEach(el => { el.hidden = !BUILD.videos; });
   rollover();
-  $('#limitSel').value = String(state.limit);
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
   $('#pinInput').value = state.pin;
   ytWorldPicker();
@@ -1600,6 +1614,8 @@ function renderParents() {
   ytSyncKeyUI();
   renderWorldToggles();
   renderThemePicker();
+  renderLangPicker();
+  renderLimitOptions();
   $('#videoCount').textContent = state.videos.length;
   $('#emptyHint').style.display = state.videos.length ? 'none' : '';
 
@@ -1608,7 +1624,7 @@ function renderParents() {
     WORLDS.filter(w => w.id !== 'favorites').forEach(w => {
       const opt = document.createElement('option');
       opt.value = w.id;
-      opt.textContent = w.name;
+      opt.textContent = t('w.' + w.id);
       worldSel.appendChild(opt);
     });
   }
@@ -1621,17 +1637,17 @@ function renderParents() {
     row.innerHTML =
       '<img alt="" src="' + thumbURL(video.id) + '">' +
       '<div class="m"><b></b><span></span></div>' +
-      '<select></select><button class="btn danger">Borrar</button>';
+      '<select></select><button class="btn danger">✕</button>';
 
     row.querySelector('b').textContent = video.title;
     row.querySelector('.m span').textContent =
-      (WORLDS.find(w => w.id === video.world) || {}).name + ' · vista ' + (video.plays || 0) + ' veces';
+      t('w.' + video.world) + ' · ' + (video.plays || 0);
 
     const sel = row.querySelector('select');
     WORLDS.filter(w => w.id !== 'favorites').forEach(w => {
       const opt = document.createElement('option');
       opt.value = w.id;
-      opt.textContent = w.name;
+      opt.textContent = t('w.' + w.id);
       if (w.id === video.world) opt.selected = true;
       sel.appendChild(opt);
     });
@@ -1665,6 +1681,55 @@ function renderWorldToggles() {
   });
 }
 
+/* The three languages, as flags-free buttons: the names are written in each
+   language, which is the one label a parent can always read. */
+function renderLangPicker() {
+  const host = $('#langPick');
+  if (!host) return;
+  host.innerHTML = '';
+  I18N_LANGS.forEach(lang => {
+    const btn = document.createElement('button');
+    btn.className = (lang.id === i18nLang ? 'on' : '');
+    btn.textContent = lang.name;
+    btn.onclick = () => {
+      state.lang = lang.id;
+      save();
+      applyLang(lang.id);
+    };
+    host.appendChild(btn);
+  });
+}
+
+/* Everything that has to be re-rendered when the language changes. The screen
+   she is on is redrawn too, so a change made in the parent panel is already
+   in place by the time she gets the iPad back. */
+function applyLang(lang) {
+  i18nSet(lang);
+  i18nApply();
+  renderLimitOptions();
+  renderLangPicker();
+  if (current === 'worlds') renderWorlds();
+  if (current === 'parents') renderParents();
+  if (current === 'count') renderCountRound();
+}
+
+/* The minute options are built rather than written, so «minutes» can be
+   translated without four copies of the same <select> in the HTML. */
+function renderLimitOptions() {
+  const sel = $('#limitSel');
+  if (!sel) return;
+  const chosen = String(state.limit);
+  sel.innerHTML = '';
+  [[0, t('p.time.none')]].concat([15, 20, 30, 45, 60, 90].map(n => [n, t('p.time.min', { n: n })]))
+    .forEach(([value, label]) => {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = label;
+      sel.appendChild(opt);
+    });
+  sel.value = chosen;
+}
+
 function renderThemePicker() {
   const host = $('#themePicker');
   host.innerHTML = '';
@@ -1695,22 +1760,22 @@ $('#resetTime').onclick = () => { state.seconds = 0; save(); renderParents(); };
 $('#savePin').onclick = () => {
   const value = $('#pinInput').value.replace(/\D/g, '').slice(0, 4);
   if (value.length === 4) { state.pin = value; save(); alert('PIN guardado'); }
-  else alert('El PIN debe tener 4 dígitos');
+  else alert(t('msg.pin4'));
 };
 
 // Ask YouTube for the real title. oEmbed needs no API key.
 $('#addLink').addEventListener('input', async () => {
   const id = videoID($('#addLink').value);
   if (!id || $('#addTitle').value) return;
-  $('#addHint').textContent = 'Buscando el título…';
+  $('#addHint').textContent = t('msg.looking');
   try {
     const url = 'https://www.youtube.com/oembed?url=' +
                 encodeURIComponent('https://www.youtube.com/watch?v=' + id) + '&format=json';
     const data = await (await fetch(url)).json();
     if (!$('#addTitle').value) $('#addTitle').value = data.title || '';
-    $('#addHint').textContent = 'Título encontrado.';
+    $('#addHint').textContent = t('msg.found');
   } catch (e) {
-    $('#addHint').textContent = 'No se pudo leer el título. Escríbelo a mano.';
+    $('#addHint').textContent = t('msg.notitle');
   }
 });
 
@@ -1719,9 +1784,9 @@ $('#addBtn').onclick = () => {
   const title = $('#addTitle').value.trim();
 
   if (!id) { $('#addHint').textContent = 'Ese enlace no sirve.'; return; }
-  if (!title) { $('#addHint').textContent = 'Ponle un título.'; return; }
+  if (!title) { $('#addHint').textContent = t('msg.needtitle'); return; }
   if (state.videos.some(v => v.id === id)) {
-    $('#addHint').textContent = 'Ese video ya está en la lista.';
+    $('#addHint').textContent = t('msg.dup');
     return;
   }
 
@@ -1779,8 +1844,8 @@ function ytSyncKeyUI() {
   $('#ytSearchBtn').disabled = !has;
   $('#ytListBtn').disabled = !has;
   $('#ytHint').textContent = has
-    ? 'Escribe qué buscar y toca Buscar.'
-    : 'Necesita una clave de YouTube. Ponla más abajo. Pegar enlaces sí funciona sin clave.';
+    ? t('msg.type')
+    : t('msg.needkey');
 }
 
 $('#ytKeySave').onclick = () => {
@@ -1813,7 +1878,7 @@ $('#ytSearchBtn').onclick = async () => {
     const found = await ytSearch(query, state.ytKey);
     $('#ytHint').textContent = found.length
       ? 'Toca «Agregar» en los que quieras.'
-      : 'No encontré nada con eso.';
+      : t('msg.nothing');
 
     found.forEach(video => {
       const already = state.videos.some(v => v.id === video.id);
@@ -1839,7 +1904,7 @@ $('#ytSearchBtn').onclick = async () => {
       $('#ytResults').appendChild(row);
     });
   } catch (err) {
-    $('#ytHint').textContent = 'YouTube respondió: ' + err.message;
+    $('#ytHint').textContent = t('msg.ytsaid') + err.message;
   }
 };
 
@@ -1856,19 +1921,19 @@ $('#ytListBtn').onclick = async () => {
     $('#ytList').value = '';
     renderParents();
   } catch (err) {
-    $('#ytHint').textContent = 'YouTube respondió: ' + err.message;
+    $('#ytHint').textContent = t('msg.ytsaid') + err.message;
   }
 };
 
 $('#ytBulkBtn').onclick = async () => {
   const ids = ytLinksFrom($('#ytBulk').value);
   const world = ytWorldPicker();
-  if (!ids.length) { $('#ytHint').textContent = 'No encontré enlaces en ese texto.'; return; }
+  if (!ids.length) { $('#ytHint').textContent = t('msg.nolinks'); return; }
 
-  $('#ytHint').textContent = 'Leyendo ' + ids.length + ' enlaces…';
+  $('#ytHint').textContent = t('msg.looking');
   const videos = await ytTitles(ids);
   const added = ytAddBatch(videos, world);
-  $('#ytHint').textContent = 'Encontré ' + ids.length + ', agregué ' + added + '.';
+  $('#ytHint').textContent = t('msg.added', { found: ids.length, added: added });
   $('#ytBulk').value = '';
   renderParents();
 };
@@ -1915,6 +1980,9 @@ if ('serviceWorker' in navigator) {
 }
 
 rollover();
+i18nSet(state.lang || i18nDetect());
+i18nApply();
+renderLimitOptions();
 applyTheme(state.theme);
 go('worlds');
 

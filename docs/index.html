@@ -19,7 +19,7 @@
 <!-- Worlds ------------------------------------------------------------ -->
 <div class="screen on" id="s-worlds">
   <div class="bar">
-    <h1>¿Qué quieres ver hoy?</h1>
+    <h1 data-t="worlds.ask"></h1>
     <div class="grow"></div>
     <div class="pill" id="clockWorlds">⏱ <span>30 min</span></div>
     <button class="round lock" data-go="help" aria-label="Instrucciones">❓</button>
@@ -61,31 +61,31 @@
 <!-- Time up ----------------------------------------------------------- -->
 <div class="screen" id="s-timeup">
   <div class="moon">🌙</div>
-  <h2>El unicornio se fue a dormir</h2>
-  <p>Mañana hay más videos</p>
-  <button class="cta" data-go="paint">🎨 Vamos a pintar</button>
-  <button class="quiet" id="timeupParents" style="margin-top:18px">Soy papá o mamá</button>
+  <h2 data-t="timeup.title"></h2>
+  <p data-t="timeup.sub"></p>
+  <button class="cta" data-go="paint" data-t="timeup.cta"></button>
+  <button class="quiet" id="timeupParents" style="margin-top:18px" data-t="timeup.parents"></button>
 </div>
 
 <!-- Paint menu -------------------------------------------------------- -->
 <div class="screen" id="s-paint">
   <div class="bar">
     <button class="round" data-go="worlds" aria-label="Inicio">🏠</button>
-    <h1>¿Qué quieres pintar?</h1>
+    <h1 data-t="paint.ask"></h1>
   </div>
   <div class="doors">
     <button class="door" data-go="color" style="background:var(--door-1)">
       <svg viewBox="0 0 320 300" id="doorArt" aria-hidden="true"></svg>
-      <span class="name">Colorear</span>
-      <span class="sub">22 dibujos</span>
+      <span class="name" data-t="paint.color"></span>
+      <span class="sub" data-t="paint.color.sub"></span>
     </button>
     <button class="door" data-go="draw" style="background:var(--door-2)">
       <svg viewBox="0 0 320 300" aria-hidden="true">
         <path d="M40 200 C90 100 130 250 170 150 C200 76 240 190 285 120"
               fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round" opacity=".75"/>
       </svg>
-      <span class="name">Dibujar</span>
-      <span class="sub">Lo que quieras</span>
+      <span class="name" data-t="paint.draw"></span>
+      <span class="sub" data-t="paint.draw.sub"></span>
     </button>
   </div>
 </div>
@@ -113,15 +113,15 @@
 <div class="screen" id="s-draw">
   <div class="bar">
     <button class="round" data-go="paint" aria-label="Atrás">‹</button>
-    <h1 style="font-size:24px">Mi dibujo</h1>
+    <h1 style="font-size:24px" data-t="draw.title"></h1>
     <div class="grow"></div>
     <button class="round" id="undoBtn" aria-label="Deshacer">↶</button>
   </div>
   <div class="tools">
-    <button class="tool on" data-tool="pencil">✏️ Lápiz</button>
-    <button class="tool" data-tool="brush">🖌 Pincel</button>
-    <button class="tool" data-tool="eraser">🩹 Borrador</button>
-    <button class="tool" id="clearDraw">🗑 Nuevo</button>
+    <button class="tool on" data-tool="pencil" data-t="tool.pencil"></button>
+    <button class="tool" data-tool="brush" data-t="tool.brush"></button>
+    <button class="tool" data-tool="eraser" data-t="tool.eraser"></button>
+    <button class="tool" id="clearDraw" data-t="tool.new"></button>
   </div>
   <div id="canvasWrap2" style="flex:1;background:#fff;border-radius:18px;min-height:0;overflow:hidden">
     <canvas id="drawCanvas"></canvas>
@@ -290,95 +290,40 @@
 <div class="screen" id="s-help">
   <div class="wrap">
     <div class="bar" style="margin:10px 0 18px">
-      <h2 style="margin:0">Cómo funciona</h2>
+      <h2 style="margin:0" data-t="help.title"></h2>
       <div class="grow"></div>
-      <button class="btn" id="helpBack">Listo</button>
+      <button class="btn" id="helpBack" data-t="help.done"></button>
     </div>
-
-    <section>
-      <h3>Entrar a los ajustes</h3>
-      <p>Mantén apretado el <b>candado</b> 🔒 durante <b>dos segundos</b> y escribe el PIN. Viene en <code>1234</code>; cámbialo en Seguridad.</p>
-      <p>Los números del teclado salen en desorden cada vez. A los 4 años se memorizan posiciones mucho antes que números, así que un teclado fijo se aprende en dos días.</p>
-    </section>
-
-    <section>
-      <h3>Agregar videos</h3>
-      <p><b>Buscar en YouTube</b> — escribes qué buscar y tocas «Agregar» en los resultados que quieras. La forma más rápida. Necesita clave.</p>
-      <p><b>Importar una lista</b> — pegas el enlace de una playlist y trae todos sus videos. Solo listas públicas o no listadas. Necesita clave.</p>
-      <p><b>Pegar muchos enlaces</b> — pegas varios de una vez, incluso dentro de texto suelto. <b>No necesita clave.</b></p>
-      <p><b>Uno por uno</b> — pegas un enlace y ya. <b>No necesita clave.</b></p>
-    </section>
-
-    <section>
-      <h3>Sacar la clave de YouTube</h3>
-      <p>Es gratis y <b>no pide tarjeta de crédito</b>. Son cuatro pasos, una sola vez:</p>
-      <ol class="steps">
-        <li><a href="https://console.cloud.google.com/projectcreate" target="_blank" rel="noopener">Crear un proyecto</a> en Google Cloud.</li>
-        <li><a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Habilitar YouTube Data API v3</a>.</li>
-        <li><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Crear la clave</a> con «Crear credenciales → Clave de API».</li>
-        <li>Edita la clave, y en <i>Restricciones de aplicación</i> elige <b>Sitios web</b> agregando la dirección de tu app con <code>/*</code> al final.</li>
-      </ol>
-      <p>El paso 4 importa: la clave queda visible en la página, cosa inevitable en una app sin servidor. Restringida a tu dominio no sirve en ningún otro sitio, y no tiene nada más colgado — lo peor que puede pasar es que alguien gaste la cuota gratuita.</p>
-      <p>La cuota son 10.000 unidades al día. Una búsqueda cuesta 100 y leer una lista cuesta 1 por cada 50 videos: da para unas 100 búsquedas diarias.</p>
-    </section>
-
-    <section>
-      <h3>La clave es tuya, por dispositivo</h3>
-      <p>Se guarda en este dispositivo, no en el código. Si alguien más abre la dirección de la app, tendría que poner su propia clave: tu cuota está protegida.</p>
-      <p>Lo cómodo es ponerla solo en el computador, cargar los videos ahí con teclado, y pasar la lista al iPad con <b>Exportar</b> e <b>Importar</b>. Así el iPad nunca necesita clave.</p>
-    </section>
-
-    <section>
-      <h3>Modo Guiado</h3>
-      <p>Sin esto ella se sale de la app y el límite de tiempo no sirve de nada.</p>
-      <p>En el iPad: <b>Ajustes → Accesibilidad → Modo Guiado</b>, actívalo y ponle un código. Para usarlo, abre la app y da <b>tres clics rápidos al botón lateral</b>. Para salir, otros tres clics y el código.</p>
-    </section>
-
-    <section>
-      <h3>El tiempo</h3>
-      <p>El contador solo corre mientras un video está efectivamente reproduciéndose, no mientras ella navega. Al agotarse, los videos se cierran pero <b>pintar y los juegos siguen disponibles</b>.</p>
-      <p>Se reinicia solo al cambiar el día. También puedes reiniciarlo a mano en Ajustes.</p>
-    </section>
-
-    <section>
-      <h3>Respaldo</h3>
-      <p>Todo vive en este dispositivo. <b>No borres la app para actualizarla</b>: al borrarla se va la lista de videos.</p>
-      <p>Usa <b>Exportar</b> una vez que tengas la lista armada. Ese archivo también sirve para pasarla a otro dispositivo, y <b>no incluye tu clave</b>.</p>
-    </section>
-
-    <section>
-      <h3>Los anuncios</h3>
-      <p>Van a salir. Es la única forma que las políticas de YouTube permiten para reproducir sus videos dentro de otra app, y una suscripción Premium no aplica ahí porque va atada a la cuenta. En contenido infantil suelen ser de 5 a 15 segundos.</p>
-    </section>
+    <div data-thtml="body"></div>
   </div>
 </div>
 
 <!-- PIN --------------------------------------------------------------- -->
 <div class="screen" id="s-pin">
-  <h2>PIN de papá o mamá</h2>
+  <h2 data-t="pin.title"></h2>
   <div class="pips" id="pips"><i></i><i></i><i></i><i></i></div>
   <div class="pad" id="pinPad"></div>
-  <button class="quiet" id="pinCancel">Cancelar</button>
+  <button class="quiet" id="pinCancel" data-t="pin.cancel"></button>
 </div>
 
 <!-- Parent panel ------------------------------------------------------ -->
 <div class="screen" id="s-parents">
   <div class="wrap">
     <div class="bar" style="margin:10px 0 18px">
-      <h2 style="margin:0">Ajustes</h2>
+      <h2 style="margin:0" data-t="p.title"></h2>
       <div class="grow"></div>
-      <button class="btn" data-go="worlds">Listo</button>
+      <button class="btn" data-go="worlds" data-t="p.done"></button>
     </div>
 
     <section>
-      <h3>Instrucciones</h3>
-      <button class="btn primary" data-go="help">Cómo funciona todo</button>
-      <p class="hint">Cómo agregar videos, sacar la clave de YouTube, el Modo Guiado y el respaldo.</p>
+      <h3 data-t="p.help.h"></h3>
+      <button class="btn primary" data-go="help" data-t="p.help.link"></button>
+      <p class="hint" data-t="p.help.sub"></p>
     </section>
 
     <section>
-      <h3>Tiempo</h3>
-      <label>Límite diario
+      <h3 data-t="p.time.h"></h3>
+      <label><span data-t="p.time.limit"></span>
         <select id="limitSel">
           <option value="0">Sin límite</option>
           <option value="15">15 minutos</option>
@@ -389,81 +334,87 @@
           <option value="90">90 minutos</option>
         </select>
       </label>
-      <label>Usado hoy <span id="usedToday">0 min</span></label>
-      <button class="btn" id="resetTime">Reiniciar el contador de hoy</button>
+      <label><span data-t="p.time.used"></span> <span id="usedToday">0 min</span></label>
+      <button class="btn" id="resetTime" data-t="p.time.reset"></button>
     </section>
 
     <section class="vidonly">
-      <h3>Buscar en YouTube</h3>
-      <label>Buscar <input type="text" id="ytQuery" placeholder="canciones infantiles" autocomplete="off"></label>
-      <label>Mundo <select id="ytWorld"></select></label>
-      <button class="btn primary" id="ytSearchBtn">Buscar</button>
-      <p class="hint" id="ytHint">Necesita una clave de YouTube. Ponla más abajo.</p>
-      <p class="hint" style="margin-top:12px"><b>Sugerencias por mundo</b> — un toque y busca:</p>
+      <h3 data-t="p.search.h"></h3>
+      <label><span data-t="p.search.q"></span> <input type="text" id="ytQuery" autocomplete="off"></label>
+      <label><span data-t="p.search.world"></span> <select id="ytWorld"></select></label>
+      <button class="btn primary" id="ytSearchBtn" data-t="p.search.go"></button>
+      <p class="hint" id="ytHint" data-t="p.search.needkey"></p>
+      <p class="hint" style="margin-top:12px" data-t="p.search.sugg"></p>
       <div class="suggests" id="ytSuggest"></div>
       <div id="ytResults"></div>
     </section>
 
     <section class="vidonly">
-      <h3>Importar una lista de reproducción</h3>
-      <label>Enlace <input type="url" id="ytList" placeholder="https://www.youtube.com/playlist?list=..." autocomplete="off"></label>
-      <button class="btn" id="ytListBtn">Traer todos</button>
-      <p class="hint">Solo listas públicas o no listadas. Las privadas y «Ver más tarde» necesitan iniciar sesión, que esta app no puede hacer.</p>
+      <h3 data-t="p.list.h"></h3>
+      <label><span data-t="p.list.link"></span> <input type="url" id="ytList" placeholder="https://www.youtube.com/playlist?list=..." autocomplete="off"></label>
+      <button class="btn" id="ytListBtn" data-t="p.list.go"></button>
+      <p class="hint" data-t="p.list.note"></p>
     </section>
 
     <section class="vidonly">
-      <h3>Pegar muchos enlaces</h3>
+      <h3 data-t="p.bulk.h"></h3>
       <textarea id="ytBulk" rows="4" placeholder="Pega aquí varios enlaces, uno por línea"></textarea>
-      <button class="btn" id="ytBulkBtn">Agregar todos</button>
-      <p class="hint">Esto no necesita clave. Sirve pegar texto suelto: la app saca los enlaces que encuentre.</p>
+      <button class="btn" id="ytBulkBtn" data-t="p.bulk.go"></button>
+      <p class="hint" data-t="p.bulk.note"></p>
     </section>
 
     <section class="vidonly">
-      <h3>Agregar un video</h3>
-      <label>Enlace <input type="url" id="addLink" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off"></label>
-      <label>Título <input type="text" id="addTitle" placeholder="Cómo lo va a ver ella"></label>
-      <label>Mundo <select id="addWorld"></select></label>
-      <button class="btn primary" id="addBtn">Agregar</button>
-      <p class="hint" id="addHint">El título y la portada se llenan solos al pegar el enlace.</p>
+      <h3 data-t="p.add.h"></h3>
+      <label><span data-t="p.add.link"></span> <input type="url" id="addLink" placeholder="https://youtu.be/..." inputmode="url" autocomplete="off"></label>
+      <label><span data-t="p.add.title"></span> <input type="text" id="addTitle"></label>
+      <label><span data-t="p.add.world"></span> <select id="addWorld"></select></label>
+      <button class="btn primary" id="addBtn" data-t="p.add.go"></button>
+      <p class="hint" id="addHint" data-t="p.add.note"></p>
     </section>
 
     <section class="vidonly">
-      <h3>Videos (<span id="videoCount">0</span>)</h3>
+      <h3><span data-t="p.videos.h"></span> (<span id="videoCount">0</span>)</h3>
       <div id="videoList"></div>
-      <p class="hint" id="emptyHint">Todavía no hay videos. Pega un enlace de YouTube arriba.</p>
+      <p class="hint" id="emptyHint" data-t="p.videos.empty"></p>
     </section>
 
     <section>
-      <h3>Mundos visibles</h3>
+      <h3 data-t="p.worlds.h"></h3>
       <div id="worldToggles"></div>
-      <p class="hint">Se ocultan de la pantalla de inicio, no se borran. Vuelve a marcarlos cuando quieras.</p>
+      <p class="hint" data-t="p.worlds.note"></p>
     </section>
 
     <section>
-      <h3>Colores de la app</h3>
+      <h3 data-t="p.lang.h"></h3>
+      <div class="cats" id="langPick"></div>
+      <p class="hint" data-t="p.lang.note"></p>
+    </section>
+
+    <section>
+      <h3 data-t="p.theme.h"></h3>
       <div id="themePicker" class="themes"></div>
-      <p class="hint">Cambia los fondos y los botones. Los dibujos y los personajes no cambian.</p>
+      <p class="hint" data-t="p.theme.note"></p>
     </section>
 
     <section class="vidonly">
-      <h3>Clave de YouTube</h3>
+      <h3 data-t="p.key.h"></h3>
       <label>API key <input type="text" id="ytKey" placeholder="AIza..." autocomplete="off"></label>
-      <button class="btn" id="ytKeySave">Guardar clave</button>
-      <p class="hint">Gratuita, se crea en Google Cloud y se pega una sola vez. Sin ella siguen funcionando el pegado masivo y agregar uno a uno. Restringe la clave a tu dominio de GitHub Pages.</p>
+      <button class="btn" id="ytKeySave" data-t="p.key.save"></button>
+      <p class="hint" data-t="p.key.note"></p>
     </section>
 
     <section>
-      <h3>Seguridad</h3>
+      <h3 data-t="p.sec.h"></h3>
       <label>PIN <input type="text" id="pinInput" inputmode="numeric" maxlength="4"></label>
-      <button class="btn" id="savePin">Guardar PIN</button>
-      <p class="hint">Activa el Modo Guiado en Ajustes → Accesibilidad para que no pueda salirse de la app: triple clic al botón lateral.</p>
+      <button class="btn" id="savePin" data-t="p.sec.save"></button>
+      <p class="hint" data-t="p.sec.note"></p>
     </section>
 
     <section>
-      <h3>Respaldo</h3>
-      <button class="btn" id="exportBtn">Exportar la lista</button>
-      <button class="btn" id="importBtn">Importar</button>
-      <p class="hint">Guarda un archivo con tus videos, por si cambias de iPad.</p>
+      <h3 data-t="p.backup.h"></h3>
+      <button class="btn" id="exportBtn" data-t="p.backup.export"></button>
+      <button class="btn" id="importBtn" data-t="p.backup.import"></button>
+      <p class="hint" data-t="p.backup.note"></p>
       <input type="file" id="importFile" accept="application/json" hidden>
     </section>
   </div>
@@ -479,6 +430,8 @@
 <script src="bugs.js"></script>
 <script src="match.js"></script>
 <script src="fish.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-help.js"></script>
 <script src="youtube.js"></script>
 <script src="app.js"></script>
 </body>

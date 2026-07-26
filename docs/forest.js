@@ -242,6 +242,13 @@ function forestAsk(onDone) {
 }
 
 /** What the wolf just put on, for the caption above the button. */
+/* The garment's name comes from the dictionary when there is one, so the hint
+   reads «He is putting on the trousers» and not «el pantalón» in English. */
+function forestGarmentName(g) {
+  const dict = FOREST_NAMES[i18nLang];
+  return (dict && dict[g.id]) || g.name;
+}
+
 function forestLastGarment() {
-  return forestWorn > 0 ? FOREST_GARMENTS[forestWorn - 1].name : '';
+  return forestWorn > 0 ? forestGarmentName(FOREST_GARMENTS[forestWorn - 1]) : '';
 }
