@@ -3,7 +3,8 @@
 
     python3 tools/make-sounds.py
 
-Escribe docs/audio/buzz.mp3, pop.mp3 y cheer.mp3.
+Escribe los archivos de docs/audio/: el zumbido y el agua van en WAV porque
+son bucles, y los sonidos sueltos en MP3.
 
 Son sintetizados, no grabados. Si algún día se graban de verdad, basta con
 reemplazar los archivos: la app no distingue de dónde salieron.
@@ -141,9 +142,79 @@ def make_cheer(seconds=1.3):
     return audio
 
 
+def looping_noise(seconds, shape, rng_seed=3):
+    """Ruido de banda limitada que empalma consigo mismo.
+
+    El ruido normal no se puede poner en bucle: el final y el principio no
+    tienen nada que ver y se oye un chasquido en cada vuelta. El truco es
+    construirlo en el dominio de la frecuencia — se le da una amplitud a cada
+    armónico de 1/duración y una fase al azar, y se hace la transformada
+    inversa. Como todos los componentes son múltiplos exactos de 1/duración, la
+    señal resultante es periódica: empalma sola, por construcción.
+
+    `shape(f)` devuelve cuánta energía lleva cada frecuencia."""
+    n = int(SR * seconds)
+    freqs = np.fft.rfftfreq(n, 1 / SR)
+    mag = shape(freqs)
+    phase = np.random.default_rng(rng_seed).uniform(0, 2 * np.pi, len(freqs))
+    spectrum = mag * np.exp(1j * phase)
+    spectrum[0] = 0                       # sin componente continua
+    return np.fft.irfft(spectrum, n)
+
+
+def make_water(seconds=4.0):
+    """El agua del lago. Un murmullo, no un río."""
+    def shape(f):
+        # Un montículo ancho abajo (el chapoteo grave) y una cola muy suave
+        # arriba (la espuma). Sin la cola suena a viento; con demasiada, a
+        # estática de radio.
+        low = np.exp(-((f - 220) / 260) ** 2)
+        air = 0.12 * np.exp(-((f - 2200) / 2400) ** 2)
+        return (low + air) / (1 + (f / 60) ** 2) ** 0.25
+
+    audio = looping_noise(seconds, shape)
+
+    # Olas: dos vaivenes lentos de volumen, ambos con un número entero de
+    # ciclos para no romper el bucle.
+    t = np.linspace(0, seconds, len(audio), endpoint=False)
+    k = 1.0 / seconds
+    audio *= (0.7
+              + 0.2 * np.sin(2 * np.pi * round(0.35 / k) * k * t)
+              + 0.1 * np.sin(2 * np.pi * round(0.9 / k) * k * t + 1.4))
+    return audio
+
+
+def make_splash(seconds=0.45):
+    """Un pez atrapado: el «plop» del agua y la burbuja que sube."""
+    t = np.linspace(0, seconds, int(SR * seconds), endpoint=False)
+    rng = np.random.default_rng(11)
+
+    # El golpe del agua: ruido que se apaga rápido y se va apagando de agudos.
+    noise = rng.normal(0, 1, len(t))
+    # Un filtro pasabajos de un polo, cuya frecuencia de corte cae con el
+    # tiempo: así el chapoteo empieza brillante y se ahoga.
+    out = np.zeros_like(noise)
+    acc = 0.0
+    for i in range(len(noise)):
+        cutoff = 5200 * np.exp(-t[i] * 14) + 300
+        a = min(1.0, 2 * np.pi * cutoff / SR)
+        acc += a * (noise[i] - acc)
+        out[i] = acc
+    splash = out * np.exp(-t * 16)
+
+    # La burbuja: un tono corto que SUBE. Al revés que el «pop» del mosquito,
+    # porque aquí algo emerge en vez de caer.
+    f = 320 + 520 * (1 - np.exp(-t * 11))
+    bubble = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 9) * np.minimum(1, t * 220)
+
+    return splash * 1.5 + bubble * 0.55
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     print('Generando los sonidos:')
     write_wav('buzz.wav', make_buzz(), 11025, peak=0.7)
     write_mp3('pop.mp3', make_pop(), '96k')
     write_mp3('cheer.mp3', make_cheer(), '96k')
+    write_wav('water.wav', make_water(), 11025, peak=0.55)
+    write_mp3('splash.mp3', make_splash(), '96k')

@@ -279,6 +279,8 @@ function fishReset() {
   }
   fishBuild();
   fishStart();
+  // The lake murmurs while she is fishing, and only while she is fishing.
+  if (typeof soundStartLoop === 'function') soundStartLoop('water');
 }
 
 function fishBuild() {
@@ -332,8 +334,12 @@ function fishStep(dt) {
         f.node.style.display = 'none';
         fishCaught++;
         fishDrawBucket();
+        // The splash lands when the fish does, not when she taps: the sound
+        // has to belong to the moment it hits the bucket.
+        if (typeof soundPlay === 'function') soundPlay('splash');
         if (fishCaught >= FISH_TOTAL) {
           fishStop();
+          if (typeof soundPlay === 'function') soundPlay('cheer');
           if (fishDoneCb) fishDoneCb();
         }
       }
@@ -366,6 +372,7 @@ function fishStart() {
 function fishStop() {
   if (fishRaf) cancelAnimationFrame(fishRaf);
   fishRaf = 0;
+  if (typeof soundStopLoop === 'function') soundStopLoop('water');
 }
 
 // ------------------------------------------------------------------ tap

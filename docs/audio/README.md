@@ -7,6 +7,8 @@ Aquí van las grabaciones. Los nombres tienen que ser exactamente estos:
 | `buzz.wav` | Mientras los mosquitos vuelan | En bucle: el final tiene que empalmar con el principio sin salto. 2 a 5 segundos. Bajito. **WAV, no MP3** — ver abajo. |
 | `pop.mp3` | Al atrapar un mosquito | Muy corto, menos de medio segundo. Alegre, no de golpe. |
 | `cheer.mp3` | Al terminar la ronda | 1 a 2 segundos. |
+| `water.wav` | Mientras pesca | En bucle, como el zumbido. Muy bajito: es el cuarto donde está, no el juego. **WAV.** |
+| `splash.mp3` | Cuando un pez cae al balde | Medio segundo. Un «plop» de agua. |
 
 Mono, MP3 o M4A, cualquier calidad razonable. Van dentro del APK, así que
 conviene que entre los tres no pasen de unos 300 KB.

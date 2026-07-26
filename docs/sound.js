@@ -17,9 +17,11 @@
    To use real recordings, drop the files into `docs/audio/` with these exact
    names. Anything short and mono is fine; MP3 or M4A both work.
 
-       audio/buzz.wav   the mosquitoes flying — loops, so it must join up
-       audio/pop.mp3    one mosquito caught — very short, under half a second
-       audio/cheer.mp3  the round finished */
+       audio/buzz.wav    the mosquitoes flying — loops, so it must join up
+       audio/water.wav   the lake — loops too
+       audio/pop.mp3     one mosquito caught — very short, under half a second
+       audio/splash.mp3  one fish caught
+       audio/cheer.mp3   the round finished */
 
 'use strict';
 
@@ -29,9 +31,16 @@ const SOUND_FILES = {
   // gap every three seconds. A WAV decodes to exactly the samples it was given.
   // It costs 66 KB instead of 20, which is a fair price for a clean loop.
   buzz:  'audio/buzz.wav',
+  water: 'audio/water.wav',      // the lake, also a loop, also a WAV
   pop:   'audio/pop.mp3',
+  splash: 'audio/splash.mp3',
   cheer: 'audio/cheer.mp3'
 };
+
+/* How loud each looping bed sits under the game. The water is quieter than the
+   buzzing on purpose: the mosquitoes are the thing she is chasing, the lake is
+   only the room she is in. */
+const SOUND_BED = { buzz: 0.08, water: 0.05 };
 
 let soundOn = true;          // the parent's switch
 let soundCtx = null;         // the WebAudio context, made on first touch
@@ -40,7 +49,7 @@ const soundBuffers = {};     // name → AudioBuffer, when a real file loaded
 
 function soundEnabled(on) {
   soundOn = !!on;
-  if (!soundOn) soundStopLoop('buzz');
+  if (!soundOn) Object.keys(soundLoops).forEach(soundStopLoop);
 }
 
 /* Browsers will not let audio start before a gesture, so the context is built
@@ -91,6 +100,25 @@ function soundSynth(name) {
   const gain = soundCtx.createGain();
   gain.connect(soundCtx.destination);
 
+  if (name === 'splash') {
+    // Stand-in for the water: a short noise burst through a falling filter.
+    const len = Math.floor(soundCtx.sampleRate * 0.35);
+    const buf = soundCtx.createBuffer(1, len, soundCtx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    }
+    const src = soundCtx.createBufferSource();
+    const lp = soundCtx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(4000, t);
+    lp.frequency.exponentialRampToValueAtTime(400, t + 0.3);
+    src.buffer = buf;
+    gain.gain.setValueAtTime(0.3, t);
+    src.connect(lp); lp.connect(gain); src.start(t);
+    return;
+  }
+
   if (name === 'pop') {
     const osc = soundCtx.createOscillator();
     osc.type = 'triangle';
@@ -131,7 +159,7 @@ function soundStartLoop(name) {
   const gain = soundCtx.createGain();
   gain.gain.value = 0;
   gain.connect(soundCtx.destination);
-  gain.gain.linearRampToValueAtTime(0.08, soundCtx.currentTime + 0.4);
+  gain.gain.linearRampToValueAtTime(SOUND_BED[name] || 0.07, soundCtx.currentTime + 0.4);
 
   const buf = soundBuffers[name];
   if (buf) {
