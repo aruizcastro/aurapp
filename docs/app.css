@@ -80,7 +80,6 @@ html, body {
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   font-family: inherit; color: var(--ink);
 }
-.tile:disabled { opacity: .4; }
 .tile .ico { font-size: 44px; line-height: 1; }
 .tile .name { font-size: 21px; font-weight: 600; }
 .tile .sub { font-size: 14px; opacity: .62; }

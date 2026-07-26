@@ -235,12 +235,16 @@ function renderWorlds() {
   host.innerHTML = '';
   const tint = currentTheme().tiles;
 
+  /* An empty world is not shown at all. Greyed-out tiles teach a
+     four-year-old to keep poking at something that never responds, and on a
+     fresh install they filled the screen with dead squares. */
   WORLDS.forEach((world, i) => {
     const count = videosIn(world.id).length;
+    if (count === 0) return;
+
     const tile = document.createElement('button');
     tile.className = 'tile';
     tile.style.background = tint[i % tint.length];
-    tile.disabled = count === 0;
     tile.innerHTML = '<span class="ico">' + world.icon + '</span>' +
                      '<span class="name">' + world.name + '</span>' +
                      '<span class="sub">' + count + ' videos</span>';

@@ -10,7 +10,7 @@ El código, los nombres de archivo y los comentarios están en inglés. Los text
 
 ## Qué hace
 
-**Videos.** Seis mundos temáticos en la primera pantalla. Dentro de cada mundo, páginas de 6 videos con flechas grandes (también funciona deslizar). Nunca hay más de 7 cosas en pantalla y cualquier video queda a dos toques. El mundo *Favoritos* se llena solo con lo que ella repite tres veces o más.
+**Videos.** Seis mundos temáticos, de los cuales **solo aparecen los que tienen videos**. Un mundo vacío no se muestra en gris: no se muestra. Un mosaico apagado le enseña a insistir en algo que nunca responde, y en una instalación nueva llenaba la pantalla de cuadros muertos. Dentro de cada mundo hay páginas de 6 videos con flechas grandes (también funciona deslizar). Nunca hay más de 7 cosas en pantalla y cualquier video queda a dos toques. El mundo *Favoritos* se llena solo con lo que ella repite tres veces o más.
 
 **Reproductor.** Usa el IFrame Player API oficial de YouTube, con los controles de YouTube apagados y reemplazados por dos botones de 76 px: pausa y casita.
 
