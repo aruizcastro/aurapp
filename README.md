@@ -42,6 +42,8 @@ Soltar el número en el grupo equivocado no cuesta nada: la tarjeta vuelve a su 
 
 **Colores de la app.** Tres paletas en el panel de padres: Unicornio (rosados y morados, la de siempre), Mar (azules y verdes) y Bosque (verdes y tierra). Cambia fondos, botones, acentos y mosaicos. Los personajes y los dibujos para colorear no cambian: son ilustración, no interfaz.
 
+**Instrucciones dentro de la app.** Un botón ❓ junto al candado y otro en Ajustes abren una pantalla que explica todo: cómo entrar, las cuatro formas de agregar videos, cómo sacar la clave de YouTube —con enlaces directos a cada paso de Google Cloud—, el Modo Guiado, el tiempo, el respaldo y los anuncios. Así no hay que volver a este archivo.
+
 **Panel de padres.** Protegido con PIN de 4 dígitos. Se entra manteniendo apretado el candado 2 segundos. Los números del teclado salen en desorden cada vez: a los 4 años se memorizan posiciones mucho antes que números.
 
 ---

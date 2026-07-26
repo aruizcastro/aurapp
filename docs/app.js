@@ -170,8 +170,10 @@ function videosIn(worldID) {
 // ------------------------------------------------------------- screens
 
 let current = 'worlds';
+let helpCameFrom = 'worlds';
 
 function go(name) {
+  if (name === 'help') helpCameFrom = current === 'help' ? helpCameFrom : current;
   if (name === 'worlds' && outOfTime()) name = 'timeup';
   $$('.screen').forEach(s => s.classList.remove('on'));
   $('#s-' + name).classList.add('on');
@@ -1174,6 +1176,8 @@ $('#forestAgain').onclick = () => {
   $('#forestAsk').hidden = false;
   $('#forestHint').textContent = 'Pregúntale si ya está listo.';
 };
+
+$('#helpBack').onclick = () => go(helpCameFrom === 'parents' ? 'parents' : 'worlds');
 
 // ---------------------------------------------------------------- worm
 
