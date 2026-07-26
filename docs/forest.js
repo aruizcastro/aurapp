@@ -151,9 +151,14 @@ function forestScene() {
   const hop = chasing ? Math.abs(Math.sin(t * 11)) * -12 : 0;
   const puff = forestPhase === 'dressing' ? Math.sin(t * 9) * 0.25 : 0;
 
-  s += '<g transform="translate(' + wolfX + ' ' + (FOREST_GROUND + hop) + ')">';
+  /* storyWolf places itself at STORY_WOLF_X / STORY_GROUND, so moving him
+     means cancelling that out — adding to it pushes him off the canvas and
+     leaves his clothes hanging in mid-air. */
+  const wolfScale = 0.74 * (1 + 0.16 * puff);   // must match storyWolf
+  s += '<g transform="translate(' + (wolfX - STORY_WOLF_X) + ' ' + hop + ')">';
   s += storyWolf(puff, 0, 0);
-  s += '<g transform="scale(0.74)">';
+  s += '<g transform="translate(' + STORY_WOLF_X + ' ' + STORY_GROUND +
+       ') scale(' + wolfScale + ')">';
   for (let i = 0; i < forestWorn; i++) s += FOREST_GARMENTS[i].draw();
   s += '</g></g>';
 
