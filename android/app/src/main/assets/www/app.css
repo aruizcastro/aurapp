@@ -43,7 +43,15 @@ html, body {
 
 /* Screens ------------------------------------------------------------- */
 
-.screen { position: fixed; inset: 0; display: none; flex-direction: column; padding: 20px; gap: 14px; }
+/* Padding respects the notch and the home bar. On a phone with a cutout, or
+   an iPad in full screen, a flat 20px puts the home button under the camera
+   hole or under the gesture bar. env() is zero on everything else, so this
+   costs nothing where it is not needed. */
+.screen {
+  position: fixed; inset: 0; display: none; flex-direction: column; gap: 14px;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+           max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
 .screen.on { display: flex; }
 
 #s-worlds, #s-paint { background: var(--bg-main); }
@@ -655,7 +663,11 @@ html, body {
 /* Short and wide (phone held sideways): the video grid would otherwise
    push its own controls off the bottom. */
 @media (orientation: landscape) and (max-height: 460px) {
-  .screen { padding: 10px; gap: 8px; }
+  .screen {
+    gap: 8px;
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+             max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
   .bar h1 { font-size: 19px; }
   .worlds { gap: 9px; }
   .tile { padding: 10px 6px; }
@@ -671,14 +683,23 @@ html, body {
 
 /* Mosquitos ------------------------------------------------------------ */
 
-.bugwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+.bugwrap {
+  flex: 1; min-height: 0; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
 
+/* The board is capped by height as well as width. Without the max-height a
+   phone held sideways gets a board taller than the screen: the width fits, the
+   height does not, and the bottom third of the game is off the display. An SVG
+   with a viewBox has an intrinsic ratio, so capping the height shrinks the
+   width to match on its own. */
 .bugboard {
-  width: 100%; max-width: 780px; border-radius: 22px; overflow: hidden;
+  width: 100%; max-width: 780px; max-height: 100%; min-height: 0;
+  border-radius: 22px; overflow: hidden;
   background: #E9F3FA; box-shadow: 0 4px 0 rgba(38,33,92,.10);
   touch-action: none;              /* the tap must not scroll or zoom the page */
 }
-.bugboard svg { display: block; width: 100%; height: auto; }
+.bugboard svg { display: block; width: 100%; height: auto; max-height: 100%; }
 
 /* The wings flap on the compositor instead of in the animation loop.
    Each pair pivots at the shoulder, so they sweep rather than squash. */
@@ -722,10 +743,21 @@ html, body {
 
 /* Une con la flecha ----------------------------------------------------- */
 
-.matchwrap { flex: 1; display: grid; place-items: center; min-height: 0; position: relative; }
+.matchwrap {
+  flex: 1; min-height: 0; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
 .matchboard {
-  width: 100%; max-width: 900px; border-radius: 22px; padding: 10px;
+  width: 100%; max-width: 900px; max-height: 100%; min-height: 0;
+  border-radius: 22px; padding: 10px;
   background: #fff; box-shadow: 0 4px 0 rgba(38,33,92,.10);
   touch-action: none;            /* the finger paints a line, it does not scroll */
 }
-.matchboard svg { display: block; width: 100%; height: auto; }
+.matchboard svg { display: block; width: 100%; height: auto; max-height: 100%; }
+
+/* On a phone held upright the header eats a lot of a short screen, so the
+   boards get their padding back. */
+@media (max-width: 760px) {
+  .bugboard, .matchboard { border-radius: 18px; }
+  .matchboard { padding: 6px; }
+}
