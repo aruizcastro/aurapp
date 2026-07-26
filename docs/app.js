@@ -6,13 +6,38 @@
 
 // ---------------------------------------------------------------- state
 
+/* Each world carries a few suggested searches rather than a list of video
+   ids. Ids cannot be checked without calling YouTube, and a wrong one does
+   not fail — it quietly plays a different video. Searches, by contrast, run
+   against today's catalogue with safe search on, and the parent approves
+   whatever comes back. */
 const WORLDS = [
-  { id: 'songs',     name: 'Canciones',  icon: '🎵', color: '#CECBF6' },
-  { id: 'animals',   name: 'Animales',   icon: '🐾', color: '#9FE1CB' },
-  { id: 'learning',  name: 'Aprender',   icon: '🔤', color: '#FAC775' },
-  { id: 'unicorns',  name: 'Unicornios', icon: '✨', color: '#F4C0D1' },
-  { id: 'bedtime',   name: 'Dormir',     icon: '🌙', color: '#B5D4F4' },
-  { id: 'favorites', name: 'Favoritos',  icon: '⭐️', color: '#F5C4B3' }
+  { id: 'songs', name: 'Canciones', icon: '🎵', color: '#CECBF6', searches: [
+    'canciones infantiles en español',
+    'rondas infantiles tradicionales',
+    'canciones para bailar niños'
+  ] },
+  { id: 'animals', name: 'Animales', icon: '🐾', color: '#9FE1CB', searches: [
+    'animales de la granja para niños',
+    'sonidos de los animales para niños',
+    'animales del mar para niños'
+  ] },
+  { id: 'learning', name: 'Aprender', icon: '🔤', color: '#FAC775', searches: [
+    'aprender los colores en español para niños',
+    'aprender los números del 1 al 10 para niños',
+    'el abecedario para niños en español'
+  ] },
+  { id: 'unicorns', name: 'Unicornios', icon: '✨', color: '#F4C0D1', searches: [
+    'unicornios para niños',
+    'cuentos de unicornios en español',
+    'canciones de unicornios para niños'
+  ] },
+  { id: 'bedtime', name: 'Dormir', icon: '🌙', color: '#B5D4F4', searches: [
+    'canciones de cuna para bebés',
+    'cuentos para dormir niños en español',
+    'música relajante para dormir niños'
+  ] },
+  { id: 'favorites', name: 'Favoritos', icon: '⭐️', color: '#F5C4B3' }
 ];
 
 const PALETTE = ['#E24B4A', '#EF9F27', '#FAC775', '#97C459', '#1D9E75',
@@ -1499,6 +1524,7 @@ function renderParents() {
   $('#usedToday').textContent = Math.floor(state.seconds / 60) + ' min';
   $('#pinInput').value = state.pin;
   ytWorldPicker();
+  renderYtSuggestions();
   ytSyncKeyUI();
   renderWorldToggles();
   renderThemePicker();
@@ -1583,6 +1609,7 @@ function renderThemePicker() {
       save();
       applyTheme(theme.id);
       ytWorldPicker();
+  renderYtSuggestions();
   ytSyncKeyUI();
   renderWorldToggles();
   renderThemePicker();
@@ -1652,6 +1679,27 @@ function ytWorldPicker() {
 // The video list uses a plain string for the favourites world; keep the
 // name in one place so a rename cannot silently break the picker.
 function favoritesWorldID() { return 'favorites'; }
+
+/* One tap per suggestion: fills the box, points at the right world, searches. */
+function renderYtSuggestions() {
+  const host = $('#ytSuggest');
+  host.innerHTML = '';
+
+  WORLDS.filter(w => w.searches).forEach(world => {
+    world.searches.forEach(term => {
+      const chip = document.createElement('button');
+      chip.className = 'suggest';
+      chip.innerHTML = '<span class="ico">' + world.icon + '</span><span></span>';
+      chip.querySelector('span:last-child').textContent = term;
+      chip.onclick = () => {
+        $('#ytQuery').value = term;
+        $('#ytWorld').value = world.id;
+        $('#ytSearchBtn').click();
+      };
+      host.appendChild(chip);
+    });
+  });
+}
 
 function ytSyncKeyUI() {
   const has = ytHasKey(state.ytKey);

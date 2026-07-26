@@ -72,6 +72,8 @@ Para usarlo: abre AurApp y da tres clics rápidos al botón lateral. El iPad que
 
 Mantén apretado el candado 2 segundos y escribe el PIN (viene en `1234`, cámbialo). Hay cuatro formas, de más a menos cómoda:
 
+**Sugerencias por mundo.** Quince búsquedas listas, tres por cada mundo de video, en español. Un toque y busca. Son *búsquedas*, no listas de videos fijas, y eso es a propósito: un id de YouTube no se puede verificar sin llamar a YouTube, y un id equivocado no falla — reproduce otro video. Una búsqueda corre contra el catálogo de hoy, con filtro seguro, y tú apruebas lo que aparece.
+
 **Buscar en YouTube.** Escribes qué buscar, salen los resultados con miniatura y tocas «Agregar» en los que quieras. Es la forma más rápida y no hay que copiar ningún enlace. Va con **búsqueda segura estricta** y filtrada a videos que se puedan reproducir dentro de la app — sin ese segundo filtro aparecerían resultados que al tocarlos no arrancan.
 
 **Importar una lista de reproducción.** Pegas el enlace de una playlist y trae todos sus videos. Solo listas públicas o no listadas: las privadas y «Ver más tarde» necesitan iniciar sesión, que una PWA no puede hacer.
