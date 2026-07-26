@@ -414,9 +414,17 @@ function buildPalette(host, initial, onPick) {
 
 // Coloring -------------------------------------------------------------
 
+/* The two categories are shown as pictures, like every other tab in the app.
+   The animals borrow the cat drawing, but the places cannot borrow one of
+   theirs: every landscape starts with a full-bleed sky rectangle, which as a
+   flat silhouette is just a filled square. So they get a purpose-built mark. */
 const CATEGORIES = [
-  { id: 'animals', name: 'Animales' },
-  { id: 'places',  name: 'Paisajes' }
+  { id: 'animals', name: 'Animales', sample: 'cat' },
+  { id: 'places',  name: 'Paisajes', icon:
+    '<path d="M20 230 L110 90 L200 230 Z" class="rg"/>' +
+    '<path d="M150 230 L226 120 L300 230 Z" class="rg"/>' +
+    '<circle cx="248" cy="72" r="34" class="rg"/>' +
+    '<path d="M10 236 L310 236" class="rg ln" fill="none" stroke-width="16"/>' }
 ];
 
 let category = 'animals';
@@ -426,8 +434,12 @@ function openColoring() {
   if (!cats.childElementCount) {
     CATEGORIES.forEach(cat => {
       const btn = document.createElement('button');
-      btn.textContent = cat.name;
-      btn.className = cat.id === category ? 'on' : '';
+      const sample = cat.sample ? SILHOUETTES.find(s => s.id === cat.sample) : null;
+      btn.className = 'icontab cat' + (cat.id === category ? ' on' : '');
+      btn.setAttribute('aria-label', cat.name);
+      btn.title = cat.name;
+      btn.innerHTML = '<svg viewBox="0 0 320 300" aria-hidden="true">' +
+                      (sample ? sample.svg : cat.icon) + '</svg>';
       btn.onclick = () => {
         cats.querySelectorAll('button').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');

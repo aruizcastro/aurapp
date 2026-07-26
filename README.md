@@ -18,7 +18,7 @@ Una capa invisible cubre el iframe y se traga todos los toques. Sin eso, tocar e
 
 **Límite de tiempo.** El contador solo corre mientras un video está efectivamente reproduciéndose, no mientras ella navega. Al agotarse aparece una pantalla de "el unicornio se fue a dormir" que ofrece ir a pintar. Se reinicia solo al cambiar el día.
 
-**Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. El botón de empezar de nuevo va junto a la paleta, donde ya está su mano, y muestra el dibujo actual sin pintar — no puede leer "empezar de nuevo", pero reconoce su propio dibujo en blanco. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
+**Pintar.** *Colorear*: 22 dibujos originales en dos categorías — 16 animales y 6 paisajes (casa, playa, montañas, castillo, cohete, arcoíris). Se toca un color y luego una zona, que se llena completa. Las dos categorías se eligen por dibujo, no por palabra: un gato para los animales y unas montañas para los paisajes. El botón de empezar de nuevo va junto a la paleta, donde ya está su mano, y muestra el dibujo actual sin pintar — no puede leer "empezar de nuevo", pero reconoce su propio dibujo en blanco. *Dibujar*: lienzo libre con lápiz fino y opaco, pincel grueso y translúcido (los trazos superpuestos se mezclan), y borrador.
 
 **Amigos.** Tres personajes en estilo sticker — Capi el capibara, Michi la gata y Coneja — que comparten un mismo cuerpo, así que la ropa le queda a los tres. Cinco actividades: vestir, darles de comer, bañarlos, jugar y dormir.
 
@@ -30,7 +30,7 @@ En el baño, la mascota se mete en la tina y ella pasa el dedo por encima: donde
 
 **El bosque.** El juego tradicional de preguntarle al lobo si ya está listo. Cada toque le pone una prenda más — siete en total — y al terminar sale corriendo y los tres amigos se dispersan muertos de risa. El botón nunca cambia de forma, así que la única pista de cuánto falta es mirar al lobo: la espera es el juego.
 
-**El gusanito.** Un juego de comer naranjas por un tablero de 8 × 6. Se mueve **un paso por cada toque** en vez de deslizarse con un temporizador: eso es lo que lo hace jugable a los 4 años, porque no hay reflejos ni prisa y puede pensar todo lo que quiera. Sosteniendo el botón camina solo. Crece con cada naranja, y al comerse la última sonríe con la boca abierta.
+**El gusanito.** Un juego de comer naranjas por un tablero de 8 × 6. Se mueve **un paso por cada toque** en vez de deslizarse con un temporizador: eso es lo que lo hace jugable a los 4 años, porque no hay reflejos ni prisa y puede pensar todo lo que quiera. Sosteniendo el botón camina solo. El botón de empezar de nuevo va arriba en la barra, **lejos de las flechas**: en el centro de la cruz es justo donde cae el pulgar y lo hundía sin querer. Crece con cada naranja, y al comerse la última sonríe con la boca abierta.
 
 No se puede perder. Las paredes lo detienen sin castigo, se atraviesa a sí mismo, y no hay reloj. El único final es feliz.
 
